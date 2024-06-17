@@ -1,7 +1,6 @@
 package com.ulutman.security.jwt;
 
 import com.ulutman.security.UserDetailsServiceImpl;
-import com.ulutman.security.jwt.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,7 +20,7 @@ import java.util.Collection;
 
 @Component
 @RequiredArgsConstructor
-class JwtFilter extends OncePerRequestFilter {
+public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private final UserDetailsServiceImpl userDetailsService;
@@ -30,7 +29,6 @@ class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-
         final String tokenHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
         String userName;
         String jwt;
@@ -40,9 +38,9 @@ class JwtFilter extends OncePerRequestFilter {
             if (userName != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails user = userDetailsService.loadUserByUsername(userName);
                 Collection<? extends GrantedAuthority> role = user.getAuthorities();
-                if (jwtUtil.tokenIsValidation(jwt,user)) {
+                if (jwtUtil.tokenIsValidation(jwt, user)) {
                     UsernamePasswordAuthenticationToken token =
-                            new UsernamePasswordAuthenticationToken(user, null,role);
+                            new UsernamePasswordAuthenticationToken(user, null, role);
                     token.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(token);
                 }
@@ -51,4 +49,5 @@ class JwtFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 }
+
 
