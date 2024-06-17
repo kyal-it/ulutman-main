@@ -28,10 +28,13 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     String name;
+    @Column(unique = true)
     String email;
     String password;
     String confirmPassword;
+    @Enumerated(EnumType.STRING)
     Role role;
+    @Column(name = "create_date")
     LocalDate createDate;
 
     @Override
@@ -43,7 +46,7 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return email;
+        return this.email;
     }
 
     @Override
