@@ -24,5 +24,4 @@ public class Favorite {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_account_id")
     private UserAccount userAccount;
-
 }
