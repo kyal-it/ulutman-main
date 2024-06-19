@@ -1,5 +1,6 @@
 package com.ulutman.model.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ulutman.model.enums.Role;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -36,6 +37,23 @@ public class User implements UserDetails {
     Role role;
     @Column(name = "create_date")
     LocalDate createDate;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Payment> payments;
+
+    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
+    private List<UserAccount> userAccounts;
+
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "publish_id")
+    private Publish publish;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "favorite_id")
+    private Favorite favorite;
+
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
