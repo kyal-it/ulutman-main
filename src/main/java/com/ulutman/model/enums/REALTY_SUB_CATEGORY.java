@@ -7,4 +7,14 @@ public enum REALTY_SUB_CATEGORY implements SubCategory {
     Apartment,
     PartOfLand,
     Space;
+
+    @Override
+    public Category getCategory() {
+        return null;
+    }
+
+    @Override
+    public String getName() {
+        return "";
+    }
 }

@@ -51,7 +51,7 @@ public class SecurityConfig {
                     authorize.requestMatchers("/api/auth/sign-up", "/api/auth/with google", "/api/auth/sign-in").permitAll()
                             .requestMatchers("/swagger-ui/**",
                                     "/swagger-resources/*",
-                                    "/v3/api-docs/**").permitAll()
+                                    "/v3/api-docs/**","/api/publishes").permitAll()
                             .requestMatchers("/api/auth/set-password", "/api/auth/forgot-password").permitAll()
                             .anyRequest().authenticated();
                 })

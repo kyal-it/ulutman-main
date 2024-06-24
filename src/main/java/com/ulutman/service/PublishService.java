@@ -30,12 +30,12 @@ public class PublishService {
     }
 
     public PublishResponse createPublish(PublishRequest publishRequest) {
-        Publish publish = this.publishMapper.mapToEntity(publishRequest);
-        Category category = publishRequest.getCategory();
-        publish.setCategory(category);
 
-
-        this.publishRepository.save(publish);
+        validateCategoryAndSubCategory(
+                publishRequest.getCategory(),
+                publishRequest.getSubCategory().getName());
+                Publish publish = this.publishMapper.mapToEntity(publishRequest);
+        publishRepository.save(publish);
         return this.publishMapper.mapToResponse(publish);
     }
 
@@ -75,4 +75,18 @@ public class PublishService {
         categoryToSubCategoryMap.put(Category.SELL, SELL_SUB_CATEGORY.class);
         categoryToSubCategoryMap.put(Category.REAL_ESTATE, REALTY_SUB_CATEGORY.class);
     }
+
+    private void validateCategoryAndSubCategory(Category category, String subCategoryName) {
+        Class<? extends Enum> subCategoryClass = categoryToSubCategoryMap.get(category);
+        if (subCategoryClass == null) {
+            throw new IllegalArgumentException("Invalid category: " + category);
+        }
+
+        try {
+            Enum.valueOf(subCategoryClass, subCategoryName.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid subcategory '" + subCategoryName + "' for category " + category);
+        }
+    }
+
 }

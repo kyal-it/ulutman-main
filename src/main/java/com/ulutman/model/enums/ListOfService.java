@@ -11,4 +11,14 @@ public enum ListOfService implements SubCategory {
     TAXIANDTRACK,
     REPAIR,
     DIFFERENT;
+
+    @Override
+    public Category getCategory() {
+        return null;
+    }
+
+    @Override
+    public String getName() {
+        return "";
+    }
 }

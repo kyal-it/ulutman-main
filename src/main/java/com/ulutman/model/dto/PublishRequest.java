@@ -1,5 +1,7 @@
 package com.ulutman.model.dto;
 
+import com.ulutman.model.entities.ConcreteSubCategory;
+import com.ulutman.model.entities.SubCategory;
 import com.ulutman.model.enums.Bank;
 import com.ulutman.model.enums.Category;
 import com.ulutman.model.enums.Metro;
@@ -14,6 +16,7 @@ public class PublishRequest {
     String address;
     String phoneNumber;
     String image;
-    Category category;
+    Category category; //Enum
+    ConcreteSubCategory subCategory;//интерфейс поли:     Category getCategory(); // Возвращает категорию, к которой относится подкатегорияString getName(); //
     Bank bank;
 }
