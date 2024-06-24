@@ -1,5 +1,7 @@
 package com.ulutman.model.entities;
 
+import com.ulutman.model.enums.Bank;
+import com.ulutman.model.enums.Category;
 import com.ulutman.model.enums.Metro;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -21,6 +23,10 @@ public class Publish {
     private Long id;
     private String title;
     private String description;
+    @Enumerated(EnumType.STRING)
+    private Category category;
+    @Enumerated(EnumType.STRING)
+    private Bank bank;
     @Enumerated(EnumType.STRING)
     private Metro metro;
     private String address;

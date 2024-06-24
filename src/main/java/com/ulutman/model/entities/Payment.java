@@ -1,6 +1,5 @@
 package com.ulutman.model.entities;
 
-import com.ulutman.model.enums.PaymentSystem;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -17,7 +16,6 @@ public class Payment {
             strategy = GenerationType.IDENTITY
     )
     private Long id;
-    private PaymentSystem paymentSystem;
     private String  cardNumber;
     private String cvc;
     private int monthDate;
