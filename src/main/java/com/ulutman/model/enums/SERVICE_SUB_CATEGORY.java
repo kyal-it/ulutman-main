@@ -11,4 +11,13 @@ public enum SERVICE_SUB_CATEGORY implements SubCategory {
     REPAIR,
     DIFFERENT;
 
+    @Override
+    public Category getCategory() {
+        return null;
+    }
+
+    @Override
+    public String getName() {
+        return "";
+    }
 }

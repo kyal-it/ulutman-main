@@ -20,13 +20,15 @@ public class PublishController {
             this.publishService = publishService;
         }
 
-        @PostMapping
-        public ResponseEntity<PublishResponse> createPublish(@RequestBody PublishRequest publishRequest) {
-            PublishResponse createdPublish = publishService.createPublish(publishRequest);
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdPublish);
-        }
 
-        @GetMapping
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public PublishResponse createPublish(@RequestBody PublishRequest publishRequest) {
+        return publishService.createPublish(publishRequest);
+    }
+
+
+    @GetMapping
         public ResponseEntity<List<PublishResponse>> getAllPublishes() {
             List<PublishResponse> publishes = publishService.getAll();
             return ResponseEntity.ok(publishes);

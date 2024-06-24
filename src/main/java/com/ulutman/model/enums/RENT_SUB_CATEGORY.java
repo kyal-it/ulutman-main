@@ -10,4 +10,14 @@ public enum RENT_SUB_CATEGORY implements SubCategory {
     RentBed,
     RentApartment,
     RentOffice;
+
+    @Override
+    public Category getCategory() {
+        return null;
+    }
+
+    @Override
+    public String getName() {
+        return "";
+    }
 }
