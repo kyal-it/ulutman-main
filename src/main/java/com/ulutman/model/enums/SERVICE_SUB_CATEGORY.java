@@ -1,6 +1,8 @@
 package com.ulutman.model.enums;
 
-public enum SERVICE_SUB_CATEGORY {
+import com.ulutman.model.entities.SubCategory;
+
+public enum SERVICE_SUB_CATEGORY implements SubCategory {
     MEDICAL,
     LEGAL,
     BEAUTY,

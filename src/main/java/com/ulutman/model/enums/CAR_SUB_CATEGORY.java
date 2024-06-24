@@ -1,6 +1,8 @@
 package com.ulutman.model.enums;
 
-public enum CAR_SUB_CATEGORY {
+import com.ulutman.model.entities.SubCategory;
+
+public enum CAR_SUB_CATEGORY implements SubCategory {
     SaleOfCar,
     RentOfCar;
 }
