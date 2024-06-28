@@ -6,9 +6,7 @@ import com.ulutman.model.dto.PublishResponse;
 import com.ulutman.model.entities.Publish;
 import com.ulutman.model.enums.*;
 import com.ulutman.repository.PublishRepository;
-import jakarta.annotation.PostConstruct;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -17,9 +15,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-@Transactional
 public class PublishService {
-    private final Map<Category, Class<? extends Enum>> categoryToSubCategoryMap = new HashMap<>();
 
     private final PublishMapper publishMapper;
     private final PublishRepository publishRepository;
@@ -30,14 +26,20 @@ public class PublishService {
     }
 
     public PublishResponse createPublish(PublishRequest publishRequest) {
-
-        validateCategoryAndSubCategory(
-                publishRequest.getCategory(),
-                publishRequest.getSubCategory().getName());
-                Publish publish = this.publishMapper.mapToEntity(publishRequest);
+        if (publishRequest.getCategory() == null || publishRequest.getSubcategory() == null) {
+            throw new IllegalArgumentException("Необходимо выбрать категорию и подкатегорию");
+        }
+        if (!Category.getAllSubcategories(publishRequest.getCategory()).contains(publishRequest.getSubcategory())) {
+            throw new IllegalArgumentException("Неверная подкатегория для выбранной категории");
+        }
+        if (!Category.getAllCategories().contains(publishRequest.getCategory())) {
+            throw new IllegalArgumentException("Неверная категория");
+        }
+        Publish publish = this.publishMapper.mapToEntity(publishRequest);
         publishRepository.save(publish);
         return this.publishMapper.mapToResponse(publish);
     }
+
 
     public List<PublishResponse> getAll() {
         return publishRepository.findAll().stream()
@@ -45,10 +47,11 @@ public class PublishService {
                 .collect(Collectors.toList());
     }
 
+
     public PublishResponse findById(Long id) {
-        Publish publish = publishRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Publish not found with id: " + id));
-        return publishMapper.mapToResponse(publish);
+        Publish publish = (Publish)this.publishRepository.findById(id).orElseThrow(() -> {
+        return new EntityNotFoundException("Publish with id " + id + " not found");
+    }); return this.publishMapper.mapToResponse(publish);
     }
 
     public PublishResponse updatePublish(Long id, PublishRequest publishRequest) {
@@ -65,28 +68,6 @@ public class PublishService {
         publishRepository.deleteById(id);
     }
 
-    @PostConstruct
-    public void initCategoryMap() {
-        categoryToSubCategoryMap.put(Category.AUTO, CAR_SUB_CATEGORY.class);
-        categoryToSubCategoryMap.put(Category.RENT, RENT_SUB_CATEGORY.class);
-        categoryToSubCategoryMap.put(Category.SERVICES, SERVICE_SUB_CATEGORY.class);
-        categoryToSubCategoryMap.put(Category.HOTEL, HOTEL_SUB_CATEGORY.class);
-        categoryToSubCategoryMap.put(Category.WORK, JOB_SUB_CATEGORY.class);
-        categoryToSubCategoryMap.put(Category.SELL, SELL_SUB_CATEGORY.class);
-        categoryToSubCategoryMap.put(Category.REAL_ESTATE, REALTY_SUB_CATEGORY.class);
-    }
 
-    private void validateCategoryAndSubCategory(Category category, String subCategoryName) {
-        Class<? extends Enum> subCategoryClass = categoryToSubCategoryMap.get(category);
-        if (subCategoryClass == null) {
-            throw new IllegalArgumentException("Invalid category: " + category);
-        }
-
-        try {
-            Enum.valueOf(subCategoryClass, subCategoryName.toUpperCase());
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Invalid subcategory '" + subCategoryName + "' for category " + category);
-        }
-    }
 
 }

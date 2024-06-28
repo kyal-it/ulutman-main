@@ -3,6 +3,7 @@ package com.ulutman.model.dto;
 import com.ulutman.model.enums.Bank;
 import com.ulutman.model.enums.Category;
 import com.ulutman.model.enums.Metro;
+import com.ulutman.model.enums.Subcategory;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,5 +22,6 @@ public class PublishResponse {
     String phoneNumber;
     String image;
     Category category;
+    Subcategory subcategory;
     Bank bank;
 }
