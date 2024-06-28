@@ -16,13 +16,19 @@ public class PublishMapper {
         publish.setPhone(publishRequest.getPhoneNumber());
         publish.setImage(publishRequest.getImage());
         publish.setCategory(publishRequest.getCategory());
+        publish.setSubCategory(publishRequest.getSubcategory());
         publish.setBank(publishRequest.getBank());
         return publish;
     }
 
     public PublishResponse mapToResponse(Publish publish) {
-        return PublishResponse.builder().description(publish.getDescription()).metro(publish.getMetro())
-                .category(publish.getCategory()).address(publish.getAddress()).phoneNumber(publish.getPhone())
-                .image(publish.getImage()).bank(publish.getBank()).build();
+        return PublishResponse.builder().id(publish.getId()).description(publish.getDescription())
+                .metro(publish.getMetro())
+                .category(publish.getCategory())
+                        .subcategory(publish.getSubCategory()).
+                address(publish.getAddress()).
+                phoneNumber(publish.getPhone())
+                .image(publish.getImage()).
+                bank(publish.getBank()).build();
     }
 }
