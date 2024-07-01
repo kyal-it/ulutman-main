@@ -42,10 +42,15 @@ public class PublishController {
         }
 
     @GetMapping("/{id}")
+    public  PublishResponse findById(@PathVariable Long id) {
+            return  this.publishService.findById(id);
+    }
+
+/*    @GetMapping("/{id}")
     public PublishResponse findById(@PathVariable Long id) {
         Publish publish = this.publishRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Publish with id " + id + " not found"));
         return this.publishMapper.mapToResponse(publish);
-    }
+    }*/
 
         @PutMapping("/{id}")
         public ResponseEntity<PublishResponse> updatePublish(@PathVariable Long id, @RequestBody PublishRequest publishRequest) {
@@ -53,9 +58,15 @@ public class PublishController {
             return ResponseEntity.ok(updatedPublish);
         }
 
-        @DeleteMapping("/{id}")
+/*        @DeleteMapping("/{id}")
         public ResponseEntity<Void> deletePublish(@PathVariable Long id) {
             publishService.deletePublish(id);
             return ResponseEntity.noContent().build();
-        }
+        }*/
+
+    @DeleteMapping(("/{id}"))
+    public String delete(@PathVariable("id") Long id) {
+        this.publishService.deletePublish(id);
+        return "Delete publish with id:" + id + " successfully delete";
+    }
     }
