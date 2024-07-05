@@ -1,22 +1,16 @@
 package com.ulutman.controller;
 
-import com.ulutman.mapper.AuthMapper;
 import com.ulutman.model.dto.AuthRequest;
 import com.ulutman.model.dto.AuthResponse;
-import com.ulutman.model.entities.User;
-import com.ulutman.model.enums.Role;
-import com.ulutman.repository.UserRepository;
 import com.ulutman.service.UserManagementService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -63,4 +57,19 @@ public class UserManagementController {
     public AuthResponse updateRoleUser(@PathVariable Long id,@RequestBody AuthRequest authRequest) {
         return userManagementService.updateUserRole(id,authRequest);
     }
+
+    @GetMapping("/filter")
+    public List<AuthResponse> getFilteredProduct(
+            @RequestParam(value = "name", required = false) List<String> names,
+            @RequestParam(value = "role", required = false) List<String> roles,
+            @RequestParam(value = "createDate", required = false) List<LocalDate> createDate,
+            @RequestParam(value = "status", required = false) List<String> status
+    ) {
+        return userManagementService.getFilteredUser(names, roles, createDate, status);
+    }
+    @GetMapping("/resetFilter")
+    public List<AuthResponse> resetFilter() {
+        return userManagementService.getAllUsers();
+    }
+
 }
