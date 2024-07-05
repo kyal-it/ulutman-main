@@ -6,6 +6,8 @@ import com.ulutman.model.entities.User;
 import com.ulutman.model.enums.Role;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+
 @Component
 public class AuthMapper {
 
@@ -14,7 +16,7 @@ public class AuthMapper {
         user.setName(authRequest.getName());
         user.setEmail(authRequest.getEmail());
         if (!authRequest.getPassword().equals(authRequest.getConfirmPassword())) {
-            throw new RuntimeException("The passwords don't match");
+            throw new RuntimeException("Пароли не совпадают");
         }
         user.setRole(Role.USER);
         return user;
@@ -25,7 +27,8 @@ public class AuthMapper {
                 .id(user.getId())
                 .name(user.getName())
                 .email(user.getEmail())
+                .role(user.getRole())
+                .createDate(LocalDate.now())
                 .build();
     }
-
 }

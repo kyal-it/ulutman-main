@@ -41,15 +41,16 @@ public class AuthService {
         log.info("User is created");
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setConfirmPassword(passwordEncoder.encode(request.getConfirmPassword()));
+        user.setRole(request.getRole());
         userRepository.save(user);
         return authMapper.mapToResponse(user);
     }
 
     public LoginResponse login(LoginRequest request) {
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new NotFoundException("User not found ! " + request.getEmail()));
+                .orElseThrow(() -> new NotFoundException("Пользователь с такой почтой: " + request.getEmail() + " не найден !"));
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new IncorrectCodeException("The password is incorrect !");
+            throw new IncorrectCodeException("Введен неверный пароль!");
         }
         manager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()));
         String jwt = jwtUtil.generateToken(user);

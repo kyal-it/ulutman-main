@@ -1,5 +1,6 @@
 package com.ulutman.model.dto;
 
+import com.ulutman.model.enums.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -8,7 +9,10 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
-import org.springframework.validation.annotation.Validated;
+import org.springframework.data.annotation.CreatedDate;
+import java.time.LocalDate;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -30,4 +34,10 @@ public class AuthRequest {
 
     @NotBlank(message = "password is mandatory!")
     String confirmPassword;
+
+    @NotBlank
+    Role role;
+
+    @CreatedDate
+    LocalDate createDate;
 }

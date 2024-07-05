@@ -1,9 +1,9 @@
 package com.ulutman.security.jwt;
 
-
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -18,12 +18,13 @@ import java.util.function.Function;
 @Service
 public class JwtUtil {
 
-    @Value("${jwt.secret:defaultSecretKeyThatIsLongEnoughForHS256}")
+    @Value("${jwt.secret}")
     private String secretKey;
     private final Long TOKEN_EXPIRATION = 24 * 7 * 60 * 60 * 1000L; // 7 days
 
     private Key getSigningKey() {
-        return Keys.hmacShaKeyFor(secretKey.getBytes());
+        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        return Keys.hmacShaKeyFor(keyBytes);
     }
 
     public String createToken(Map<String, Object> claims, String subject) {
@@ -42,8 +43,9 @@ public class JwtUtil {
     }
 
     public Claims getAllClaimsFromToken(String token) {
-        return Jwts.parser()
-                .setSigningKey(secretKey)
+        return Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
                 .parseClaimsJws(token)
                 .getBody();
     }
