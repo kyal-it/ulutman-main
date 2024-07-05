@@ -1,6 +1,7 @@
 package com.ulutman.model.dto;
 
 import com.ulutman.model.enums.Role;
+import com.ulutman.model.enums.Status;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -17,5 +18,6 @@ public class AuthResponse {
     String name;
     String email;
     Role role;
+    Status status;
     LocalDate createDate;
 }
