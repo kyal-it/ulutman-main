@@ -2,6 +2,7 @@ package com.ulutman.model.entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ulutman.model.enums.Role;
+import com.ulutman.model.enums.Status;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -33,6 +34,8 @@ public class User implements UserDetails {
     String confirmPassword;
     @Enumerated(EnumType.STRING)
     Role role;
+    @Enumerated(EnumType.STRING)
+    Status status;
 
     @Column(name = "create_date")
     LocalDate createDate;

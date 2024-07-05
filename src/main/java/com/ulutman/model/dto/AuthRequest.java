@@ -1,6 +1,7 @@
 package com.ulutman.model.dto;
 
 import com.ulutman.model.enums.Role;
+import com.ulutman.model.enums.Status;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -37,6 +38,9 @@ public class AuthRequest {
 
     @NotBlank
     Role role;
+
+    @NotBlank
+    Status status;
 
     @CreatedDate
     LocalDate createDate;
