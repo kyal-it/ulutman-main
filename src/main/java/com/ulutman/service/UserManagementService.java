@@ -5,7 +5,6 @@ import com.ulutman.mapper.AuthMapper;
 import com.ulutman.model.dto.AuthRequest;
 import com.ulutman.model.dto.AuthResponse;
 import com.ulutman.model.entities.User;
-import com.ulutman.model.enums.Role;
 import com.ulutman.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -71,5 +70,14 @@ public class UserManagementService {
         user.setRole(authRequest.getRole());
         user = userRepository.save(user);
         return authMapper.mapToResponse(user);
+    }
+
+    public List<AuthResponse> getFilteredUser(
+            List<String> names,
+            List<String> roles,
+            List<LocalDate> createDate,
+            List<String> status) {
+        List<User> attribute = userRepository.userFilter(names, roles, createDate, status);
+        return attribute.stream().map(authMapper::mapToResponse).toList();
     }
 }
