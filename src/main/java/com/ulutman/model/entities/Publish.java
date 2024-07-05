@@ -1,6 +1,9 @@
 package com.ulutman.model.entities;
 
+import com.ulutman.model.enums.Bank;
+import com.ulutman.model.enums.Category;
 import com.ulutman.model.enums.Metro;
+import com.ulutman.model.enums.Subcategory;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,6 +25,12 @@ public class Publish {
     private String title;
     private String description;
     @Enumerated(EnumType.STRING)
+    private Category category;
+    @Enumerated(EnumType.STRING)
+    private Subcategory subCategory;
+    @Enumerated(EnumType.STRING)
+    private Bank bank;
+    @Enumerated(EnumType.STRING)
     private Metro metro;
     private String address;
     private String phone;
@@ -37,6 +46,8 @@ public class Publish {
 
     @OneToMany(mappedBy = "publish", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<User> users;
+
+
 
 
 
