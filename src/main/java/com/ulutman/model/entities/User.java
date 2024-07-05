@@ -13,9 +13,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 @Entity
 @Table(name = "users")
@@ -35,13 +33,14 @@ public class User implements UserDetails {
     String confirmPassword;
     @Enumerated(EnumType.STRING)
     Role role;
+
     @Column(name = "create_date")
     LocalDate createDate;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Payment> payments;
 
-    @OneToMany(mappedBy = "user",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<UserAccount> userAccounts;
 
 
@@ -52,7 +51,6 @@ public class User implements UserDetails {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "favorite_id")
     private Favorite favorite;
-
 
 
     @Override
@@ -86,4 +84,5 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
 }
