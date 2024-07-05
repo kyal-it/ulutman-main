@@ -22,7 +22,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-   private final JwtFilter filter;
+    private final JwtFilter filter;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -48,7 +48,10 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> {
-                    authorize.requestMatchers("/api/auth/sign-up", "/api/auth/with google", "/api/auth/sign-in").permitAll()
+                    authorize
+                            .requestMatchers("/api/admin/**").permitAll()
+                            .requestMatchers("/api/auth/sign-up", "/api/auth/with google", "/api/auth/sign-in",
+                                    "/api/publishes", "/api/users/**").permitAll()
                             .requestMatchers("/swagger-ui/**",
                                     "/swagger-resources/*",
                                     "/v3/api-docs/**", "/api/publishes/**").permitAll()
