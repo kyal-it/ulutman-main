@@ -1,6 +1,6 @@
 package com.ulutman.model.enums;
 
-public enum PaymentSystem {
+public enum Bank {
     SBERBANK,
     TINKPOFF,
     ALFABANK,
