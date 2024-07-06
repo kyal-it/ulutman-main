@@ -25,6 +25,7 @@ public class PublishService {
         this.publishRepository = publishRepository;
     }
 
+
     public PublishResponse createPublish(PublishRequest publishRequest) {
         if (publishRequest.getCategory() == null || publishRequest.getSubcategory() == null) {
             throw new IllegalArgumentException("Необходимо выбрать категорию и подкатегорию");
@@ -61,12 +62,6 @@ public class PublishService {
         return publishMapper.mapToResponse(existingPublish);
     }
 
-  /*  public void deletePublish(Long id) {*/
-/*        if (!publishRepository.existsById(id)) {
-            throw new EntityNotFoundException("Публикация не найдена с идентификатором: " + id);
-        }
-        publishRepository.deleteById(id);
-    }*/
 
     public void deletePublish(Long productId) {
         this.publishRepository.findById(productId).orElseThrow(() -> {
