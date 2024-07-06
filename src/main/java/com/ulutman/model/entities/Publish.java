@@ -47,6 +47,8 @@ public class Publish {
     @OneToMany(mappedBy = "publish", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<User> users;
 
+    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "products")
+    List<Favorite> favorites;
 
 
 
