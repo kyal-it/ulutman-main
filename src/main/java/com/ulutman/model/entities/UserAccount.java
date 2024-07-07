@@ -20,13 +20,13 @@ public class UserAccount {
     @OneToMany(mappedBy = "userAccount",cascade = CascadeType.ALL)
     private List<Message> messages;
 
-    @OneToOne(mappedBy = "userAccount",cascade = CascadeType.ALL)
-    private Favorite favorite;
+//    @OneToOne(mappedBy = "userAccount",cascade = CascadeType.ALL)
+//    private Favorite favorite;
 
     @OneToOne(mappedBy = "userAccount",cascade = CascadeType.ALL)
     private MyPublish myPublish;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
      private User user;
 

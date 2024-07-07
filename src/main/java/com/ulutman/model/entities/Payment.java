@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.List;
+
 @Entity
 @Table(name="payments")
 @Getter
@@ -25,4 +27,7 @@ public class Payment {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     private User user;
+
+//    @OneToMany(mappedBy = "payment", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<Publish> publishes;
 }

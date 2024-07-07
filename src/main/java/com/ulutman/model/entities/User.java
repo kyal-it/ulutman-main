@@ -43,17 +43,17 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Payment> payments;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<UserAccount> userAccounts;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private UserAccount userAccount;
 
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "publish_id")
-    private Publish publish;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "favorite_id")
-    private Favorite favorite;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+//    @JoinColumn(name = "publish_id")
+    private List<Publish> publishes;
+//
+//    @OneToOne(cascade = CascadeType.ALL,mappedBy = "users")
+////    @JoinColumn(name = "favorite_id")
+//    private Favorite favorite;
 
 
     @Override
