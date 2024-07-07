@@ -5,10 +5,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 @Entity
-@Table(name="payments")
+@Table(name = "payments")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -18,7 +16,7 @@ public class Payment {
             strategy = GenerationType.IDENTITY
     )
     private Long id;
-    private String  cardNumber;
+    private String cardNumber;
     private String cvc;
     private int monthDate;
     private int yearDate;

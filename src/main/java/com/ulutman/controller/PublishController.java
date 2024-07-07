@@ -1,10 +1,9 @@
 package com.ulutman.controller;
 
-import com.ulutman.mapper.PublishMapper;
 import com.ulutman.model.dto.PublishRequest;
 import com.ulutman.model.dto.PublishResponse;
-import com.ulutman.repository.PublishRepository;
 import com.ulutman.service.PublishService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,25 +11,18 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/publishes")
 public class PublishController {
 
-    private final PublishMapper publishMapper;
-    private final PublishRepository publishRepository;
     private final PublishService publishService;
-
-    public PublishController(PublishMapper publishMapper, PublishRepository publishRepository, PublishService publishService) {
-        this.publishMapper = publishMapper;
-        this.publishRepository = publishRepository;
-        this.publishService = publishService;
-    }
-
 
     @PostMapping("/create")
     @ResponseStatus(HttpStatus.CREATED)
     public PublishResponse createPublish(@RequestBody PublishRequest publishRequest) {
         return publishService.createPublish(publishRequest);
     }
+
     @GetMapping("/getAll")
     public List<PublishResponse> getAll() {
         return publishService.getAll();
