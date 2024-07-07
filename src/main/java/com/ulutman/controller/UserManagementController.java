@@ -67,9 +67,9 @@ public class UserManagementController {
     ) {
         return userManagementService.getFilteredUser(names, roles, createDate, status);
     }
+
     @GetMapping("/resetFilter")
     public List<AuthResponse> resetFilter() {
         return userManagementService.getAllUsers();
     }
-
 }

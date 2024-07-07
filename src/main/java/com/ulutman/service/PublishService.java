@@ -43,7 +43,7 @@ public class PublishService {
 
     public PublishResponse findById(Long id) {
         Publish publish = (Publish)this.publishRepository.findById(id).orElseThrow(() -> {
-        return new EntityNotFoundException("Публикация с идентификатором " + id + " не найдено");
+        return new EntityNotFoundException("Публикация по идентификатору " + id + " не найдена");
     }); return this.publishMapper.mapToResponse(publish);
     }
 

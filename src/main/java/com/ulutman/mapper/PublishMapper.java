@@ -5,6 +5,8 @@ import com.ulutman.model.dto.PublishResponse;
 import com.ulutman.model.entities.Publish;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+
 @Component
 public class PublishMapper {
 
@@ -18,6 +20,7 @@ public class PublishMapper {
         publish.setCategory(publishRequest.getCategory());
         publish.setSubCategory(publishRequest.getSubcategory());
         publish.setBank(publishRequest.getBank());
+        publish.setPublishStatus(publishRequest.getPublishStatus());
         return publish;
     }
 
@@ -25,10 +28,13 @@ public class PublishMapper {
         return PublishResponse.builder().id(publish.getId()).description(publish.getDescription())
                 .metro(publish.getMetro())
                 .category(publish.getCategory())
-                        .subcategory(publish.getSubCategory()).
-                address(publish.getAddress()).
-                phoneNumber(publish.getPhone())
-                .image(publish.getImage()).
-                bank(publish.getBank()).build();
+                .subcategory(publish.getSubCategory())
+                .address(publish.getAddress())
+                .phoneNumber(publish.getPhone())
+                .image(publish.getImage())
+                .bank(publish.getBank())
+                .publishStatus(publish.getPublishStatus())
+                .createDate(LocalDate.now())
+                .build();
     }
 }
