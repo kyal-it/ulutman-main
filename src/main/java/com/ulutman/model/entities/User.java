@@ -1,6 +1,5 @@
 package com.ulutman.model.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ulutman.model.enums.Role;
 import com.ulutman.model.enums.Status;
 import jakarta.persistence.*;
@@ -50,11 +49,6 @@ public class User implements UserDetails {
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 //    @JoinColumn(name = "publish_id")
     private List<Publish> publishes;
-//
-//    @OneToOne(cascade = CascadeType.ALL,mappedBy = "users")
-////    @JoinColumn(name = "favorite_id")
-//    private Favorite favorite;
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
