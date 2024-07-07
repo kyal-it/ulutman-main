@@ -44,11 +44,12 @@ public class Publish {
     )
     private Payment payment;
 
-    @OneToMany(mappedBy = "publish", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<User> users;
+    @ManyToOne( cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id")
+    private User user;
 
-    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "products")
-    List<Favorite> favorites;
+//    @ManyToMany(cascade = CascadeType.ALL, mappedBy = "publishes")
+//    List<Favorite> favorites;
 
 
 
