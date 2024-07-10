@@ -29,4 +29,8 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
                           @Param("role") List<String> roles,
                           @Param("createDate") List<LocalDate> createDate,
                           @Param("status") List<String> status);
+
+    @Query("SELECT user FROM User user LEFT JOIN FETCH user.publishes WHERE user.id =:userId")
+    Optional<User> findUserWithPublication(@Param("userId")Long userId);
 }
+

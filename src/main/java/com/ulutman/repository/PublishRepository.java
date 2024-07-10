@@ -26,5 +26,5 @@ public interface PublishRepository extends JpaRepository<Publish, Long> {
             @Param("createDates") List<LocalDate> createDates,
             @Param("publishStatuses") List<String> publishStatuses);
 
-
+List<Publish> findByUserId(Long userId);
 }

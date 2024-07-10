@@ -1,5 +1,6 @@
 package com.ulutman.mapper;
 
+import com.ulutman.model.dto.AuthRequest;
 import com.ulutman.model.dto.PublishRequest;
 import com.ulutman.model.dto.PublishResponse;
 import com.ulutman.model.entities.Publish;
@@ -21,6 +22,9 @@ public class PublishMapper {
         publish.setSubCategory(publishRequest.getSubcategory());
         publish.setBank(publishRequest.getBank());
         publish.setPublishStatus(publishRequest.getPublishStatus());
+        publish.setUser(publish.getUser());
+        publish.setPublishStatus(publishRequest.getPublishStatus());
+        publish.setCategory(publishRequest.getCategory());
         return publish;
     }
 
@@ -35,6 +39,7 @@ public class PublishMapper {
                 .bank(publish.getBank())
                 .publishStatus(publish.getPublishStatus())
                 .createDate(LocalDate.now())
+                .categoryStatus(publish.getCategoryStatus())
                 .build();
     }
 }
