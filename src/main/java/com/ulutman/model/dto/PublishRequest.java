@@ -16,4 +16,6 @@ public class PublishRequest {
     Subcategory subcategory; //Enum
     Bank bank;
     PublishStatus publishStatus;
+    Long userId;
+    CategoryStatus categoryStatus;
 }

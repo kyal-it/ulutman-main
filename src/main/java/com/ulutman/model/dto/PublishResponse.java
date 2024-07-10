@@ -25,4 +25,6 @@ public class PublishResponse {
     Bank bank;
     PublishStatus publishStatus;
     LocalDate createDate;
+    AuthResponse user;
+    CategoryStatus categoryStatus;
 }
