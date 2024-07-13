@@ -23,6 +23,7 @@ public class UserPublishesMapper {
         List<PublishResponse> publishResponses = publishes.stream()
                 .map(publishMapper::mapToResponse)
                 .collect(Collectors.toList());
+
         UserPublishesResponse userPublishesResponse = new UserPublishesResponse();
         userPublishesResponse.setAuthResponse(authResponse);
         userPublishesResponse.setPublishResponses(publishResponses);

@@ -1,5 +1,6 @@
 package com.ulutman.repository;
 
+import com.ulutman.model.dto.PublishResponse;
 import com.ulutman.model.entities.Publish;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -26,5 +27,7 @@ public interface PublishRepository extends JpaRepository<Publish, Long> {
             @Param("createDates") List<LocalDate> createDates,
             @Param("publishStatuses") List<String> publishStatuses);
 
-List<Publish> findByUserId(Long userId);
+    @Query("SELECT p FROM Publish  p WHERE p.user.id =: userId")
+    List<Publish> findAllPublishResponsesByUserId(@Param("userId") Long userId);
+
 }

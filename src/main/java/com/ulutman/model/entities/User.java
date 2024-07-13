@@ -47,7 +47,7 @@ public class User implements UserDetails {
 
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-//    @JoinColumn(name = "publish_id")
+    @JoinColumn(name = "publish_id")
     private List<Publish> publishes;
 
     @Override
