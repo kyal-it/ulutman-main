@@ -1,7 +1,6 @@
 package com.ulutman.service;
 
 import com.ulutman.exception.NotFoundException;
-import com.ulutman.mapper.AuthMapper;
 import com.ulutman.mapper.PublishMapper;
 import com.ulutman.mapper.UserPublishesMapper;
 import com.ulutman.model.dto.PublishRequest;
@@ -58,4 +57,5 @@ public class ManageCategoryService {
         List<Publish> publishes = user.getPublishes();
         return userPublishesMapper.mapToResponse(user, publishes);
     }
+
 }
