@@ -28,6 +28,6 @@ public interface PublishRepository extends JpaRepository<Publish, Long> {
             @Param("publishStatuses") List<String> publishStatuses);
 
     @Query("SELECT p FROM Publish  p WHERE p.user.id =: userId")
-    List<Publish> findAllPublishResponsesByUserId(@Param("userId") Long userId);
+    List<Publish> getPublishByUserId(@Param("userId") Long userId);
 
 }
