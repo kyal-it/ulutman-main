@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -54,8 +55,11 @@ public class ManageCategoryService {
     public UserPublishesResponse getUserWithPublications(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь по идентификатору " + userId + " не найден"));
-        List<Publish> publishes = user.getPublishes();
-        return userPublishesMapper.mapToResponse(user, publishes);
-    }
 
+        List<Publish> publishes = user.getPublishes(); // Assuming this returns a list of Publish entities
+        List<PublishResponse> publishResponses = publishes.stream()
+                .map(publishMapper::mapToResponse)
+                .collect(Collectors.toList());
+        return userPublishesMapper.mapToResponse(user, publishResponses);
+    }
 }

@@ -18,10 +18,10 @@ public class UserPublishesMapper {
     private final AuthMapper authMapper;
     private final PublishMapper publishMapper;
 
-    public UserPublishesResponse mapToResponse(User user, List<Publish> publishes) {
+    public UserPublishesResponse mapToResponse(User user, List<PublishResponse> publishes) {
         AuthResponse authResponse = authMapper.mapToResponse(user);
         List<PublishResponse> publishResponses = publishes.stream()
-                .map(publishMapper::mapToResponse)
+                .map((PublishResponse publish) -> publishMapper.mapToResponse((Publish) publishes))
                 .collect(Collectors.toList());
 
         UserPublishesResponse userPublishesResponse = new UserPublishesResponse();
