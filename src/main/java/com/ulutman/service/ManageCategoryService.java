@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,7 +34,6 @@ public class ManageCategoryService {
 
     public PublishResponse addCategoryAndSubCategory(PublishRequest publishRequest) {
         Publish publish = new Publish();
-        publish.setCategory(publishRequest.getCategory());
         publish.setSubCategory(publishRequest.getSubcategory());
         publishRepository.save(publish);
         return publishMapper.mapToResponse(publish);

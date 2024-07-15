@@ -36,7 +36,7 @@ public class ManageCategoryController {
         log.info("Публикация по идентификатору " + id + " успешна удалена ");
     }
 
-    @GetMapping("/{id}/publications")
+    @GetMapping("/publications/{id}")
     public ResponseEntity<UserPublishesResponse> getUserWithPublications(@PathVariable Long id) {
         UserPublishesResponse response = manageCategoryService.getUserWithPublications(id);
         return ResponseEntity.ok(response);
