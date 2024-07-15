@@ -66,4 +66,11 @@ public class PublishService {
         });
         this.publishRepository.deleteById(productId);
     }
+
+    public List<PublishResponse> getAllPublicationsByUser(Long userId) {
+        List<Publish> publishes = publishRepository.getPublishByUserId(userId);
+        return publishes.stream()
+                .map(publishMapper::mapToResponse)
+                .collect(Collectors.toList());
+    }
 }

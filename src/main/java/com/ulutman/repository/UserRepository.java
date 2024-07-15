@@ -30,6 +30,5 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
                           @Param("role") List<String> roles,
                           @Param("createDate") List<LocalDate> createDate,
                           @Param("status") List<String> status);
-
 }
 

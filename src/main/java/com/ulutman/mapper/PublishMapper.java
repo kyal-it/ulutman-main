@@ -22,7 +22,7 @@ public class PublishMapper {
         publish.setSubCategory(publishRequest.getSubcategory());
         publish.setBank(publishRequest.getBank());
         publish.setPublishStatus(publishRequest.getPublishStatus());
-//        publish.setUser(publish.getUser());
+        publish.setUser(publish.getUser());
         publish.setPublishStatus(publishRequest.getPublishStatus());
         publish.setCategory(publishRequest.getCategory());
         return publish;
