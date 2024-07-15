@@ -66,7 +66,4 @@ public class PublishService {
         });
         this.publishRepository.deleteById(productId);
     }
-
-
-
 }
