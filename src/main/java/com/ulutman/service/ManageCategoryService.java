@@ -17,7 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -55,11 +54,13 @@ public class ManageCategoryService {
     public UserPublishesResponse getUserWithPublications(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь по идентификатору " + userId + " не найден"));
-
-        List<Publish> publishes = user.getPublishes(); // Assuming this returns a list of Publish entities
+        System.out.println("ПОЛЬЗОВАТЕЛЬ " + user);
+        List<Publish> publishes = user.getPublishes();
+        System.out.println("ПУБЛИКАЦИИ ПОЛЬЗОВАТЕЛЯ " + user.getPublishes());// Assuming this returns a list of Publish entities
         List<PublishResponse> publishResponses = publishes.stream()
                 .map(publishMapper::mapToResponse)
                 .collect(Collectors.toList());
+        System.out.println("ПУБЛИКАЦИИ " + publishResponses);
         return userPublishesMapper.mapToResponse(user, publishResponses);
     }
 }
