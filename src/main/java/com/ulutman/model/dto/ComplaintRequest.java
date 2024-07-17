@@ -1,5 +1,7 @@
 package com.ulutman.model.dto;
 
+import com.ulutman.model.entities.Complaint;
+import com.ulutman.model.enums.ComplaintStatus;
 import com.ulutman.model.enums.ComplaintType;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -14,4 +16,5 @@ public class ComplaintRequest {
     ComplaintType complaintType;
     String complaintContent;
     Long userId;
+    ComplaintStatus complaintStatus;
 }

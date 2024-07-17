@@ -25,6 +25,4 @@ public interface PublishRepository extends JpaRepository<Publish, Long> {
             @Param("categories") List<String> categories,
             @Param("createDates") List<LocalDate> createDates,
             @Param("publishStatuses") List<String> publishStatuses);
-
-
 }

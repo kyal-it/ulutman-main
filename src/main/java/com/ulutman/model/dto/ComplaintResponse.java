@@ -5,7 +5,7 @@ import com.ulutman.model.enums.ComplaintType;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -17,6 +17,6 @@ public class ComplaintResponse {
     ComplaintType complaintType;
     String complaintContent;
     AuthResponse authResponse;
-    LocalDateTime createDate;
+    LocalDate createDate;
     ComplaintStatus complaintStatus;
 }

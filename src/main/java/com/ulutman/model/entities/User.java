@@ -16,7 +16,7 @@ import java.time.LocalDate;
 import java.util.*;
 
 @Entity
-@Table(name = "users")
+@Table(name = "users",schema = "my_schema")
 @Getter
 @Setter
 @NoArgsConstructor
