@@ -25,7 +25,9 @@ public class PublishMapper {
     }
 
     public PublishResponse mapToResponse(Publish publish) {
-        return PublishResponse.builder().id(publish.getId()).description(publish.getDescription())
+        return PublishResponse.builder()
+                .id(publish.getId())
+                .description(publish.getDescription())
                 .metro(publish.getMetro())
                 .category(publish.getCategory())
                 .subcategory(publish.getSubCategory())
