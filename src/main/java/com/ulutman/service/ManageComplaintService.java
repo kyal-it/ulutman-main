@@ -17,14 +17,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ComplaintService {
+public class ManageComplaintService {
 
     private final ComplaintRepository complaintRepository;
     private final UserRepository userRepository;
@@ -34,6 +36,7 @@ public class ComplaintService {
         Complaint complaint = new Complaint();
         complaint.setComplaintContent(complaintRequest.getComplaintContent());
         complaint.setComplaintType(complaintRequest.getComplaintType());
+        complaint.setComplaintStatus(ComplaintStatus.ОЖИДАЕТ);
         complaint.setCreateDate(LocalDate.now());
 
         Optional<User> user = userRepository.findById(complaintRequest.getUserId());
@@ -43,15 +46,27 @@ public class ComplaintService {
     }
 
     public List<ComplaintResponse> getAllComplaints() {
-        List<Complaint> complaints = complaintRepository.findAll();
-        return complaints.stream().map(complaintMapper::mapToResponse).toList();
+        List<ComplaintResponse> complaintResponses = new ArrayList<>();
+        for (Complaint complaint : complaintRepository.findAll()) {
+            complaintResponses.add(complaintMapper.mapToResponse(complaint));
+        }
+        return complaintResponses;
     }
 
-    public ComplaintResponse updateComplaintStatus(Long id, @RequestBody ComplaintStatus complaintStatus) {
+    public ComplaintResponse updateComplaintStatus(Long id, @RequestBody ComplaintRequest complaintRequest) {
         Complaint complaint = complaintRepository.findById(id)
-                        .orElseThrow(()-> new NotFoundException("Жалоба по идентификатору "+ id +" не найдена"));
-        complaint.setComplaintStatus(complaintStatus);
+                .orElseThrow(() -> new NotFoundException("Жалоба по идентификатору " + id + " не найдена"));
+        complaint.setComplaintStatus(complaintRequest.getComplaintStatus());
         complaintRepository.save(complaint);
         return complaintMapper.mapToResponse(complaint);
+    }
+
+    public List<ComplaintResponse> getFilteredComplaints(
+            List<User> users,
+            List<String> complaintTypes,
+            List<LocalDate> createDates,
+            List<String> complaintStatuses) {
+        List<Complaint> complaintList = complaintRepository.complaintFilter(users, complaintTypes, createDates, complaintStatuses);
+        return complaintList.stream().map(complaintMapper::mapToResponse).collect(Collectors.toList());
     }
 }
