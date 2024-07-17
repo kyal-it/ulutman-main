@@ -45,10 +45,12 @@ public class User implements UserDetails {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private UserAccount userAccount;
 
-
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 //    @JoinColumn(name = "publish_id")
     private List<Publish> publishes;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Complaint> complaints;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
