@@ -1,0 +1,24 @@
+package com.ulutman.model.dto;
+
+import com.ulutman.model.enums.ModeratorStatus;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.FieldDefaults;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+@Getter
+@Setter
+@Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class MessageResponse {
+
+    Long id;
+    String username;
+    String content;
+    ModeratorStatus moderatorStatus;
+    LocalDate createDate;
+}
