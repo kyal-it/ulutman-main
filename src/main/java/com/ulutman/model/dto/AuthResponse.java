@@ -1,5 +1,6 @@
 package com.ulutman.model.dto;
 
+import com.ulutman.model.entities.Favorite;
 import com.ulutman.model.enums.Role;
 import com.ulutman.model.enums.Status;
 import lombok.*;
@@ -20,4 +21,5 @@ public class AuthResponse {
     Role role;
     Status status;
     LocalDate createDate;
+
 }
