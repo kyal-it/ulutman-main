@@ -4,6 +4,7 @@ import com.ulutman.exception.NotFoundException;
 import com.ulutman.mapper.AuthMapper;
 import com.ulutman.model.dto.AuthRequest;
 import com.ulutman.model.dto.AuthResponse;
+import com.ulutman.model.entities.Favorite;
 import com.ulutman.model.entities.User;
 import com.ulutman.repository.UserRepository;
 import lombok.AccessLevel;
@@ -35,6 +36,9 @@ public class UserManagementService {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setConfirmPassword(passwordEncoder.encode(request.getConfirmPassword()));
         user.setRole(request.getRole());
+        Favorite favorite = new Favorite();
+        favorite.setUser(user);
+        user.setFavorite(favorite);
         userRepository.save(user);
         return authMapper.mapToResponse(user);
     }
