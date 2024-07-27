@@ -32,9 +32,10 @@ public class ManageComplaintController {
         return complaintService.getAllComplaints();
     }
 
-    @PutMapping("/status/{id}")
-    public ComplaintResponse updateStatus(@PathVariable Long id, @RequestBody ComplaintRequest complaintRequest) {
-        return complaintService.updateComplaintStatus(id, complaintRequest);
+    @PutMapping("/{id}/status")
+    public ResponseEntity<ComplaintResponse> updateComplaintStatus(@PathVariable Long id, @RequestBody ComplaintRequest complaintRequest) {
+        ComplaintResponse updatedComplaint = complaintService.updateComplaintStatus(id, complaintRequest);
+        return ResponseEntity.ok(updatedComplaint);
     }
 
     @GetMapping("/filter")

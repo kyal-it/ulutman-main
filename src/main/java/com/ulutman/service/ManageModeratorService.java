@@ -1,8 +1,6 @@
 package com.ulutman.service;
 
-import com.ulutman.model.dto.ModeratorCommentResponse;
-import com.ulutman.model.dto.ModeratorMessageResponse;
-import com.ulutman.model.dto.UserCommentsMessagesResponse;
+import com.ulutman.model.dto.*;
 import com.ulutman.model.entities.Comment;
 import com.ulutman.model.entities.Message;
 import com.ulutman.model.entities.User;
@@ -28,9 +26,9 @@ public class ManageModeratorService {
     private final UserRepository userRepository;
     private final MessageRepository messageRepository;
 
-     public List<ModeratorCommentResponse> getUserComments(Long userId) {
+    public List<ModeratorCommentResponse> getUserComments(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("Пользователь по идентификатору " + userId + " не нвйден"));
 
         List<Comment> comments = commentRepository.findByUserId(userId);
         return comments.stream()
@@ -46,7 +44,7 @@ public class ManageModeratorService {
 
     public List<ModeratorMessageResponse> getUserMessages(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("Пользователь по идентификатору " + userId + " не найден"));
 
         List<Message> messages = messageRepository.findByUserId(userId);
         return messages.stream()
@@ -60,9 +58,10 @@ public class ManageModeratorService {
                 .collect(Collectors.toList());
     }
 
+
     public UserCommentsMessagesResponse getUserCommentsAndMessages(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new RuntimeException("Пользователь по идентификатору " + userId + " не найден"));
 
         List<ModeratorCommentResponse> comments = getUserComments(userId);
         List<ModeratorMessageResponse> messages = getUserMessages(userId);

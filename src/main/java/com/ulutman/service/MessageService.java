@@ -16,6 +16,8 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -35,15 +37,31 @@ public class MessageService {
         message.setContent(messageRequest.getContent());
         message.setUser(user);
         message.setModeratorStatus(ModeratorStatus.ОЖИДАЕТ);
+        message.setCreateDate(LocalDate.now());
         messageRepository.save(message);
         return messageMapper.mapToResponse(message);
     }
 
-    public MessageResponse updateMessageStatus(Long messageId, ModeratorStatus moderatorStatus) {
+    public MessageResponse updateMessageStatus(Long messageId, MessageRequest messageRequest) {
+        // Проверка, что идентификатор сообщения и запрос не равны null
+        if (messageId == null || messageRequest == null) {
+            throw new IllegalArgumentException("Message ID and MessageRequest cannot be null");
+        }
+
+        // Поиск сообщения по идентификатору
         Message message = messageRepository.findById(messageId)
                 .orElseThrow(() -> new NotFoundException("Сообщение по идентификатору " + messageId + " не найдено"));
-        message.setModeratorStatus(moderatorStatus);
-        messageRepository.save(message);
+
+        // Получение статуса из запроса
+        ModeratorStatus newStatus = messageRequest.getModeratorStatus();
+
+        // Проверка на изменение статуса перед сохранением
+        if (newStatus != null && !newStatus.equals(message.getModeratorStatus())) {
+            message.setModeratorStatus(newStatus);
+            messageRepository.save(message);
+        }
+
+        // Преобразование и возврат ответа
         return messageMapper.mapToResponse(message);
     }
 }

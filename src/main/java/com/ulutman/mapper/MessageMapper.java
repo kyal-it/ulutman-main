@@ -8,6 +8,8 @@ import com.ulutman.repository.MessageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+
 @Component
 @RequiredArgsConstructor
 public class MessageMapper {
@@ -28,6 +30,7 @@ public class MessageMapper {
                 .content(message.getContent())
                 .username(message.getUser().getUsername())
                 .moderatorStatus(message.getModeratorStatus())
+                .createDate(LocalDate.now())
                 .build();
     }
 }
