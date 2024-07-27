@@ -10,12 +10,12 @@ import lombok.experimental.FieldDefaults;
 import java.time.LocalDate;
 
 
-
 @Getter
 @Setter
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ModeratorCommentResponse {
+
 
     Long commentId;
     String username;
@@ -27,7 +27,7 @@ public class ModeratorCommentResponse {
         this.commentId = commentId;
         this.username = username;
         this.commentContent = content;
-        this.createDate=createDate ;
+        this.createDate = createDate;
         this.moderatorStatus = moderatorStatus;
     }
 }

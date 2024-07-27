@@ -2,7 +2,6 @@ package com.ulutman.controller;
 
 import com.ulutman.model.dto.CommentRequest;
 import com.ulutman.model.dto.CommentResponse;
-import com.ulutman.model.enums.ModeratorStatus;
 import com.ulutman.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,10 +20,9 @@ public class CommentController {
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/status/{id}")
-    public ResponseEntity<CommentResponse> updateCommentStatus(@PathVariable Long id, @RequestParam ModeratorStatus moderatorStatus) {
-        CommentResponse response = commentService.updateCommentStatus(id, moderatorStatus);
-        return ResponseEntity.ok(response);
+    @PutMapping("/{commentId}/status")
+    public ResponseEntity<CommentResponse> updateCommentStatus(@PathVariable Long commentId, @RequestBody CommentRequest commentRequest) {
+        CommentResponse updatedComment = commentService.updateCommentStatus(commentId, commentRequest);
+        return ResponseEntity.ok(updatedComment);
     }
-
 }

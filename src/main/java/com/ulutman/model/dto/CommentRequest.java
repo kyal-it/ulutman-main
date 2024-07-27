@@ -1,5 +1,6 @@
 package com.ulutman.model.dto;
 
+import com.ulutman.model.enums.ModeratorStatus;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,4 +13,6 @@ public class CommentRequest {
 
     Long userId;
     String content;
+    ModeratorStatus moderatorStatus;
+
 }

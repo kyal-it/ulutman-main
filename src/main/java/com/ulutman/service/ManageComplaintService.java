@@ -53,11 +53,26 @@ public class ManageComplaintService {
         return complaintResponses;
     }
 
-    public ComplaintResponse updateComplaintStatus(Long id, @RequestBody ComplaintRequest complaintRequest) {
-        Complaint complaint = complaintRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Жалоба по идентификатору " + id + " не найдена"));
-        complaint.setComplaintStatus(complaintRequest.getComplaintStatus());
-        complaintRepository.save(complaint);
+    public ComplaintResponse updateComplaintStatus(Long complaintId, ComplaintRequest complaintRequest) {
+        // Проверка, что идентификатор жалобы и запрос не равны null
+        if (complaintId == null || complaintRequest == null) {
+            throw new IllegalArgumentException("Идентификатор жалобы и запрос на подачу жалобы не могут быть пустыми");
+        }
+
+        // Поиск жалобы по идентификатору
+        Complaint complaint = complaintRepository.findById(complaintId)
+                .orElseThrow(() -> new NotFoundException("Жалоба по идентификатору " + complaintId + " не найдена"));
+
+        // Получение статуса из запроса
+        ComplaintStatus newStatus = complaintRequest.getComplaintStatus();
+
+        // Проверка на изменение статуса перед сохранением
+        if (newStatus != null && !newStatus.equals(complaint.getComplaintStatus())) {
+            complaint.setComplaintStatus(newStatus);
+            complaintRepository.save(complaint);
+        }
+
+        // Преобразование и возврат ответа
         return complaintMapper.mapToResponse(complaint);
     }
 

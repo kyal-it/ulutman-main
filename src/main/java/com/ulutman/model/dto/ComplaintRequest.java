@@ -1,6 +1,5 @@
 package com.ulutman.model.dto;
 
-import com.ulutman.model.entities.Complaint;
 import com.ulutman.model.enums.ComplaintStatus;
 import com.ulutman.model.enums.ComplaintType;
 import lombok.AccessLevel;

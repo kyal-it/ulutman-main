@@ -2,7 +2,6 @@ package com.ulutman.controller;
 
 import com.ulutman.model.dto.MessageRequest;
 import com.ulutman.model.dto.MessageResponse;
-import com.ulutman.model.enums.ModeratorStatus;
 import com.ulutman.service.MessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,13 +16,13 @@ public class MessageController {
 
     @PostMapping("/add")
     public ResponseEntity<MessageResponse> addMessage(@RequestBody MessageRequest messageRequest) {
-     MessageResponse messageResponse = messageService.addMessage(messageRequest);
-     return ResponseEntity.ok(messageResponse);
+        MessageResponse messageResponse = messageService.addMessage(messageRequest);
+        return ResponseEntity.ok(messageResponse);
     }
 
-    @PutMapping("/status/{id}")
-    public ResponseEntity<MessageResponse> updateMessageStatus(@PathVariable Long id, @RequestParam ModeratorStatus moderatorStatus) {
-        MessageResponse response = messageService.updateMessageStatus(id, moderatorStatus);
-        return ResponseEntity.ok(response);
+    @PutMapping("/{messageId}/status")
+    public ResponseEntity<MessageResponse> updateMessageStatus(@PathVariable Long messageId, @RequestBody MessageRequest messageRequest) {
+        MessageResponse updatedMessage = messageService.updateMessageStatus(messageId, messageRequest);
+        return ResponseEntity.ok(updatedMessage);
     }
 }

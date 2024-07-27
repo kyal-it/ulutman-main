@@ -1,16 +1,16 @@
 package com.ulutman.controller;
 
-import com.ulutman.model.dto.ModeratorCommentResponse;
-import com.ulutman.model.dto.ModeratorMessageResponse;
-import com.ulutman.model.dto.UserCommentsMessagesResponse;
+import com.ulutman.model.dto.*;
+import com.ulutman.model.entities.User;
+import com.ulutman.model.enums.ModeratorStatus;
+import com.ulutman.service.CommentService;
 import com.ulutman.service.ManageModeratorService;
+import com.ulutman.service.MessageService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -19,6 +19,8 @@ import java.util.List;
 public class ManageModeratorController {
 
     private final ManageModeratorService manageModeratorService;
+    private final CommentService commentService;
+    private final MessageService messageService;
 
     @GetMapping("/users/{userId}/comments")
     public ResponseEntity<List<ModeratorCommentResponse>> getUserComments(@PathVariable Long userId) {
@@ -36,5 +38,17 @@ public class ManageModeratorController {
     public ResponseEntity<UserCommentsMessagesResponse> getUserCommentsAndMessages(@PathVariable Long userId) {
         UserCommentsMessagesResponse response = manageModeratorService.getUserCommentsAndMessages(userId);
         return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/{commentId}/status")
+    public ResponseEntity<CommentResponse> updateCommentStatus(@PathVariable Long commentId, @RequestBody CommentRequest commentRequest) {
+        CommentResponse updatedComment = commentService.updateCommentStatus(commentId, commentRequest);
+        return ResponseEntity.ok(updatedComment);
+    }
+
+    @PutMapping("/{messageId}/status")
+    public ResponseEntity<MessageResponse> updateMessageStatus(@PathVariable Long messageId, @RequestBody MessageRequest messageRequest) {
+        MessageResponse updatedMessage = messageService.updateMessageStatus(messageId, messageRequest);
+        return ResponseEntity.ok(updatedMessage);
     }
 }
