@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name="payments")
+@Table(name = "payments",schema = "my_schema")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -16,7 +16,7 @@ public class Payment {
             strategy = GenerationType.IDENTITY
     )
     private Long id;
-    private String  cardNumber;
+    private String cardNumber;
     private String cvc;
     private int monthDate;
     private int yearDate;
@@ -25,4 +25,7 @@ public class Payment {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     private User user;
+
+//    @OneToMany(mappedBy = "payment", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<Publish> publishes;
 }

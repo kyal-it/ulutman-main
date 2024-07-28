@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name="messages")
+@Table(name="messages",schema = "my_schema")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -18,6 +18,4 @@ public class Message {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_account_id")
     private UserAccount userAccount;
-
-
 }

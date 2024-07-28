@@ -1,18 +1,16 @@
 package com.ulutman.model.entities;
 
-import com.ulutman.model.enums.Bank;
-import com.ulutman.model.enums.Category;
-import com.ulutman.model.enums.Metro;
-import com.ulutman.model.enums.Subcategory;
+import com.ulutman.model.enums.*;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
-@Table(name="publishes")
+@Table(name = "publishes",schema = "my_schema")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -35,6 +33,10 @@ public class Publish {
     private String address;
     private String phone;
     private String image;
+    @Column(name = "create_date")
+    private LocalDate createDate;
+    @Enumerated(EnumType.STRING)
+    private PublishStatus publishStatus;
 
     @ManyToOne(
             cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}
@@ -44,12 +46,7 @@ public class Publish {
     )
     private Payment payment;
 
-    @OneToMany(mappedBy = "publish", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<User> users;
-
-
-
-
-
-
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id")
+    private User user;
 }

@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name="myPublishes")
+@Table(name="myPublishes",schema = "my_schema")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -20,6 +20,4 @@ public class MyPublish {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_account_id")
     private UserAccount userAccount;
-
-
 }

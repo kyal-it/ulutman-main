@@ -8,7 +8,7 @@ import lombok.Setter;
 import java.util.List;
 
 @Entity
-@Table(name="userAccounts")
+@Table(name = "userAccounts",schema = "my_schema")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -17,17 +17,17 @@ public class UserAccount {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToMany(mappedBy = "userAccount",cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "userAccount", cascade = CascadeType.ALL)
     private List<Message> messages;
 
-    @OneToOne(mappedBy = "userAccount",cascade = CascadeType.ALL)
-    private Favorite favorite;
+//    @OneToOne(mappedBy = "userAccount",cascade = CascadeType.ALL)
+//    private Favorite favorite;
 
-    @OneToOne(mappedBy = "userAccount",cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "userAccount", cascade = CascadeType.ALL)
     private MyPublish myPublish;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
-     private User user;
+    private User user;
 
 }
