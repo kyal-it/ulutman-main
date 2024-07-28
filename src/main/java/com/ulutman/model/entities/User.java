@@ -1,6 +1,5 @@
 package com.ulutman.model.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ulutman.model.enums.Role;
 import com.ulutman.model.enums.Status;
 import jakarta.persistence.*;
@@ -17,7 +16,7 @@ import java.time.LocalDate;
 import java.util.*;
 
 @Entity
-@Table(name = "users")
+@Table(name = "users",schema = "my_schema")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -43,18 +42,15 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Payment> payments;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<UserAccount> userAccounts;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private UserAccount userAccount;
 
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+//    @JoinColumn(name = "publish_id")
+    private List<Publish> publishes;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "publish_id")
-    private Publish publish;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "favorite_id")
-    private Favorite favorite;
-
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Complaint> complaints;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
