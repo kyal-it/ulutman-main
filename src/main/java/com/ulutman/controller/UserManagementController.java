@@ -54,8 +54,8 @@ public class UserManagementController {
 
     @PutMapping("/role/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public AuthResponse updateRoleUser(@PathVariable Long id,@RequestBody AuthRequest authRequest) {
-        return userManagementService.updateUserRole(id,authRequest);
+    public AuthResponse updateRoleUser(@PathVariable Long id, @RequestBody AuthRequest authRequest) {
+        return userManagementService.updateUserRole(id, authRequest);
     }
 
     @GetMapping("/filter")

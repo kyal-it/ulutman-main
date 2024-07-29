@@ -3,8 +3,6 @@ package com.ulutman.controller;
 import com.ulutman.model.dto.ComplaintRequest;
 import com.ulutman.model.dto.ComplaintResponse;
 import com.ulutman.model.entities.User;
-import com.ulutman.model.enums.ComplaintStatus;
-import com.ulutman.model.enums.ComplaintType;
 import com.ulutman.service.ManageComplaintService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -32,9 +30,10 @@ public class ManageComplaintController {
         return complaintService.getAllComplaints();
     }
 
-    @PutMapping("/status/{id}")
-    public ComplaintResponse updateStatus(@PathVariable Long id, @RequestBody ComplaintRequest complaintRequest) {
-        return complaintService.updateComplaintStatus(id, complaintRequest);
+    @PutMapping("/{id}/status")
+    public ResponseEntity<ComplaintResponse> updateComplaintStatus(@PathVariable Long id, @RequestBody ComplaintRequest complaintRequest) {
+        ComplaintResponse updatedComplaint = complaintService.updateComplaintStatus(id, complaintRequest);
+        return ResponseEntity.ok(updatedComplaint);
     }
 
     @GetMapping("/filter")
