@@ -17,14 +17,14 @@ public class ModeratorMessageResponse {
 
     Long messageId;
     String username;
-    String messageContent;
+    String content;
     LocalDate createDate;
     ModeratorStatus moderatorStatus;
 
     public ModeratorMessageResponse(Long messageId, String username, String content, LocalDate createDate, ModeratorStatus moderatorStatus) {
         this.messageId = messageId;
         this.username = username;
-        this.messageContent = content;
+        this.content= content;
         this.createDate = createDate;
         this.moderatorStatus = moderatorStatus;
     }

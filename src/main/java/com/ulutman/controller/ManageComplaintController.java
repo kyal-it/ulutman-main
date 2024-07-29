@@ -3,8 +3,6 @@ package com.ulutman.controller;
 import com.ulutman.model.dto.ComplaintRequest;
 import com.ulutman.model.dto.ComplaintResponse;
 import com.ulutman.model.entities.User;
-import com.ulutman.model.enums.ComplaintStatus;
-import com.ulutman.model.enums.ComplaintType;
 import com.ulutman.service.ManageComplaintService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

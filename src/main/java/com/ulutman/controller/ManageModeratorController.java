@@ -2,7 +2,6 @@ package com.ulutman.controller;
 
 import com.ulutman.model.dto.*;
 import com.ulutman.model.entities.User;
-import com.ulutman.model.enums.ModeratorStatus;
 import com.ulutman.service.CommentService;
 import com.ulutman.service.ManageModeratorService;
 import com.ulutman.service.MessageService;
@@ -50,5 +49,21 @@ public class ManageModeratorController {
     public ResponseEntity<MessageResponse> updateMessageStatus(@PathVariable Long messageId, @RequestBody MessageRequest messageRequest) {
         MessageResponse updatedMessage = messageService.updateMessageStatus(messageId, messageRequest);
         return ResponseEntity.ok(updatedMessage);
+    }
+
+    @GetMapping("/comments/filter")
+    public List<CommentResponse> filterComments(@RequestParam(value = "user", required = false) List<User> users,
+                                                @RequestParam(value = "content", required = false) List<String> content,
+                                                @RequestParam(value = "createDate", required = false) List<LocalDate> createDates,
+                                                @RequestParam(value = "moderatorStatuses", required = false) List<String> moderatorStatuses) {
+        return manageModeratorService.getCommentsByFilters(users, content, createDates, moderatorStatuses);
+    }
+
+    @GetMapping("/message/filter")
+    public List<MessageResponse> filterMessages(@RequestParam(value = "user", required = false) List<User> users,
+                                                @RequestParam(value = "content", required = false) List<String> content,
+                                                @RequestParam(value = "createDate", required = false) List<LocalDate> createDates,
+                                                @RequestParam(value = "moderatorStatuses", required = false) List<String> moderatorStatuses) {
+        return manageModeratorService.getMessagesByFilters(users, content, createDates, moderatorStatuses);
     }
 }

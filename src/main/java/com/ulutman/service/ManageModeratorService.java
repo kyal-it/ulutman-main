@@ -1,5 +1,7 @@
 package com.ulutman.service;
 
+import com.ulutman.mapper.CommentMapper;
+import com.ulutman.mapper.MessageMapper;
 import com.ulutman.model.dto.*;
 import com.ulutman.model.entities.Comment;
 import com.ulutman.model.entities.Message;
@@ -13,6 +15,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -25,6 +28,8 @@ public class ManageModeratorService {
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
     private final MessageRepository messageRepository;
+    private final CommentMapper commentMapper;
+    private final MessageMapper messageMapper;
 
     public List<ModeratorCommentResponse> getUserComments(Long userId) {
         User user = userRepository.findById(userId)
@@ -72,6 +77,16 @@ public class ManageModeratorService {
                 comments,
                 messages
         );
+    }
+
+    public List<CommentResponse> getCommentsByFilters(List<User> users, List<String> content, List<LocalDate> createDates, List<String> moderatorStatus) {
+        List<Comment> comments = commentRepository.findCommentsByFilters(users, content, createDates, moderatorStatus);
+        return comments.stream().map(commentMapper::mapToResponse).collect(Collectors.toList());
+    }
+
+    public List<MessageResponse> getMessagesByFilters(List<User> users, List<String> content, List<LocalDate> createDate, List<String> moderatorStatus) {
+        List<Message> messages = messageRepository.findMessagesByFilters(users, content, createDate, moderatorStatus);
+        return messages.stream().map(messageMapper::mapToResponse).collect(Collectors.toList());
     }
 }
 
