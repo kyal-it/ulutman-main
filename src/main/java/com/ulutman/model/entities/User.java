@@ -16,7 +16,7 @@ import java.time.LocalDate;
 import java.util.*;
 
 @Entity
-@Table(name = "users",schema = "my_schema")
+@Table(name = "users", schema = "my_schema")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -56,7 +56,7 @@ public class User implements UserDetails {
     private List<Comment> comments;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-     private List<Message> messages ;
+    private List<Message> messages;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
