@@ -10,11 +10,11 @@ import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
-
+import java.util.Set;
 
 
 @Entity
-@Table(name = "mailing", schema = "my_schema")
+@Table(name = "mailing")
 @Getter
 @Setter
 @ToString
@@ -36,4 +36,7 @@ public class Mailing {
     @Column(name = "promotion_end_date")
     LocalDate promotionEndDate;
     LocalDate createDate;
+
+    @ManyToMany(mappedBy = "mailings")
+    private Set<User> users;
 }

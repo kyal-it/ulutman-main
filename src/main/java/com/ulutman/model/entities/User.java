@@ -16,7 +16,7 @@ import java.time.LocalDate;
 import java.util.*;
 
 @Entity
-@Table(name = "users", schema = "my_schema")
+@Table(name = "users")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -57,6 +57,14 @@ public class User implements UserDetails {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Message> messages;
+
+    @ManyToMany
+    @JoinTable(
+            name = "mailing_user",       // Имя таблицы связи
+            joinColumns = @JoinColumn(name = "user_id"),   // Колонка внешнего ключа для User
+            inverseJoinColumns = @JoinColumn(name = "mailing_id")  // Колонка внешнего ключа для Mailing
+    )
+    private Set<Mailing> mailings;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
