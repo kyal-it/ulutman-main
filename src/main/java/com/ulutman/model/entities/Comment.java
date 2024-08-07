@@ -11,7 +11,7 @@ import lombok.experimental.FieldDefaults;
 import java.time.LocalDate;
 
 @Entity
-@Table(name = "comments",schema = "my_schema")
+@Table(name = "comments")
 @Getter
 @Setter
 @NoArgsConstructor
