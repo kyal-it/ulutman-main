@@ -15,10 +15,11 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-@RequestMapping("/api/category")
+@RequestMapping("/api/manage/category")
 public class ManageCategoryController {
 
     private final ManageCategoryService manageCategoryService;
+
 
     @PostMapping("/addCatAndSub")
     public ResponseEntity<PublishResponse> addCategoryAndSubCategory(@RequestBody PublishRequest publishRequest) {
