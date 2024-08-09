@@ -24,9 +24,9 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserManagementService {
 
-   private final UserRepository userRepository;
-   private final AuthMapper authMapper;
-   private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final AuthMapper authMapper;
+    private final PasswordEncoder passwordEncoder;
 
     public AuthResponse save(AuthRequest request) {
         User user = authMapper.mapToEntity(request);
@@ -48,7 +48,7 @@ public class UserManagementService {
     }
 
     public AuthResponse getUserById(Long id) {
-        User user =  userRepository.findById(id).orElseThrow(()-> new NotFoundException("Пользователь с таким id не найден " + id));
+        User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("Пользователь с таким id не найден " + id));
         return authMapper.mapToResponse(user);
     }
 
@@ -56,8 +56,8 @@ public class UserManagementService {
         userRepository.deleteById(id);
     }
 
-    public AuthResponse updateUser(Long id,AuthRequest authRequest) {
-        User user = userRepository.findById(id).orElseThrow(()-> new NotFoundException("Пользователь с таким id не найден "+id));
+    public AuthResponse updateUser(Long id, AuthRequest authRequest) {
+        User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("Пользователь с таким id не найден " + id));
         user.setName(authRequest.getName());
         user.setEmail(authRequest.getEmail());
         user.setPassword(passwordEncoder.encode(authRequest.getPassword()));
@@ -65,8 +65,8 @@ public class UserManagementService {
         return authMapper.mapToResponse(user);
     }
 
-    public AuthResponse updateUserRole(Long id,@RequestBody AuthRequest authRequest) {
-        User user =  userRepository.findById(id).orElseThrow(()-> new NotFoundException("Пользователь с таким id не найден " + id));
+    public AuthResponse updateUserRole(Long id, @RequestBody AuthRequest authRequest) {
+        User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("Пользователь с таким id не найден " + id));
         user.setRole(authRequest.getRole());
         user = userRepository.save(user);
         return authMapper.mapToResponse(user);

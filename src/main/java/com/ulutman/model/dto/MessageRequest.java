@@ -1,7 +1,6 @@
 package com.ulutman.model.dto;
 
-import com.ulutman.model.enums.ComplaintStatus;
-import com.ulutman.model.enums.ComplaintType;
+import com.ulutman.model.enums.ModeratorStatus;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -10,10 +9,9 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ComplaintRequest {
+public class MessageRequest {
 
-    ComplaintType complaintType;
-    String complaintContent;
     Long userId;
-    ComplaintStatus complaintStatus;
+    String content;
+    ModeratorStatus moderatorStatus;
 }

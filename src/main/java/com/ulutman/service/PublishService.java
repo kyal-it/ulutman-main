@@ -42,9 +42,10 @@ public class PublishService {
     }
 
     public PublishResponse findById(Long id) {
-        Publish publish = (Publish)this.publishRepository.findById(id).orElseThrow(() -> {
-        return new EntityNotFoundException("Публикация по идентификатору " + id + " не найдена");
-    }); return this.publishMapper.mapToResponse(publish);
+        Publish publish = (Publish) this.publishRepository.findById(id).orElseThrow(() -> {
+            return new EntityNotFoundException("Публикация по идентификатору " + id + " не найдена");
+        });
+        return this.publishMapper.mapToResponse(publish);
     }
 
     public PublishResponse updatePublish(Long id, PublishRequest publishRequest) {
@@ -62,7 +63,7 @@ public class PublishService {
 
     public void deletePublish(Long productId) {
         this.publishRepository.findById(productId).orElseThrow(() -> {
-            return new EntityNotFoundException("Публикация  по идентификатору " + productId +  " успешно удалено");
+            return new EntityNotFoundException("Публикация  по идентификатору " + productId + " успешно удалено");
         });
         this.publishRepository.deleteById(productId);
     }
