@@ -1,34 +1,36 @@
 package com.ulutman.model.entities;
 
-import com.ulutman.model.enums.ModeratorStatus;
+import com.ulutman.model.enums.ComplaintStatus;
+import com.ulutman.model.enums.ComplaintType;
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "messages")
+@Table(name = "complaints")
 @Getter
 @Setter
 @NoArgsConstructor
-public class Message {
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class Complaint {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    String content;
     @Enumerated(EnumType.STRING)
-    ModeratorStatus moderatorStatus;
+    ComplaintType complaintType;
+    @Enumerated(EnumType.STRING)
+    ComplaintStatus complaintStatus;
+    String ComplaintContent;
     @Column(name = "create_date")
     LocalDate createDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     User user;
-
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_account_id")
-    private UserAccount userAccount;
 }
