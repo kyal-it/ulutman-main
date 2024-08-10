@@ -49,9 +49,12 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> {
                     authorize
-                            .requestMatchers("/api/admin/**").permitAll()
-                            .requestMatchers("/api/manage/**").permitAll()
-                            .requestMatchers("/api/category/**").permitAll()
+                            .requestMatchers("/api/manage/**",
+                                    "api/manage/users",
+                                    "/api/manage/complaints/",
+                                    "/api/manage/moderator",
+                                    "/api/manage/publishes",
+                                    "/api/mailing").hasAuthority("ADMIN")
                             .requestMatchers("/api/auth/sign-up", "/api/auth/with google", "/api/auth/sign-in",
                                     "/api/publishes", "/api/users/**").permitAll()
                             .requestMatchers("/swagger-ui/**",
