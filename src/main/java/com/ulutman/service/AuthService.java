@@ -8,6 +8,7 @@ import com.ulutman.model.dto.AuthRequest;
 import com.ulutman.model.dto.AuthResponse;
 import com.ulutman.model.dto.LoginRequest;
 import com.ulutman.model.dto.LoginResponse;
+import com.ulutman.model.entities.Favorite;
 import com.ulutman.model.entities.User;
 import com.ulutman.repository.UserRepository;
 import com.ulutman.security.jwt.JwtUtil;
@@ -42,6 +43,9 @@ public class AuthService {
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setConfirmPassword(passwordEncoder.encode(request.getConfirmPassword()));
         user.setRole(request.getRole());
+        Favorite basket = new Favorite();
+        user.setFavorite(basket);
+        basket.setUser(user);
         userRepository.save(user);
         return authMapper.mapToResponse(user);
     }
