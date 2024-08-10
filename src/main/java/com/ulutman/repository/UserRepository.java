@@ -1,5 +1,6 @@
 package com.ulutman.repository;
 
+import com.ulutman.model.entities.Publish;
 import com.ulutman.model.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -28,3 +29,4 @@ public interface UserRepository extends JpaRepository<User, Long>, JpaSpecificat
                           @Param("createDate") List<LocalDate> createDate,
                           @Param("status") List<String> status);
 }
+

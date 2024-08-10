@@ -1,5 +1,6 @@
 package com.ulutman.model.dto;
 
+import com.ulutman.model.entities.User;
 import com.ulutman.model.enums.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -25,4 +26,6 @@ public class PublishResponse {
     Bank bank;
     PublishStatus publishStatus;
     LocalDate createDate;
+    AuthResponse user;
+    CategoryStatus categoryStatus;
 }
