@@ -1,14 +1,14 @@
 package com.ulutman.model.dto;
 
-import com.ulutman.model.enums.Bank;
-import com.ulutman.model.enums.Category;
-import com.ulutman.model.enums.Metro;
-import com.ulutman.model.enums.Subcategory;
+import com.ulutman.model.entities.User;
+import com.ulutman.model.enums.*;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
+
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -24,4 +24,8 @@ public class PublishResponse {
     Category category;
     Subcategory subcategory;
     Bank bank;
+    PublishStatus publishStatus;
+    LocalDate createDate;
+    AuthResponse user;
+    CategoryStatus categoryStatus;
 }

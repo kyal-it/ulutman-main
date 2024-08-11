@@ -1,10 +1,13 @@
 package com.ulutman.model.enums;
+
 import java.util.Arrays;
 import java.util.List;
 
 import static com.ulutman.model.enums.Subcategory.*;
 
 public enum Category {
+
+
     WORK {
         @Override
         public List<Subcategory> getSubcategories() {

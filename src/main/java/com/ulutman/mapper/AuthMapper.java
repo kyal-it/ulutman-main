@@ -32,4 +32,11 @@ public class AuthMapper {
                 .createDate(LocalDate.now())
                 .build();
     }
+
+    public AuthResponse mapToComplaintResponse(User user) {
+        return AuthResponse.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .build();
+    }
 }

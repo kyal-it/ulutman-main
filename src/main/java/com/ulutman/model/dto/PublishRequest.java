@@ -1,9 +1,7 @@
 package com.ulutman.model.dto;
 
-import com.ulutman.model.enums.Bank;
-import com.ulutman.model.enums.Category;
-import com.ulutman.model.enums.Metro;
-import com.ulutman.model.enums.Subcategory;
+import com.ulutman.model.entities.User;
+import com.ulutman.model.enums.*;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -18,4 +16,7 @@ public class PublishRequest {
     Category category; //Enum
     Subcategory subcategory; //Enum
     Bank bank;
+    PublishStatus publishStatus;
+    Long userId;
+    CategoryStatus categoryStatus;
 }

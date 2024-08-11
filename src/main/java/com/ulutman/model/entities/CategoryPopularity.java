@@ -1,23 +1,29 @@
 package com.ulutman.model.entities;
 
+import com.ulutman.model.enums.Category;
 import jakarta.persistence.*;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
-import org.yaml.snakeyaml.events.Event;
 
 @Entity
-@Table(name = "permissions")
+@Table(name = "categoryPopularities")
 @Getter
 @Setter
 @NoArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Permission {
+public class CategoryPopularity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    String name;
+    @Enumerated(EnumType.STRING)
+    Category category;
+    int views;
+    int publications;
+
+
 }

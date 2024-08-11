@@ -1,6 +1,5 @@
 package com.ulutman.model.entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.ulutman.model.enums.Role;
 import com.ulutman.model.enums.Status;
 import jakarta.persistence.*;
@@ -43,18 +42,29 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Payment> payments;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<UserAccount> userAccounts;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private UserAccount userAccount;
 
-
-    @ManyToOne(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "publish_id")
-    private Publish publish;
+    private List<Publish> publishes;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "favorite_id")
-    private Favorite favorite;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Complaint> complaints;
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Comment> comments;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Message> messages;
+
+    @ManyToMany
+    @JoinTable(
+            name = "mailing_user",       // Имя таблицы связи
+            joinColumns = @JoinColumn(name = "user_id"),   // Колонка внешнего ключа для User
+            inverseJoinColumns = @JoinColumn(name = "mailing_id")  // Колонка внешнего ключа для Mailing
+    )
+    private Set<Mailing> mailings;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
