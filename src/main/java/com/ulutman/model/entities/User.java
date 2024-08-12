@@ -26,13 +26,19 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+
     String name;
+
     @Column(unique = true)
     String email;
+
     String password;
+
     String confirmPassword;
+
     @Enumerated(EnumType.STRING)
     Role role;
+
     @Enumerated(EnumType.STRING)
     Status status;
 
@@ -44,6 +50,10 @@ public class User implements UserDetails {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private UserAccount userAccount;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "publish_id")
+    private Publish publish;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "publish_id")
@@ -57,6 +67,9 @@ public class User implements UserDetails {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Message> messages;
+
+    @OneToOne(cascade = CascadeType .ALL, mappedBy = "user")
+    private Favorite favorites;
 
     @ManyToMany
     @JoinTable(
