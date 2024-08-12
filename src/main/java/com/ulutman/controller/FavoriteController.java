@@ -16,8 +16,9 @@ import java.security.Principal;
 public class FavoriteController {
 
     private final FavoriteService favoriteService;
+
     @PostMapping("/addToFavorites/{id}")
-    public FavoriteResponse addToFavorites(@PathVariable("id") Long publishId, Principal principal){
+    public FavoriteResponse addToFavorites(@PathVariable("id") Long publishId, Principal principal) {
         return favoriteService.addToFavorites(publishId, principal);
     }
 
@@ -27,7 +28,7 @@ public class FavoriteController {
     }
 
     @DeleteMapping("/deleteFromFavorites/{id}")
-    public ResponseEntity<String> deleteById(@PathVariable("id") Long publishId, Principal principal){
+    public ResponseEntity<String> deleteById(@PathVariable("id") Long publishId, Principal principal) {
         favoriteService.deleteFromFavorites(publishId, principal);
         return ResponseEntity.ok("Публикация, успешно удаленная из избранного");
     }
