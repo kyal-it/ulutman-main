@@ -6,6 +6,7 @@ import com.ulutman.model.dto.AuthRequest;
 import com.ulutman.model.dto.AuthResponse;
 import com.ulutman.model.entities.Favorite;
 import com.ulutman.model.entities.User;
+import com.ulutman.repository.FavoriteRepository;
 import com.ulutman.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ public class UserManagementService {
     private final UserRepository userRepository;
     private final AuthMapper authMapper;
     private final PasswordEncoder passwordEncoder;
+    private FavoriteRepository favoriteRepository;
 
     public AuthResponse save(AuthRequest request) {
         User user = authMapper.mapToEntity(request);
@@ -38,7 +40,8 @@ public class UserManagementService {
         user.setRole(request.getRole());
         Favorite favorite = new Favorite();
         favorite.setUser(user);
-        user.setFavorite(favorite);
+        favoriteRepository.save(favorite);
+        user.setFavorites(favorite);
         userRepository.save(user);
         return authMapper.mapToResponse(user);
     }

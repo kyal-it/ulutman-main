@@ -44,7 +44,7 @@ public class AuthService {
         user.setConfirmPassword(passwordEncoder.encode(request.getConfirmPassword()));
         user.setRole(request.getRole());
         Favorite basket = new Favorite();
-        user.setFavorite(basket);
+        user.setFavorites(basket);
         basket.setUser(user);
         userRepository.save(user);
         return authMapper.mapToResponse(user);
