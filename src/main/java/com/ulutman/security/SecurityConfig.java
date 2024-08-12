@@ -59,7 +59,7 @@ public class SecurityConfig {
                                     "/api/publishes", "/api/users/**").permitAll()
                             .requestMatchers("/swagger-ui/**",
                                     "/swagger-resources/*",
-                                    "/v3/api-docs/**", "/api/publishes/**").permitAll()
+                                    "/v3/api-docs/**", "/api/publishes/**","/api/**").permitAll()
                             .requestMatchers("/api/auth/set-password", "/api/auth/forgot-password").permitAll()
                             .anyRequest().authenticated();
                 })
