@@ -10,6 +10,8 @@ import com.ulutman.model.dto.LoginRequest;
 import com.ulutman.model.dto.LoginResponse;
 import com.ulutman.model.entities.Favorite;
 import com.ulutman.model.entities.User;
+import com.ulutman.model.enums.Role;
+import com.ulutman.model.enums.Status;
 import com.ulutman.repository.UserRepository;
 import com.ulutman.security.jwt.JwtUtil;
 import lombok.AccessLevel;
@@ -42,7 +44,8 @@ public class AuthService {
         log.info("User is created");
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setConfirmPassword(passwordEncoder.encode(request.getConfirmPassword()));
-        user.setRole(request.getRole());
+        user.setRole(Role.USER);
+        user.setStatus(Status.АКТИВНЫЙ);
         Favorite basket = new Favorite();
         user.setFavorites(basket);
         basket.setUser(user);
