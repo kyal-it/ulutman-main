@@ -6,7 +6,8 @@ import com.ulutman.model.dto.AuthRequest;
 import com.ulutman.model.dto.AuthResponse;
 import com.ulutman.model.entities.Favorite;
 import com.ulutman.model.entities.User;
-import com.ulutman.repository.FavoriteRepository;
+import com.ulutman.model.enums.Role;
+import com.ulutman.model.enums.Status;
 import com.ulutman.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -14,11 +15,12 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,19 +31,21 @@ public class UserManagementService {
     private final UserRepository userRepository;
     private final AuthMapper authMapper;
     private final PasswordEncoder passwordEncoder;
-    private FavoriteRepository favoriteRepository;
 
     public AuthResponse save(AuthRequest request) {
         User user = authMapper.mapToEntity(request);
         user.setCreateDate(LocalDate.now());
-        log.info("User is created");
+        log.info("Пользователь успешно создан!");
+        if (!request.getPassword().equals(request.getConfirmPassword())) {
+            throw new IllegalArgumentException("Пароли не совпадают");
+        }
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setConfirmPassword(passwordEncoder.encode(request.getConfirmPassword()));
-        user.setRole(request.getRole());
-        Favorite favorite = new Favorite();
-        favorite.setUser(user);
-        favoriteRepository.save(favorite);
-        user.setFavorites(favorite);
+        user.setRole(request.getRole() != null ? request.getRole() : Role.USER); // По умолчанию USER, если роль не указана
+        user.setStatus(Status.АКТИВНЫЙ);
+        Favorite basket = new Favorite();
+        user.setFavorites(basket);
+        basket.setUser(user);
         userRepository.save(user);
         return authMapper.mapToResponse(user);
     }
@@ -59,32 +63,23 @@ public class UserManagementService {
         return authMapper.mapToResponse(user);
     }
 
+    public AuthResponse updateUserStatus(Long id, Status newStatus) {
+
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Пользователь с таким id не найден " + id));
+
+        if (newStatus != null && user.getStatus() != newStatus) {
+            user.setStatus(newStatus);
+            userRepository.save(user);
+        }
+
+        return authMapper.mapToResponse(user);
+    }
+
     public void deleteUserById(Long id) {
         userRepository.deleteById(id);
     }
-
-    public AuthResponse updateUser(Long id, AuthRequest authRequest) {
-        User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("Пользователь с таким id не найден " + id));
-        user.setName(authRequest.getName());
-        user.setEmail(authRequest.getEmail());
-        user.setPassword(passwordEncoder.encode(authRequest.getPassword()));
-        user = userRepository.save(user);
-        return authMapper.mapToResponse(user);
-    }
-
-    public AuthResponse updateUserRole(Long id, @RequestBody AuthRequest authRequest) {
-        User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("Пользователь с таким id не найден " + id));
-        user.setRole(authRequest.getRole());
-        user = userRepository.save(user);
-        return authMapper.mapToResponse(user);
-    }
-
-    public List<AuthResponse> getFilteredUser(
-            List<String> names,
-            List<String> roles,
-            List<LocalDate> createDate,
-            List<String> status) {
-        List<User> attribute = userRepository.userFilter(names, roles, createDate, status);
-        return attribute.stream().map(authMapper::mapToResponse).toList();
-    }
 }
+
+
+

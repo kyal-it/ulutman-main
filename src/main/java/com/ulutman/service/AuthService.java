@@ -41,14 +41,20 @@ public class AuthService {
     public AuthResponse save(AuthRequest request) {
         User user = authMapper.mapToEntity(request);
         user.setCreateDate(LocalDate.now());
-        log.info("User is created");
+        log.info("Пользователь успешно создан!");
+
+        if (!request.getPassword().equals(request.getConfirmPassword())) {
+            throw new IllegalArgumentException("Пароли не совпадают");
+        }
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setConfirmPassword(passwordEncoder.encode(request.getConfirmPassword()));
-        user.setRole(Role.USER);
+        user.setRole(request.getRole() != null ? request.getRole() : Role.USER); // По умолчанию USER, если роль не указана
         user.setStatus(Status.АКТИВНЫЙ);
+
         Favorite basket = new Favorite();
         user.setFavorites(basket);
         basket.setUser(user);
+
         userRepository.save(user);
         return authMapper.mapToResponse(user);
     }
@@ -56,6 +62,7 @@ public class AuthService {
     public LoginResponse login(LoginRequest request) {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new NotFoundException("Пользователь с такой почтой: " + request.getEmail() + " не найден !"));
+
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new IncorrectCodeException("Введен неверный пароль!");
         }

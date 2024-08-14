@@ -1,6 +1,7 @@
 package com.ulutman.model.dto;
 
 import com.ulutman.model.enums.Role;
+import com.ulutman.model.enums.ServiceRole;
 import com.ulutman.model.enums.Status;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -15,6 +16,7 @@ import org.springframework.data.annotation.CreatedDate;
 import java.time.LocalDate;
 
 import java.util.List;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -45,4 +47,5 @@ public class AuthRequest {
 
     @CreatedDate
     LocalDate createDate;
+
 }

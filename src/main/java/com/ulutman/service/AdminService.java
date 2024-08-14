@@ -1,8 +1,12 @@
 package com.ulutman.service;
 
-import com.ulutman.model.entities.Admin;
-import com.ulutman.model.enums.ServiceRole;
-import com.ulutman.repository.AdminRepository;
+import com.ulutman.mapper.AuthMapper;
+import com.ulutman.model.dto.AuthRequest;
+import com.ulutman.model.dto.AuthResponse;
+import com.ulutman.model.entities.Favorite;
+import com.ulutman.model.entities.User;
+import com.ulutman.model.enums.Role;
+import com.ulutman.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -10,8 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-import java.util.Set;
+import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
@@ -19,32 +22,26 @@ import java.util.Set;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AdminService {
 
-    private final AdminRepository adminRepository;
-    private  final PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final AuthMapper authMapper;
 
-    public Admin createAdmin(String username, String password, Set<ServiceRole> roles) {
-        Admin admin = new Admin();
-        admin.setUsername(username);
-        admin.setPassword(passwordEncoder.encode(password)); // Убедитесь, что пароль хэшируется перед сохранением
-        admin.setRoles(roles);
-
-        return adminRepository.save(admin);
-    }
-
-    public Optional<Admin> findAdminByUsername(String username) {
-        return adminRepository.findByUsername(username);
-    }
-
-    public void updateAdminRoles(String username, Set<ServiceRole> roles) {
-        Optional<Admin> adminOpt = findAdminByUsername(username);
-        if (adminOpt.isPresent()) {
-            Admin admin = adminOpt.get();
-            System.out.println("Updating roles for admin: " + admin.getUsername());
-            admin.setRoles(roles);
-            adminRepository.save(admin);
-            System.out.println("Roles updated: " + admin.getRoles());
-        } else {
-            System.out.println("Admin not found with username: " + username);
+    public AuthResponse saveAdmin(AuthRequest request) {
+        User user = authMapper.mapToEntity(request);
+        user.setCreateDate(LocalDate.now());
+        log.info("Админ успешно создан");
+        if (!request.getPassword().equals(request.getConfirmPassword())) {
+            throw new IllegalArgumentException("Passwords do not match");
         }
+
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setConfirmPassword(passwordEncoder.encode(request.getConfirmPassword()));
+        user.setRole(Role.ADMIN); // По умолчанию USER, если роль не указана
+        Favorite basket = new Favorite();
+        user.setFavorites(basket);
+        basket.setUser(user);
+
+        userRepository.save(user);
+        return authMapper.mapToResponse(user);
     }
 }

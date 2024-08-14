@@ -1,6 +1,7 @@
 package com.ulutman.model.entities;
 
 import com.ulutman.model.enums.Role;
+import com.ulutman.model.enums.ServiceRole;
 import com.ulutman.model.enums.Status;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
