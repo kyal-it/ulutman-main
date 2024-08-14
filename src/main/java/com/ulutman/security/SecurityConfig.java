@@ -42,6 +42,7 @@ public class SecurityConfig {
         return new UserDetailsServiceImpl();
     }
 
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.cors(AbstractHttpConfigurer::disable)
@@ -55,11 +56,13 @@ public class SecurityConfig {
                                     "/api/manage/moderator",
                                     "/api/manage/publishes",
                                     "/api/mailing").hasAuthority("ADMIN")
-                            .requestMatchers("/api/auth/sign-up", "/api/auth/with google", "/api/auth/sign-in",
+                            .requestMatchers("/api/auth/sign-up",
+                                    "/api/auth/with google",
+                                    "/api/auth/sign-in",
                                     "/api/publishes", "/api/users/**").permitAll()
                             .requestMatchers("/swagger-ui/**",
                                     "/swagger-resources/*",
-                                    "/v3/api-docs/**", "/api/publishes/**","/api/**").permitAll()
+                                    "/v3/api-docs/**", "/api/publishes/**", "/api/**").permitAll()
                             .requestMatchers("/api/auth/set-password", "/api/auth/forgot-password").permitAll()
                             .anyRequest().authenticated();
                 })

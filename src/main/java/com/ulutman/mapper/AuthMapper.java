@@ -33,6 +33,7 @@ public class AuthMapper {
                 .build();
     }
 
+
     public AuthResponse mapToComplaintResponse(User user) {
         return AuthResponse.builder()
                 .id(user.getId())

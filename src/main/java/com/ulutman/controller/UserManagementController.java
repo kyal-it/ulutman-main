@@ -2,6 +2,7 @@ package com.ulutman.controller;
 
 import com.ulutman.model.dto.AuthRequest;
 import com.ulutman.model.dto.AuthResponse;
+import com.ulutman.model.enums.Status;
 import com.ulutman.service.UserManagementService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -48,12 +49,6 @@ public class UserManagementController {
         return userManagementService.getUserById(id);
     }
 
-    @Operation(summary = "Manage  users: update user by Id")
-    @ApiResponse(responseCode = "201", description = "Updated user by id successfully")
-    @PutMapping("/updateById/{id}")
-    public AuthResponse updateById(@PathVariable Long id, @RequestBody AuthRequest authRequest) {
-        return userManagementService.updateUser(id, authRequest);
-    }
 
     @Operation(summary = "Manage  users: delete user by Id")
     @ApiResponse(responseCode = "201", description = "Deleted user by id successfully")
@@ -65,9 +60,11 @@ public class UserManagementController {
 
     @Operation(summary = "Manage  users: update user status")
     @ApiResponse(responseCode = "201", description = "Updated user status successfully")
-    @PutMapping("/role/{id}")
-    public AuthResponse updateRoleUser(@PathVariable Long id, @RequestBody AuthRequest authRequest) {
-        return userManagementService.updateUserRole(id, authRequest);
+    @PutMapping("/{id}/status")
+    public ResponseEntity<AuthResponse> updateUserStatus(@PathVariable Long id,
+                                                         @RequestParam Status newStatus) {
+        AuthResponse authResponse = userManagementService.updateUserStatus(id, newStatus);
+        return ResponseEntity.ok(authResponse);
     }
 
     @Operation(summary = "Manage user: filter users")
