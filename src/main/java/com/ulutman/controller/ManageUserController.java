@@ -24,10 +24,9 @@ import java.util.List;
 @Slf4j
 @Tag(name = "Auth")
 @SecurityRequirement(name = "Authorization")
-public class UserManagementController {
+public class ManageUserController {
 
     private final ManageUserService userManagementService;
-    private final UserRepository userRepository;
 
     @Operation(summary = "Manage  users: add user")
     @ApiResponse(responseCode = "201", description = "User added successfully")
