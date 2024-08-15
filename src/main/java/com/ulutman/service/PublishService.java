@@ -4,10 +4,15 @@ import com.ulutman.mapper.PublishMapper;
 import com.ulutman.model.dto.PublishRequest;
 import com.ulutman.model.dto.PublishResponse;
 import com.ulutman.model.entities.Publish;
+import com.ulutman.model.entities.User;
 import com.ulutman.model.enums.*;
 import com.ulutman.repository.PublishRepository;
+import com.ulutman.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,12 +20,16 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class PublishService {
 
     private final PublishMapper publishMapper;
     private final PublishRepository publishRepository;
+    private final UserRepository userRepository;
 
     public PublishResponse createPublish(PublishRequest publishRequest) {
+
         if (publishRequest.getCategory() == null || publishRequest.getSubcategory() == null) {
             throw new IllegalArgumentException("Необходимо выбрать категорию и подкатегорию");
         }
@@ -30,7 +39,15 @@ public class PublishService {
         if (!Category.getAllCategories().contains(publishRequest.getCategory())) {
             throw new IllegalArgumentException("Неверная категория");
         }
+
+        // Маппинг PublishRequest в Publish
         Publish publish = this.publishMapper.mapToEntity(publishRequest);
+
+        // Найти пользователя по ID из PublishRequest
+        User user = userRepository.findById(publishRequest.getUserId())
+                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+        publish.setUser(user);
+
         publishRepository.save(publish);
         return this.publishMapper.mapToResponse(publish);
     }
@@ -66,12 +83,5 @@ public class PublishService {
             return new EntityNotFoundException("Публикация  по идентификатору " + productId + " успешно удалено");
         });
         this.publishRepository.deleteById(productId);
-    }
-
-    public List<PublishResponse> getAllPublicationsByUser(Long userId) {
-        List<Publish> publishes = publishRepository.getPublishByUserId(userId);
-        return publishes.stream()
-                .map(publishMapper::mapToResponse)
-                .collect(Collectors.toList());
     }
 }

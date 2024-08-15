@@ -1,7 +1,6 @@
 package com.ulutman.model.entities;
 
 import com.ulutman.model.enums.Role;
-import com.ulutman.model.enums.ServiceRole;
 import com.ulutman.model.enums.Status;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -52,13 +51,8 @@ public class User implements UserDetails {
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private UserAccount userAccount;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "publish_id")
-    private Publish publish;
-
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "publish_id")
-    private List<Publish> publishes;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Publish> publishes = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Complaint> complaints;
@@ -69,7 +63,7 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Message> messages;
 
-    @OneToOne(cascade = CascadeType .ALL, mappedBy = "user")
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "user")
     private Favorite favorites;
 
     @ManyToMany
@@ -111,5 +105,4 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
-
 }

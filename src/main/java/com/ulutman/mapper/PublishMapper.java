@@ -1,9 +1,10 @@
 package com.ulutman.mapper;
 
-import com.ulutman.model.dto.AuthRequest;
+import com.ulutman.model.dto.AuthResponse;
 import com.ulutman.model.dto.PublishRequest;
 import com.ulutman.model.dto.PublishResponse;
 import com.ulutman.model.entities.Publish;
+import com.ulutman.model.entities.User;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
@@ -21,8 +22,6 @@ public class PublishMapper {
         publish.setCategory(publishRequest.getCategory());
         publish.setSubCategory(publishRequest.getSubcategory());
         publish.setBank(publishRequest.getBank());
-        publish.setPublishStatus(publishRequest.getPublishStatus());
-        publish.setUser(publish.getUser());
         publish.setPublishStatus(publishRequest.getPublishStatus());
         publish.setCategory(publishRequest.getCategory());
         return publish;
@@ -42,6 +41,20 @@ public class PublishMapper {
                 .publishStatus(publish.getPublishStatus())
                 .createDate(LocalDate.now())
                 .categoryStatus(publish.getCategoryStatus())
+                .publishStatus(publish.getPublishStatus())
+                .user(mapUserToAuthResponse(publish.getUser()))
+                .build();
+    }
+
+    // Вспомогательный метод для маппинга User в AuthResponse
+    private AuthResponse mapUserToAuthResponse(User user) {
+        if (user == null) {
+            return null;
+        }
+        return AuthResponse.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .email(user.getEmail())
                 .build();
     }
 }

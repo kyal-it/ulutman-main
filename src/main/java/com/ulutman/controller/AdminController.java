@@ -30,38 +30,4 @@ public class AdminController {
         AuthResponse response = adminService.saveAdmin(authRequest);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
-
-
-//    @Operation(summary = "Create a new Admin")
-//    @ApiResponse(responseCode = "201", description = "Admin created successfully")
-//    @PostMapping("/create")
-//    public ResponseEntity<String> createAdmin(
-//            @RequestParam String username,
-//            @RequestParam String password,
-//            @RequestParam Set<ServiceRole> roles) {
-//        Admin admin = adminService.createAdmin(username, password, roles);
-//        return ResponseEntity.ok("Админ " + admin.getUsername() + " созданный с помощью ролей: " + roles);
-//    }
-
-//    @Operation(summary = "Get Admin by username")
-//    @ApiResponse(responseCode = "201", description = "Admin received successfully")
-//    @GetMapping("/{username}")
-//    public ResponseEntity<Admin> getAdminByUsername(@PathVariable String username) {
-//        Optional<Admin> adminOpt = adminService.findAdminByUsername(username);
-//        if (adminOpt.isPresent()) {
-//            return ResponseEntity.ok(adminOpt.get());
-//        } else {
-//            return ResponseEntity.notFound().build();
-//        }
-//    }
-
-//    @Operation(summary = "Update Admin roles")
-//    @ApiResponse(responseCode = "201", description = "Updated admin roles successfully")
-//    @PutMapping("/updateRoles")
-//    public ResponseEntity<String> updateAdminRoles(
-//            @RequestParam String username,
-//            @RequestParam Set<ServiceRole> roles) {
-//        adminService.updateAdminRoles(username, roles);
-//        return ResponseEntity.ok("Roles updated for admin " + username + ": " + roles);
-//    }
 }
