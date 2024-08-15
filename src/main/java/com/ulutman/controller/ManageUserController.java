@@ -3,7 +3,6 @@ package com.ulutman.controller;
 import com.ulutman.model.dto.AuthRequest;
 import com.ulutman.model.dto.AuthResponse;
 import com.ulutman.model.enums.Status;
-import com.ulutman.repository.UserRepository;
 import com.ulutman.service.ManageUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

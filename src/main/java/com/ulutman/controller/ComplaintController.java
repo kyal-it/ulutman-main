@@ -22,5 +22,4 @@ public class ComplaintController {
         ComplaintResponse response = complaintService.createComplaint(complaintRequest);
         return ResponseEntity.ok(response);
     }
-
 }

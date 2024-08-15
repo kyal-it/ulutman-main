@@ -1,11 +1,7 @@
 package com.ulutman.model.dto;
 
-import com.ulutman.model.entities.User;
 import com.ulutman.model.enums.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;

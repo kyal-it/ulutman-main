@@ -12,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -27,19 +26,20 @@ public class PublishController {
     @Operation(summary = "Create publish")
     @ApiResponse(responseCode = "201", description = "Publish created successfully")
     @PostMapping("/create")
-    @ResponseStatus(HttpStatus.CREATED)
-    public PublishResponse createPublish(@RequestBody PublishRequest publishRequest) {
-        return publishService.createPublish(publishRequest);
+    public ResponseEntity<PublishResponse> createPublish(@RequestBody PublishRequest publishRequest) {
+        try {
+            PublishResponse response = publishService.createPublish(publishRequest);
+            return new ResponseEntity<>(response, HttpStatus.CREATED);
+        } catch (IllegalArgumentException e) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
     }
 
     @Operation(summary = "Publishes: get all publishes")
     @ApiResponse(responseCode = "201", description = "Return list of publishes")
     @GetMapping("/getAll")
-    public List<PublishResponse> getAll() {
-        return publishService.getAll();
-    }
-
-    @GetMapping
     public ResponseEntity<List<PublishResponse>> getAllPublishes() {
         List<PublishResponse> publishes = publishService.getAll();
         return ResponseEntity.ok(publishes);

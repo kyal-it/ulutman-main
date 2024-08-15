@@ -15,6 +15,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 public class Publish {
+
     @Id
     @GeneratedValue(
             strategy = GenerationType.IDENTITY
@@ -48,16 +49,10 @@ public class Publish {
     )
     private Payment payment;
 
-    @OneToMany(mappedBy = "publish", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<User> users;
-
     @ManyToMany(cascade = CascadeType.ALL, mappedBy = "publishes")
     List<Favorite> favorites;
 
-
-
-
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 }
