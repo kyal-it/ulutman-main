@@ -3,7 +3,8 @@ package com.ulutman.controller;
 import com.ulutman.model.dto.AuthRequest;
 import com.ulutman.model.dto.AuthResponse;
 import com.ulutman.model.enums.Status;
-import com.ulutman.service.UserManagementService;
+import com.ulutman.repository.UserRepository;
+import com.ulutman.service.ManageUserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -25,7 +26,8 @@ import java.util.List;
 @SecurityRequirement(name = "Authorization")
 public class UserManagementController {
 
-    private final UserManagementService userManagementService;
+    private final ManageUserService userManagementService;
+    private final UserRepository userRepository;
 
     @Operation(summary = "Manage  users: add user")
     @ApiResponse(responseCode = "201", description = "User added successfully")
@@ -70,14 +72,15 @@ public class UserManagementController {
     @Operation(summary = "Manage user: filter users")
     @ApiResponse(responseCode = "201", description = "Users successfully filtered")
     @GetMapping("/filter")
-    public List<AuthResponse> getFilteredProduct(
+    public ResponseEntity<List<AuthResponse>> filterUsers(
             @RequestParam(value = "name", required = false) List<String> names,
             @RequestParam(value = "role", required = false) List<String> roles,
             @RequestParam(value = "createDate", required = false) List<LocalDate> createDate,
-            @RequestParam(value = "status", required = false) List<String> status
-    ) {
-        return userManagementService.getFilteredUser(names, roles, createDate, status);
-    }
+            @RequestParam(value = "status", required = false) List<String> statuses) {
+
+        List<AuthResponse> responses = userManagementService.filterUsers(names, roles, createDate, statuses);
+        return ResponseEntity.ok(responses);
+}
 
     @Operation(summary = "Manage users: reset filters users")
     @ApiResponse(responseCode = "201", description = "Users filters successfully reset")
