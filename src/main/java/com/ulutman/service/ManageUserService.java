@@ -19,14 +19,13 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class UserManagementService {
+public class ManageUserService {
 
     private final UserRepository userRepository;
     private final AuthMapper authMapper;
@@ -64,7 +63,6 @@ public class UserManagementService {
     }
 
     public AuthResponse updateUserStatus(Long id, Status newStatus) {
-
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Пользователь с таким id не найден " + id));
 
@@ -72,12 +70,21 @@ public class UserManagementService {
             user.setStatus(newStatus);
             userRepository.save(user);
         }
-
         return authMapper.mapToResponse(user);
     }
 
     public void deleteUserById(Long id) {
         userRepository.deleteById(id);
+    }
+
+    public List<AuthResponse> filterUsers(List<String> names,
+                                          List<String> roles,
+                                          List<LocalDate> createDate,
+                                          List<String> statuses) {
+        List<User> users = userRepository.userFilter(names, roles, createDate, statuses);
+        return users.stream()
+                .map(authMapper::mapToResponse)
+                .collect(Collectors.toList());
     }
 }
 
