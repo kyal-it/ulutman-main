@@ -1,10 +1,9 @@
 package com.ulutman.security.jwt;
 
+import org.springframework.stereotype.Service;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Encoders;
 import io.jsonwebtoken.security.Keys;
-import org.springframework.stereotype.Service;
-
 import javax.crypto.SecretKey;
 @Service
 public class JwtKeyGenerator {
