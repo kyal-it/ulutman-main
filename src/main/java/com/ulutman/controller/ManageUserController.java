@@ -1,7 +1,10 @@
 package com.ulutman.controller;
 
+import com.ulutman.mapper.AuthMapper;
 import com.ulutman.model.dto.AuthRequest;
 import com.ulutman.model.dto.AuthResponse;
+import com.ulutman.model.entities.User;
+import com.ulutman.model.enums.Role;
 import com.ulutman.model.enums.Status;
 import com.ulutman.service.ManageUserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,6 +30,9 @@ import java.util.List;
 public class ManageUserController {
 
     private final ManageUserService userManagementService;
+    private final AuthMapper authMapper;
+    private final ManageUserService manageUserService;
+
 
     @Operation(summary = "Manage  users: add user")
     @ApiResponse(responseCode = "201", description = "User added successfully")
@@ -67,7 +74,7 @@ public class ManageUserController {
         return ResponseEntity.ok(authResponse);
     }
 
-    @Operation(summary = "Manage user: filter users")
+        @Operation(summary = "Manage user: filter users")
     @ApiResponse(responseCode = "201", description = "Users successfully filtered")
     @GetMapping("/filter")
     public ResponseEntity<List<AuthResponse>> filterUsers(
@@ -78,7 +85,18 @@ public class ManageUserController {
 
         List<AuthResponse> responses = userManagementService.filterUsers(names, roles, createDate, statuses);
         return ResponseEntity.ok(responses);
-}
+    }
+//    @Operation(summary = "Manage user: filter users")
+//    @ApiResponse(responseCode = "201", description = "Users successfully filtered")
+//    @GetMapping("/filter")
+//    public List<AuthResponse> filterUsers(
+//            @RequestParam(required = false) String namePrefix,
+//            @RequestParam(required = false) List<String> roles,
+//            @RequestParam(required = false) List<LocalDate> createDate,
+//            @RequestParam(required = false) List<String> statuses ) {
+//
+//        return manageUserService.filterUsers(namePrefix, roles, createDate, statuses);
+//    }
 
     @Operation(summary = "Manage users: reset filters users")
     @ApiResponse(responseCode = "201", description = "Users filters successfully reset")
