@@ -77,7 +77,8 @@ public class ManageUserService {
         userRepository.deleteById(id);
     }
 
-    public List<AuthResponse> filterUsers(List<String> names,
+
+        public List<AuthResponse> filterUsers(List<String> names,
                                           List<String> roles,
                                           List<LocalDate> createDate,
                                           List<String> statuses) {
@@ -86,7 +87,15 @@ public class ManageUserService {
                 .map(authMapper::mapToResponse)
                 .collect(Collectors.toList());
     }
+
+//    public List<AuthResponse> filterUsers(String namePrefix, List<String> roles, List<LocalDate> createDate, List<String> statuses) {
+//        List<User> attribute= userRepository.userFilter(namePrefix, roles, createDate, statuses);
+//        return attribute.stream().map(authMapper::mapToResponse).collect(Collectors.toList());
+//    }
+
 }
+
+
 
 
 
