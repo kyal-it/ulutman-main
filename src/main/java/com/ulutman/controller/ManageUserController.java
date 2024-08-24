@@ -3,7 +3,6 @@ package com.ulutman.controller;
 import com.ulutman.mapper.AuthMapper;
 import com.ulutman.model.dto.AuthRequest;
 import com.ulutman.model.dto.AuthResponse;
-import com.ulutman.model.entities.User;
 import com.ulutman.model.enums.Role;
 import com.ulutman.model.enums.Status;
 import com.ulutman.service.ManageUserService;
@@ -19,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,7 +27,6 @@ import java.util.stream.Collectors;
 @SecurityRequirement(name = "Authorization")
 public class ManageUserController {
 
-    private final ManageUserService userManagementService;
     private final AuthMapper authMapper;
     private final ManageUserService manageUserService;
 
@@ -38,7 +35,7 @@ public class ManageUserController {
     @ApiResponse(responseCode = "201", description = "User added successfully")
     @PostMapping("/addUsers")
     public ResponseEntity<AuthResponse> save(@RequestBody AuthRequest authRequest) {
-        AuthResponse response = userManagementService.save(authRequest);
+        AuthResponse response = manageUserService.save(authRequest);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
@@ -46,14 +43,14 @@ public class ManageUserController {
     @ApiResponse(responseCode = "201", description = "Return list if users")
     @GetMapping("/getAll")
     public List<AuthResponse> getAll() {
-        return userManagementService.getAllUsers();
+        return manageUserService.getAllUsers();
     }
 
     @Operation(summary = "Manage  users: get user by Id")
     @ApiResponse(responseCode = "201", description = "User found")
     @GetMapping("/getById/{id}")
     public AuthResponse getById(@PathVariable Long id) {
-        return userManagementService.getUserById(id);
+        return manageUserService.getUserById(id);
     }
 
 
@@ -61,7 +58,7 @@ public class ManageUserController {
     @ApiResponse(responseCode = "201", description = "Deleted user by id successfully")
     @DeleteMapping("/deleteById{id}")
     public String deleteById(@PathVariable Long id) {
-        userManagementService.deleteUserById(id);
+        manageUserService.deleteUserById(id);
         return "Пользователь успешно удален";
     }
 
@@ -70,38 +67,30 @@ public class ManageUserController {
     @PutMapping("/{id}/status")
     public ResponseEntity<AuthResponse> updateUserStatus(@PathVariable Long id,
                                                          @RequestParam Status newStatus) {
-        AuthResponse authResponse = userManagementService.updateUserStatus(id, newStatus);
+        AuthResponse authResponse = manageUserService.updateUserStatus(id, newStatus);
         return ResponseEntity.ok(authResponse);
     }
 
-        @Operation(summary = "Manage user: filter users")
+    @Operation(summary = "Manage user: filter by name")
+    @ApiResponse(responseCode = "201", description = "Users  by name successfully filtered")
+    @GetMapping("/name/filter")
+    public List<AuthResponse> filterUsers(@RequestParam(required = false) String name) {
+        return manageUserService.filterUsersByName(name);
+    }
+
+    @Operation(summary = "Manage user: filter users")
     @ApiResponse(responseCode = "201", description = "Users successfully filtered")
     @GetMapping("/filter")
-    public ResponseEntity<List<AuthResponse>> filterUsers(
-            @RequestParam(value = "name", required = false) List<String> names,
-            @RequestParam(value = "role", required = false) List<String> roles,
-            @RequestParam(value = "createDate", required = false) List<LocalDate> createDate,
-            @RequestParam(value = "status", required = false) List<String> statuses) {
-
-        List<AuthResponse> responses = userManagementService.filterUsers(names, roles, createDate, statuses);
-        return ResponseEntity.ok(responses);
+    public List<AuthResponse> filterUsers(@RequestParam(required = false) List<Role> roles,
+                                          @RequestParam(required = false) List<LocalDate> createDate,
+                                          @RequestParam(required = false) List<Status> statuses) {
+        return manageUserService.filterUsers(roles, createDate, statuses);
     }
-//    @Operation(summary = "Manage user: filter users")
-//    @ApiResponse(responseCode = "201", description = "Users successfully filtered")
-//    @GetMapping("/filter")
-//    public List<AuthResponse> filterUsers(
-//            @RequestParam(required = false) String namePrefix,
-//            @RequestParam(required = false) List<String> roles,
-//            @RequestParam(required = false) List<LocalDate> createDate,
-//            @RequestParam(required = false) List<String> statuses ) {
-//
-//        return manageUserService.filterUsers(namePrefix, roles, createDate, statuses);
-//    }
 
     @Operation(summary = "Manage users: reset filters users")
     @ApiResponse(responseCode = "201", description = "Users filters successfully reset")
     @GetMapping("/resetFilter")
     public List<AuthResponse> resetFilter() {
-        return userManagementService.getAllUsers();
+        return manageUserService.getAllUsers();
     }
 }

@@ -18,29 +18,18 @@ public interface UserRepository extends JpaRepository<User, Long> {
     Optional<User> findByEmail(@Param("email") String email);
 
     @Query("""
-             SELECT user FROM User user WHERE
-              (:names IS NULL OR LOWER(user.name) LIKE (:names))
-            AND (:roles IS NULL OR user.role IN (:roles))
-            AND (:createDate IS NULL OR user.createDate IN (:createDate))
-            AND (:statuses IS NULL OR LOWER(user.status) IN (:statuses))
-             """)
-    List<User> userFilter(@Param("names") List<String> names,
-                          @Param("roles") List<String> roles,
+            SELECT user FROM User user WHERE
+            (:names IS NULL OR LOWER(user.name) LIKE LOWER(CONCAT(:names, '%')))
+            """)
+    List<User> userFilterByName(@Param("names") String names);
+
+    @Query("""
+            SELECT user FROM User user WHERE
+            (:roles IS NULL OR user.role IN :roles) AND
+            (:statuses IS NULL OR user.status IN :statuses) AND
+            (:createDate IS NULL OR user.createDate IN :createDate)
+            """)
+    List<User> userFilter(@Param("roles") List<Role> roles,
                           @Param("createDate") List<LocalDate> createDate,
-                          @Param("statuses") List<String> statuses);
-
-
-//    @Query("""
-//    SELECT user FROM User user WHERE
-//    (:names IS NULL OR LOWER(user.name) LIKE LOWER(CONCAT(:names, '%')))
-//    AND (:roles IS NULL OR user.role IN (:roles))
-//    AND (:createDate IS NULL OR user.createDate IN (:createDate))
-//    AND (:statuses IS NULL OR LOWER(user.status) IN (:statuses))
-//    """)
-//    List<User> userFilter(@Param("names") String names,
-//                          @Param("roles") List<String> roles,
-//                          @Param("createDate") List<LocalDate> createDate,
-//                          @Param("statuses") List<String> statuses);
-
-
+                          @Param("statuses") List<Status> statuses);
 }
