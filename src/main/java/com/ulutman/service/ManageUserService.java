@@ -77,22 +77,41 @@ public class ManageUserService {
         userRepository.deleteById(id);
     }
 
+    public List<AuthResponse> filterUsersByName(String name) {
 
-        public List<AuthResponse> filterUsers(List<String> names,
-                                          List<String> roles,
-                                          List<LocalDate> createDate,
-                                          List<String> statuses) {
-        List<User> users = userRepository.userFilter(names, roles, createDate, statuses);
-        return users.stream()
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Имя не может быть пустым или содержать только пробелы.");
+        }
+
+        name = name.toLowerCase() + "%";
+
+        return userRepository.userFilterByName(name).stream()
                 .map(authMapper::mapToResponse)
                 .collect(Collectors.toList());
     }
 
-//    public List<AuthResponse> filterUsers(String namePrefix, List<String> roles, List<LocalDate> createDate, List<String> statuses) {
-//        List<User> attribute= userRepository.userFilter(namePrefix, roles, createDate, statuses);
-//        return attribute.stream().map(authMapper::mapToResponse).collect(Collectors.toList());
-//    }
+    public List<AuthResponse> filterUsers(List<Role> roles,
+                                          List<LocalDate> createDate,
+                                          List<Status> statuses) {
 
+        if (roles != null && roles.stream().anyMatch(role -> role == null || role.toString().trim().isEmpty())) {
+            throw new IllegalArgumentException("Роли не могут содержать нулевых или пустых значений.");
+        }
+
+        if (createDate != null && createDate.stream().anyMatch(date -> date == null)) {
+            throw new IllegalArgumentException("Дата создания не может содержать нулевых значений.");
+        }
+
+        if (statuses != null && statuses.stream().anyMatch(status -> status == null || status.toString().trim().isEmpty())) {
+            throw new IllegalArgumentException("Статусы не могут содержать нулевых или пустых значений.");
+        }
+
+        List<User> users = userRepository.userFilter(roles, createDate, statuses);
+
+        return users.stream()
+                .map(authMapper::mapToResponse)
+                .collect(Collectors.toList());
+    }
 }
 
 
