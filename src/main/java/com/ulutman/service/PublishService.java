@@ -40,16 +40,23 @@ public class PublishService {
             throw new IllegalArgumentException("Неверная категория");
         }
 
-        // Маппинг PublishRequest в Publish
-        Publish publish = this.publishMapper.mapToEntity(publishRequest);
+        Publish publish = publishMapper.mapToEntity(publishRequest);
 
-        // Найти пользователя по ID из PublishRequest
         User user = userRepository.findById(publishRequest.getUserId())
-                .orElseThrow(() -> new RuntimeException("Пользователь не найден"));
+                .orElseThrow(() -> new RuntimeException("Пользователь не найден"+ publishRequest.getUserId()));
         publish.setUser(user);
+        publish.setCategoryStatus(CategoryStatus.АКТИВНО);
 
-        publishRepository.save(publish);
-        return this.publishMapper.mapToResponse(publish);
+        Publish savedPublish = publishRepository.save(publish);
+
+
+        Integer numberOfPublications = getNumberOfPublications(user.getId());
+
+        return publishMapper.mapToResponse(savedPublish);
+    }
+
+    public int getNumberOfPublications(Long userId) {
+        return publishRepository.findAllByUserId(userId).size();
     }
 
     public List<PublishResponse> getAll() {
@@ -59,10 +66,9 @@ public class PublishService {
     }
 
     public PublishResponse findById(Long id) {
-        Publish publish = (Publish) this.publishRepository.findById(id).orElseThrow(() -> {
-            return new EntityNotFoundException("Публикация по идентификатору " + id + " не найдена");
-        });
-        return this.publishMapper.mapToResponse(publish);
+        Publish publish = publishRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Публикация по идентификатору " + id + " не найдена"));
+        return publishMapper.mapToResponse(publish);
     }
 
     public PublishResponse updatePublish(Long id, PublishRequest publishRequest) {

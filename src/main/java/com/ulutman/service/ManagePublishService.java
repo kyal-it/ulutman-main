@@ -86,13 +86,4 @@ public class ManagePublishService {
         log.info("Публикация  по идентификатору" + productId + " успешна удалена");
     }
 
-    public List<PublishResponse> filterPublish(List<String> descriptions,
-                                               List<String> categories,
-                                               List<LocalDate> createDate,
-                                               List<String> publishStatuses) {
-        List<Publish> publishes = publishRepository.publishFilter(descriptions, categories, createDate, publishStatuses);
-        return publishes.stream()
-                .map(publishMapper::mapToResponse)
-                .collect(Collectors.toList());
-    }
 }

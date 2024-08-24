@@ -5,11 +5,13 @@ import com.ulutman.model.dto.PublishRequest;
 import com.ulutman.model.dto.PublishResponse;
 import com.ulutman.model.entities.Publish;
 import com.ulutman.model.entities.User;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 
 @Component
+@RequiredArgsConstructor
 public class PublishMapper {
 
     public Publish mapToEntity(PublishRequest publishRequest) {

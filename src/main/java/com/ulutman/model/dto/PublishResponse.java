@@ -18,6 +18,7 @@ public class PublishResponse {
     String phoneNumber;
     String image;
     Category category;
+    Integer numberOfPublications;
     Subcategory subcategory;
     Bank bank;
     PublishStatus publishStatus;

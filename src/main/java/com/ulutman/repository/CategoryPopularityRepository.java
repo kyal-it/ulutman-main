@@ -11,4 +11,5 @@ import java.util.Optional;
 public interface CategoryPopularityRepository extends JpaRepository<CategoryPopularity, Long> {
 
     Optional<CategoryPopularity> findByCategory(Category category);
+
 }
