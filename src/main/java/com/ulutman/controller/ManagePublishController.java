@@ -1,6 +1,5 @@
 package com.ulutman.controller;
 
-import com.ulutman.model.dto.AuthResponse;
 import com.ulutman.model.dto.PublishRequest;
 import com.ulutman.model.dto.PublishResponse;
 import com.ulutman.model.enums.PublishStatus;
@@ -62,18 +61,6 @@ public class ManagePublishController {
         return "Публикация успешно удалена";
     }
 
-    @Operation(summary = "Manage  publishes: filter publishes")
-    @ApiResponse(responseCode = "201", description = "Publishes successfully filtered")
-    @GetMapping("/filter")
-    public ResponseEntity<List<PublishResponse>> filterUsers(
-            @RequestParam(value = "description", required = false) List<String> descriptions,
-            @RequestParam(value = "category", required = false) List<String> categories ,
-            @RequestParam(value = "createDate", required = false) List<LocalDate> createDate,
-            @RequestParam(value = "publishStatus", required = false) List<String> publishStatuses) {
-
-        List<PublishResponse> responses = managePublicationsService.filterPublish(descriptions,categories, createDate, publishStatuses);
-        return ResponseEntity.ok(responses);
-    }
 
     @Operation(summary = "Manage publishes: reset filters publishes")
     @ApiResponse(responseCode = "201", description = "Publishes filters successfully reset")

@@ -14,6 +14,8 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserPublishesResponse {
 
+    Integer numberOfPublications;
     AuthResponse authResponse;
     List<PublishResponse> publishResponses;
+
 }

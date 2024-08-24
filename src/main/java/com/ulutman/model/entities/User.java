@@ -35,6 +35,8 @@ public class User implements UserDetails {
     String password;
 
     String confirmPassword;
+    @Transient
+    int numberOfPublications;
 
     @Enumerated(EnumType.STRING)
     Role role;
