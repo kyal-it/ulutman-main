@@ -1,6 +1,5 @@
 package com.ulutman.controller;
 
-import com.ulutman.mapper.AuthMapper;
 import com.ulutman.model.dto.AuthRequest;
 import com.ulutman.model.dto.AuthResponse;
 import com.ulutman.model.enums.Role;
@@ -27,7 +26,6 @@ import java.util.List;
 @SecurityRequirement(name = "Authorization")
 public class ManageUserController {
 
-    private final AuthMapper authMapper;
     private final ManageUserService manageUserService;
 
 

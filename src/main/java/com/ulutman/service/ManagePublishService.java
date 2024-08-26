@@ -6,19 +6,17 @@ import com.ulutman.mapper.PublishMapper;
 import com.ulutman.model.dto.AuthResponse;
 import com.ulutman.model.dto.PublishRequest;
 import com.ulutman.model.dto.PublishResponse;
-import com.ulutman.model.entities.Publish;;
-import com.ulutman.model.entities.User;
+import com.ulutman.model.entities.Publish;
+import com.ulutman.model.enums.Category;
 import com.ulutman.model.enums.PublishStatus;
 import com.ulutman.repository.PublishRepository;
+import com.ulutman.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDate;
@@ -35,6 +33,7 @@ public class ManagePublishService {
     private final PublishRepository publishRepository;
     private final AuthMapper authMapper;
     private final PublishService publishService;
+    private final UserRepository userRepository;
 
     public List<PublishResponse> getAllPublish() {
         return publishRepository.findAll().stream().map(publishMapper::mapToResponse).collect(Collectors.toList());
@@ -64,13 +63,6 @@ public class ManagePublishService {
         return publishMapper.mapToResponse(publish);
     }
 
-//    @PostMapping("/create/{userId}")
-//    public ResponseEntity<Publish> createPublish(@PathVariable Long userId, @RequestBody Publish publish) {
-//        Publish createdPublish = publishService.createPublish(userId, publish);
-//        return ResponseEntity.ok(createdPublish);
-//    }
-
-    // Метод для получения всех публикаций пользователя
     public List<PublishResponse> getAllPublishesByUser(Long userId) {
         List<Publish> publishes = publishRepository.findAllByUserId(userId);
         return publishes.stream()
@@ -86,4 +78,40 @@ public class ManagePublishService {
         log.info("Публикация  по идентификатору" + productId + " успешна удалена");
     }
 
+    public List<AuthResponse> filterUsersByName(String name) {
+
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Имя не может быть пустым или содержать только пробелы.");
+        }
+
+        name = name.toLowerCase() + "%";
+
+        return userRepository.userFilterByName(name).stream()
+                .map(authMapper::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    public List<PublishResponse> filterPublishes(List<Category> categories,
+                                                 List<PublishStatus> publishStatuses,
+                                                 List<LocalDate> createDates) {
+
+        if (categories != null && categories.stream().anyMatch(category -> category == null)) {
+            throw new IllegalArgumentException("Категории не могут содержать нулевых значений.");
+        }
+
+        if (publishStatuses != null && publishStatuses.stream().anyMatch(status -> status == null)) {
+            throw new IllegalArgumentException("Статусы публикаций не могут содержать нулевых значений.");
+        }
+
+        if (createDates != null && createDates.stream().anyMatch(date -> date == null)) {
+            throw new IllegalArgumentException("Даты создания не могут содержать нулевых значений.");
+        }
+
+        List<Publish> publishes = publishRepository.filterPublishes(categories, publishStatuses, createDates);
+
+        // Преобразование списка Publish в список PublishResponse
+        return publishes.stream()
+                .map(publishMapper::mapToResponse)
+                .collect(Collectors.toList());
+    }
 }
