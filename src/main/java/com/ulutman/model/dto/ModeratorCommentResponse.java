@@ -16,11 +16,14 @@ import java.time.LocalDate;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ModeratorCommentResponse {
 
-
     Long commentId;
+
     String username;
+
     String commentContent;
+
     LocalDate createDate;
+
     ModeratorStatus moderatorStatus;
 
     public ModeratorCommentResponse(Long commentId, String username, String content, LocalDate createDate, ModeratorStatus moderatorStatus) {

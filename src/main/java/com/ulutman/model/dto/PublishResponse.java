@@ -11,18 +11,32 @@ import java.time.LocalDate;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PublishResponse {
+
     Long id;
+
     String description;
+
     Metro metro;
+
     String address;
+
     String phoneNumber;
+
     String image;
+
     Category category;
+
     Integer numberOfPublications;
+
     Subcategory subcategory;
+
     Bank bank;
+
     PublishStatus publishStatus;
+
     LocalDate createDate;
+
     AuthResponse user;
+
     CategoryStatus categoryStatus;
 }

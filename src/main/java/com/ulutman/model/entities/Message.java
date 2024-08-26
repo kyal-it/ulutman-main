@@ -18,9 +18,12 @@ public class Message {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+
     String content;
+
     @Enumerated(EnumType.STRING)
     ModeratorStatus moderatorStatus;
+
     @Column(name = "create_date")
     LocalDate createDate;
 

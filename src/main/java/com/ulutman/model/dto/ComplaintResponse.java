@@ -14,9 +14,14 @@ import java.time.LocalDate;
 public class ComplaintResponse {
 
     Long id;
+
     ComplaintType complaintType;
+
     String complaintContent;
+
     AuthResponse authResponse;
+
     LocalDate createDate;
+
     ComplaintStatus complaintStatus;
 }

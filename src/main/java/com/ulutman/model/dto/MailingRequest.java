@@ -15,11 +15,18 @@ import java.time.LocalDate;
 public class MailingRequest {
 
     String title;
+
     String message;
+
     MailingType mailingType;
+
     MailingStatus mailingStatus;
+
     String image;
+
     LocalDate promotionStartDate;
+
     LocalDate promotionEndDate;
+
     LocalDate createDate;
 }

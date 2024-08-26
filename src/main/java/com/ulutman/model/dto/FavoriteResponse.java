@@ -8,6 +8,8 @@ import lombok.Setter;
 @Getter
 @Builder
 public class FavoriteResponse {
+
     Long id;
+
     PublishResponse publishResponse;
 }

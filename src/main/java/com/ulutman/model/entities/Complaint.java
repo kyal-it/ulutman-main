@@ -22,11 +22,15 @@ public class Complaint {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+
     @Enumerated(EnumType.STRING)
     ComplaintType complaintType;
+
     @Enumerated(EnumType.STRING)
     ComplaintStatus complaintStatus;
+
     String ComplaintContent;
+
     @Column(name = "create_date")
     LocalDate createDate;
 

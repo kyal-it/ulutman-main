@@ -7,7 +7,6 @@ import static com.ulutman.model.enums.Subcategory.*;
 
 public enum Category {
 
-
     WORK {
         @Override
         public List<Subcategory> getSubcategories() {

@@ -24,17 +24,25 @@ public class Mailing {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+
     String title;
+
     @Enumerated(EnumType.STRING)
     MailingType mailingType;
+
     @Enumerated(EnumType.STRING)
     MailingStatus mailingStatus;
+
     String message;
+
     String image;
+
     @Column(name = "promotion_start_date")
     LocalDate promotionStartDate;
+
     @Column(name = "promotion_end_date")
     LocalDate promotionEndDate;
+
     LocalDate createDate;
 
     @ManyToMany(mappedBy = "mailings")

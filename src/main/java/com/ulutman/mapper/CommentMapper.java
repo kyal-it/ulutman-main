@@ -1,6 +1,5 @@
 package com.ulutman.mapper;
 
-
 import com.ulutman.model.dto.CommentRequest;
 import com.ulutman.model.dto.CommentResponse;
 import com.ulutman.model.entities.Comment;

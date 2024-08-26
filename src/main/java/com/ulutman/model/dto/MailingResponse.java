@@ -17,13 +17,20 @@ import java.time.LocalDate;
 public class MailingResponse {
 
     Long id;
-    String title;
-    String message;
-    MailingType mailingType;
-    MailingStatus mailingStatus;
-    String image;
-    LocalDate promotionStartDate;
-    LocalDate promotionEndDate;
-    LocalDate createDate;
 
+    String title;
+
+    String message;
+
+    MailingType mailingType;
+
+    MailingStatus mailingStatus;
+
+    String image;
+
+    LocalDate promotionStartDate;
+
+    LocalDate promotionEndDate;
+
+    LocalDate createDate;
 }

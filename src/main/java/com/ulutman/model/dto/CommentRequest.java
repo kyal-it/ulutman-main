@@ -12,7 +12,8 @@ import lombok.experimental.FieldDefaults;
 public class CommentRequest {
 
     Long userId;
-    String content;
-    ModeratorStatus moderatorStatus;
 
+    String content;
+
+    ModeratorStatus moderatorStatus;
 }
