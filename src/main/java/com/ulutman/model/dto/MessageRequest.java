@@ -12,6 +12,8 @@ import lombok.experimental.FieldDefaults;
 public class MessageRequest {
 
     Long userId;
+
     String content;
+
     ModeratorStatus moderatorStatus;
 }

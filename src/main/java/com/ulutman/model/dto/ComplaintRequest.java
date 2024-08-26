@@ -13,7 +13,10 @@ import lombok.experimental.FieldDefaults;
 public class ComplaintRequest {
 
     ComplaintType complaintType;
+
     String complaintContent;
+
     Long userId;
+
     ComplaintStatus complaintStatus;
 }

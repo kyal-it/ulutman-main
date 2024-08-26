@@ -43,5 +43,4 @@ public class AuthRequest {
 
     @CreatedDate
     LocalDate createDate;
-
 }

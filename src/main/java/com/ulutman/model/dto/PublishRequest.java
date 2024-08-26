@@ -11,15 +11,26 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PublishRequest {
+
     String description;
+
     Metro metro;
+
     String address;
+
     String phoneNumber;
+
     String image;
-    Category category; //Enum
-    Subcategory subcategory; //Enum
+
+    Category category;
+
+    Subcategory subcategory;
+
     Bank bank;
+
     PublishStatus publishStatus;
+
     Long userId;
+
     CategoryStatus categoryStatus;
 }

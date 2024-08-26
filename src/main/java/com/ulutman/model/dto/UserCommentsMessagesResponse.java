@@ -15,8 +15,11 @@ import java.util.List;
 public class UserCommentsMessagesResponse {
 
     private Long userId;
+
     private String username;
+
     private List<ModeratorCommentResponse> comments;
+
     private List<ModeratorMessageResponse> messages;
 
     public UserCommentsMessagesResponse(Long userId, String username,

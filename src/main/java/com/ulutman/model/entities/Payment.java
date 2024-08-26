@@ -16,10 +16,15 @@ public class Payment {
             strategy = GenerationType.IDENTITY
     )
     private Long id;
+
     private String cardNumber;
+
     private String cvc;
+
     private int monthDate;
+
     private int yearDate;
+
     private String userName;
 
     @ManyToOne(cascade = CascadeType.ALL)

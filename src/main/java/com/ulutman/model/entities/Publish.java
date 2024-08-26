@@ -21,23 +21,35 @@ public class Publish {
             strategy = GenerationType.IDENTITY
     )
     private Long id;
+
     private String title;
+
     private String description;
+
     @Enumerated(EnumType.STRING)
     private Category category;
+
     @Enumerated(EnumType.STRING)
     private Subcategory subCategory;
+
     @Enumerated(EnumType.STRING)
     private Bank bank;
+
     @Enumerated(EnumType.STRING)
     private Metro metro;
+
     private String address;
+
     private String phone;
+
     private String image;
+
     @Column(name = "create_date")
     private LocalDate createDate;
+
     @Enumerated(EnumType.STRING)
     private PublishStatus publishStatus;
+
     @Enumerated(EnumType.STRING)
     private CategoryStatus categoryStatus;
 

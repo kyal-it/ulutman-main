@@ -15,7 +15,8 @@ import java.util.List;
 public class UserPublishesResponse {
 
     Integer numberOfPublications;
-    AuthResponse authResponse;
-    List<PublishResponse> publishResponses;
 
+    AuthResponse authResponse;
+
+    List<PublishResponse> publishResponses;
 }

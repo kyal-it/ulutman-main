@@ -14,10 +14,14 @@ import java.time.LocalDate;
 public class AuthResponse {
 
     Long id;
-    String name;
-    String email;
-    Role role;
-    Status status;
-    LocalDate createDate;
 
+    String name;
+
+    String email;
+
+    Role role;
+
+    Status status;
+
+    LocalDate createDate;
 }

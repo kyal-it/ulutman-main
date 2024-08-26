@@ -16,8 +16,12 @@ import java.time.LocalDate;
 public class MessageResponse {
 
     Long id;
+
     String username;
+
     String content;
+
     ModeratorStatus moderatorStatus;
+
     LocalDate createDate;
 }

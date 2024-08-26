@@ -13,8 +13,12 @@ import java.time.LocalDate;
 public class CommentResponse {
 
     Long id;
+
     String username;
+
     String content;
+
     ModeratorStatus moderatorStatus;
+
     LocalDate createDate;
 }
