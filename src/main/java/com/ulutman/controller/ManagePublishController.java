@@ -1,7 +1,9 @@
 package com.ulutman.controller;
 
+import com.ulutman.model.dto.AuthResponse;
 import com.ulutman.model.dto.PublishRequest;
 import com.ulutman.model.dto.PublishResponse;
+import com.ulutman.model.enums.Category;
 import com.ulutman.model.enums.PublishStatus;
 import com.ulutman.service.ManagePublishService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -42,7 +44,7 @@ public class ManagePublishController {
     @ApiResponse(responseCode = "201", description = "Updated publish status by id successfully")
     @PutMapping("/{id}/status")
     public ResponseEntity<PublishResponse> updateUserStatus(@PathVariable Long id,
-                                                         @RequestParam PublishStatus newStatus) {
+                                                            @RequestParam PublishStatus newStatus) {
         PublishResponse publishResponse = managePublicationsService.updatePublishStatus(id, newStatus);
         return ResponseEntity.ok(publishResponse);
     }
@@ -61,6 +63,24 @@ public class ManagePublishController {
         return "Публикация успешно удалена";
     }
 
+    @Operation(summary = "Manage publishes: filter by name")
+    @ApiResponse(responseCode = "201", description = "Users  by name successfully filtered")
+    @GetMapping("/name/filter")
+    public List<AuthResponse> filterUsers(@RequestParam(required = false) String name) {
+        return managePublicationsService.filterUsersByName(name);
+    }
+
+    @Operation(summary = "Manage publishes: filter publishes")
+    @ApiResponse(responseCode = "201", description = "Publish  successfully filtered")
+    @GetMapping("/filter")
+    public ResponseEntity<List<PublishResponse>> filterPublishes(
+            @RequestParam(value = "categories", required = false) List<Category> categories,
+            @RequestParam(value = "publishStatuses", required = false) List<PublishStatus> publishStatuses,
+            @RequestParam(value = "createDate", required = false) List<LocalDate> createDates
+    ) {
+        List<PublishResponse> publishResponses = managePublicationsService.filterPublishes(categories, publishStatuses, createDates);
+        return ResponseEntity.ok(publishResponses);
+    }
 
     @Operation(summary = "Manage publishes: reset filters publishes")
     @ApiResponse(responseCode = "201", description = "Publishes filters successfully reset")
