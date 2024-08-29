@@ -1,7 +1,7 @@
 version: "3.9"
 services:
   backend:
-    image: '#image'
+    image: 'ulutman'
     container_name: ulutman
     restart: always
     ports:
