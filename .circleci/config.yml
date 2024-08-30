@@ -20,7 +20,7 @@ jobs:
           command: |
             ssh -o "StrictHostKeyChecking=no" -i ./privateKey.pem ubuntu@$HOST '
             if [[ ! $(sudo docker -v) ]]; then
-                sudo apt-get update && sudo apt-get install -y docker.io
+               sudo snap install docker
             fi'
   build-image:
     docker:
