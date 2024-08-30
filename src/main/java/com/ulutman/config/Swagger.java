@@ -36,15 +36,15 @@ public class Swagger {
                 .type(SecurityScheme.Type.HTTP)
                 .scheme("Bearer");
     }
-    @Bean
-    public Docket api() {
-        return new Docket(DocumentationType.SWAGGER_2)
-                .select()
-                .apis(RequestHandlerSelectors.basePackage("ваш.пакет"))
-                .paths(PathSelectors.any())
-                .build()
-                .consumes(new HashSet<>(Arrays.asList("multipart/form-data")))
-                .produces(new HashSet<>(Arrays.asList("application/json")));
-    }
+//    @Bean
+//    public Docket api() {
+//        return new Docket(DocumentationType.SWAGGER_2)
+//                .select()
+//                .apis(RequestHandlerSelectors.basePackage("ваш.пакет"))
+//                .paths(PathSelectors.any())
+//                .build()
+//                .consumes(new HashSet<>(Arrays.asList("multipart/form-data")))
+//                .produces(new HashSet<>(Arrays.asList("application/json")));
+//    }
 
 }
