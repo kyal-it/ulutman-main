@@ -24,7 +24,7 @@ jobs:
             fi'
   build-image:
     docker:
-      - image: docker:27.2.0
+      - image: docker:20.10.9
     steps:
       - checkout
       - setup_remote_docker
