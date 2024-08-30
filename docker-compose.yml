@@ -9,7 +9,7 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: main
       SERVER_PORT: 8080
-      POSTGRES_DB: jdbc:postgresql://database:5432/newpostgres
+      POSTGRES_DB: jdbc:postgresql://database:5432/postgres
       POSTGRES_USER: ulutmanuser
       POSTGRES_PASSWORD: ulutman2024
   database:
