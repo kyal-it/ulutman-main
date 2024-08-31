@@ -51,7 +51,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> {
                     authorize
                             .requestMatchers("/api/manage/**",
-                                    "api/manage/users",
+                                    "/api/manage/users",
                                     "/api/manage/complaints/",
                                     "/api/manage/moderator",
                                     "/api/manage/publishes",
@@ -61,7 +61,7 @@ public class SecurityConfig {
                                     "/api/auth/sign-in",
                                     "/api/publishes/**", "/api/users/**").permitAll()
                             .requestMatchers("/swagger-ui/**",
-                                    "/swagger-resources/*",
+                                    "/swagger-resources/**",
                                     "/v3/api-docs/**", "/api/publishes/**", "/api/**").permitAll()
                             .requestMatchers("/api/auth/set-password", "/api/auth/forgot-password").permitAll()
                             .anyRequest().authenticated();
