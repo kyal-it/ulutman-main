@@ -1,8 +1,8 @@
 version: "3.9"
 services:
   backend:
-    image: 'ulutman'
-    container_name: ulutman
+    image: '#image'
+    container_name: ulutman1
     restart: always
     ports:
       - "80:8080"
