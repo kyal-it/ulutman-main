@@ -22,7 +22,7 @@
 //@RequiredArgsConstructor
 //public class SecurityConfig {
 //
-//    private final JwtFilter filter;
+//    private final JwtFilter jwtFilter;
 //
 //    @Bean
 //    public PasswordEncoder passwordEncoder() {
@@ -66,7 +66,7 @@
 //                            .requestMatchers("/api/auth/set-password", "/api/auth/forgot-password").permitAll()
 //                            .anyRequest().authenticated();
 //                })
-//                .addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
+//                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 //        return http.build();
 //    }
 //}
