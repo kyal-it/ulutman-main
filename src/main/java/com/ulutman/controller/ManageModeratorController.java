@@ -19,7 +19,7 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/manage/moderator")
-@Tag(name = "Auth")
+@Tag(name = "Manage Moderator")
 @SecurityRequirement(name = "Authorization")
 public class ManageModeratorController {
 
@@ -27,7 +27,7 @@ public class ManageModeratorController {
     private final CommentService commentService;
     private final MessageService messageService;
 
-    @Operation(summary = "Manage  moderators : get messages of user")
+    @Operation(summary = "Get comments of user")
     @ApiResponse(responseCode = "201", description = "Return list comments of user")
     @GetMapping("/users/{userId}/comments")
     public ResponseEntity<List<ModeratorCommentResponse>> getUserComments(@PathVariable Long userId) {
@@ -35,7 +35,7 @@ public class ManageModeratorController {
         return ResponseEntity.ok(responses);
     }
 
-    @Operation(summary = "Manage moderators: get messages of user")
+    @Operation(summary = "Get messages of user")
     @ApiResponse(responseCode = "201", description = "Return list messages of user")
     @GetMapping("/users/{userId}/messages")
     public ResponseEntity<List<ModeratorMessageResponse>> getUserMessages(@PathVariable Long userId) {
@@ -43,7 +43,7 @@ public class ManageModeratorController {
         return ResponseEntity.ok(responses);
     }
 
-    @Operation(summary = "Manage  moderators: get comments of user")
+    @Operation(summary = "Get comments and messages of user")
     @ApiResponse(responseCode = "201", description = "Return list  comments and messages of user")
     @GetMapping("/users/{userId}/details")
     public ResponseEntity<UserCommentsMessagesResponse> getUserCommentsAndMessages(@PathVariable Long userId) {
@@ -51,7 +51,7 @@ public class ManageModeratorController {
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "Manage moderators: update comment status")
+    @Operation(summary = "Update comment status")
     @ApiResponse(responseCode = "201", description = "Updated comment status successfully")
     @PutMapping("/{commentId}/status")
     public ResponseEntity<CommentResponse> updateCommentStatus(@PathVariable Long commentId, @RequestBody CommentRequest commentRequest) {
@@ -59,7 +59,7 @@ public class ManageModeratorController {
         return ResponseEntity.ok(updatedComment);
     }
 
-    @Operation(summary = "Manage moderators: update message status")
+    @Operation(summary = "Update message status")
     @ApiResponse(responseCode = "201", description = "Updated message status successfully")
     @PutMapping("/{messageId}/status")
     public ResponseEntity<MessageResponse> updateMessageStatus(@PathVariable Long messageId, @RequestBody MessageRequest messageRequest) {
@@ -67,7 +67,7 @@ public class ManageModeratorController {
         return ResponseEntity.ok(updatedMessage);
     }
 
-    @Operation(summary = "Manage moderators: filter comments")
+    @Operation(summary = "Filter comments")
     @ApiResponse(responseCode = "201", description = "Comments successfully filtered")
     @GetMapping("/comments/filter")
     public List<CommentResponse> filterComments(@RequestParam(value = "user", required = false) List<User> users,
@@ -77,7 +77,7 @@ public class ManageModeratorController {
         return manageModeratorService.getCommentsByFilters(users, content, createDates, moderatorStatuses);
     }
 
-    @Operation(summary = "Manage  moderators: filter messages")
+    @Operation(summary = "Filter messages")
     @ApiResponse(responseCode = "201", description = "Messages successfully filtered")
     @GetMapping("/message/filter")
     public List<MessageResponse> filterMessages(@RequestParam(value = "user", required = false) List<User> users,

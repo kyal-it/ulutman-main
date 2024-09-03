@@ -14,21 +14,21 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/manage/messages")
-@Tag(name = "Auth")
+@Tag(name = "Message")
 @SecurityRequirement(name = "Authorization")
 public class MessageController {
 
     private final MessageService messageService;
 
-    @Operation(summary = "Create message")
-    @ApiResponse(responseCode = "201", description = "Message created successfully")
+    @Operation(summary = "Create  a message")
+    @ApiResponse(responseCode = "201", description = "The message created successfully")
     @PostMapping("/add")
     public ResponseEntity<MessageResponse> addMessage(@RequestBody MessageRequest messageRequest) {
         MessageResponse messageResponse = messageService.addMessage(messageRequest);
         return ResponseEntity.ok(messageResponse);
     }
 
-    @Operation(summary = "Update message status")
+    @Operation(summary = "Update a message status")
     @ApiResponse(responseCode = "201", description = "Updated message status successfully")
     @PutMapping("/{messageId}/status")
     public ResponseEntity<MessageResponse> updateMessageStatus(@PathVariable Long messageId, @RequestBody MessageRequest messageRequest) {

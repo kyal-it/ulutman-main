@@ -15,7 +15,7 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api/dashboard/categories")
 @RequiredArgsConstructor
-@Tag(name = "Auth")
+@Tag(name = "Category popularity")
 @SecurityRequirement(name = "Authorization")
 public class CategoryPopularityController {
 

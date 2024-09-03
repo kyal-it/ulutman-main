@@ -17,14 +17,14 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/publishes")
-@Tag(name = "Auth")
+@Tag(name = "Publish")
 @SecurityRequirement(name = "Authorization")
 public class PublishController {
 
     private final PublishService publishService;
 
-    @Operation(summary = "Create publish")
-    @ApiResponse(responseCode = "201", description = "Publish created successfully")
+    @Operation(summary = "Create a publication")
+    @ApiResponse(responseCode = "201", description = "The publish created successfully")
     @PostMapping("/create")
     public ResponseEntity<PublishResponse> createPublish(@RequestBody PublishRequest publishRequest) {
         try {
@@ -37,7 +37,7 @@ public class PublishController {
         }
     }
 
-    @Operation(summary = "Publishes: get all publishes")
+    @Operation(summary = "Get all publications")
     @ApiResponse(responseCode = "201", description = "Return list of publishes")
     @GetMapping("/getAll")
     public ResponseEntity<List<PublishResponse>> getAllPublishes() {
@@ -45,23 +45,23 @@ public class PublishController {
         return ResponseEntity.ok(publishes);
     }
 
-    @Operation(summary = "Publishes: get publish by Id")
-    @ApiResponse(responseCode = "201", description = "Publish found")
+    @Operation(summary = "Get a publication by id")
+    @ApiResponse(responseCode = "201", description = "Publication found")
     @GetMapping("find/{id}")
     public PublishResponse findById(@PathVariable Long id) {
         return this.publishService.findById(id);
     }
 
-    @Operation(summary = "Publishes: update publish by Id")
-    @ApiResponse(responseCode = "201", description = "Updated publish by id successfully")
+    @Operation(summary = "Update a publication by id")
+    @ApiResponse(responseCode = "201", description = "Updated  the publication  by id successfully")
     @PutMapping("/update/{id}")
     public ResponseEntity<PublishResponse> updatePublish(@PathVariable Long id, @RequestBody PublishRequest publishRequest) {
         PublishResponse updatedPublish = publishService.updatePublish(id, publishRequest);
         return ResponseEntity.ok(updatedPublish);
     }
 
-    @Operation(summary = "Manage  publishes: delete publish by id")
-    @ApiResponse(responseCode = "201", description = "Deleted publish by id successfully")
+    @Operation(summary = "Delete a publication by id")
+    @ApiResponse(responseCode = "201", description = "Deleted the publication  by id successfully")
     @DeleteMapping(("/delete/{id}"))
     public String delete(@PathVariable("id") Long id) {
         this.publishService.deletePublish(id);
