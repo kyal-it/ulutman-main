@@ -18,14 +18,14 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/manage/complaints")
-@Tag(name = "Auth")
+@Tag(name = "Manage Complaint")
 @SecurityRequirement(name = "Authorization")
 public class ManageComplaintController {
 
     private final ManageComplaintService complaintService;
     private final ManageComplaintService manageComplaintService;
 
-    @Operation(summary = "Manage complaints: create complaint")
+    @Operation(summary = "Create a  complaint")
     @ApiResponse(responseCode = "201", description = "Complaint created successfully")
     @PostMapping("/create")
     public ResponseEntity<ComplaintResponse> createComplaint(@RequestBody ComplaintRequest complaintRequest) {
@@ -33,14 +33,14 @@ public class ManageComplaintController {
         return ResponseEntity.ok(response);
     }
 
-    @Operation(summary = "Manage complaints: get all complaints")
+    @Operation(summary = "Get all complaints")
     @ApiResponse(responseCode = "201", description = "Return list of complaints")
     @GetMapping("/getAll")
     public List<ComplaintResponse> getAll() {
         return complaintService.getAllComplaints();
     }
 
-    @Operation(summary = "Manage complaints: update complaint status")
+    @Operation(summary = "Update complaint status")
     @ApiResponse(responseCode = "201", description = "Updated complaint status successfully")
     @PutMapping("/{id}/status")
     public ResponseEntity<ComplaintResponse> updateComplaintStatus(@PathVariable Long id, @RequestBody ComplaintRequest complaintRequest) {
@@ -48,7 +48,7 @@ public class ManageComplaintController {
         return ResponseEntity.ok(updatedComplaint);
     }
 
-    @Operation(summary = "Manage complaints: filter complaints")
+    @Operation(summary = "Filter complaints")
     @ApiResponse(responseCode = "201", description = "Complaints successfully filtered")
     @GetMapping("/filter")
     public List<ComplaintResponse> filterComplaints(
@@ -60,7 +60,7 @@ public class ManageComplaintController {
         return manageComplaintService.getFilteredComplaints(users, complaintTypes, createDates, complaintStatuses);
     }
 
-    @Operation(summary = "Manage complaints: reset filters complaints")
+    @Operation(summary = "Reset filters complaints")
     @ApiResponse(responseCode = "201", description = "Complaints filters successfully reset")
     @GetMapping("/resetFilter")
     public List<ComplaintResponse> resetFilter() {

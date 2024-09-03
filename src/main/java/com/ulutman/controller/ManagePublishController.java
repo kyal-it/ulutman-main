@@ -20,28 +20,28 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/manage/publishes")
-@Tag(name = "Auth")
+@Tag(name = "Manage Publishes")
 @SecurityRequirement(name = "Authorization")
 public class ManagePublishController {
 
     private final ManagePublishService managePublicationsService;
 
-    @Operation(summary = "Manage  publishes: get all publishes")
+    @Operation(summary = "Get all publications")
     @ApiResponse(responseCode = "201", description = "Return list of publishes")
     @GetMapping("/getAll")
     public List<PublishResponse> getAll() {
         return managePublicationsService.getAllPublish();
     }
 
-    @Operation(summary = "Manage  publishes: update publish by Id")
-    @ApiResponse(responseCode = "201", description = "Updated publish by id successfully")
+    @Operation(summary = "Update a publications by id")
+    @ApiResponse(responseCode = "201", description = "Updated the publication  by id successfully")
     @PutMapping("/{id}/updateById")
     public PublishResponse updateById(@PathVariable Long id, @RequestBody PublishRequest publishRequest) {
         return managePublicationsService.updatePublish(id, publishRequest);
     }
 
-    @Operation(summary = "Manage  publishes: update publish status")
-    @ApiResponse(responseCode = "201", description = "Updated publish status by id successfully")
+    @Operation(summary = "Update a publication status")
+    @ApiResponse(responseCode = "201", description = "Updated the publication status by id successfully")
     @PutMapping("/{id}/status")
     public ResponseEntity<PublishResponse> updateUserStatus(@PathVariable Long id,
                                                             @RequestParam PublishStatus newStatus) {
@@ -49,29 +49,31 @@ public class ManagePublishController {
         return ResponseEntity.ok(publishResponse);
     }
 
+    @Operation(summary = "Get user publications")
+    @ApiResponse(responseCode = "201", description = "Return the list of the user's publications")
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<PublishResponse>> getPublishesByUserId(@PathVariable Long userId) {
         List<PublishResponse> publishes = managePublicationsService.getAllPublishesByUser(userId);
         return ResponseEntity.ok(publishes);
     }
 
-    @Operation(summary = "Manage  publishes: delete publish by id")
-    @ApiResponse(responseCode = "201", description = "Deleted publish by id successfully")
+    @Operation(summary = "Delete publication by id")
+    @ApiResponse(responseCode = "201", description = "Deleted the publication by id successfully")
     @DeleteMapping("/deleteById/{id}")
     public String deleteById(@PathVariable Long id) {
         managePublicationsService.deletePublish(id);
         return "Публикация успешно удалена";
     }
 
-    @Operation(summary = "Manage publishes: filter by name")
+    @Operation(summary = "Filter  users by name")
     @ApiResponse(responseCode = "201", description = "Users  by name successfully filtered")
     @GetMapping("/name/filter")
     public List<AuthResponse> filterUsers(@RequestParam(required = false) String name) {
         return managePublicationsService.filterUsersByName(name);
     }
 
-    @Operation(summary = "Manage publishes: filter publishes")
-    @ApiResponse(responseCode = "201", description = "Publish  successfully filtered")
+    @Operation(summary = "Filter publications")
+    @ApiResponse(responseCode = "201", description = "Publications  successfully filtered")
     @GetMapping("/filter")
     public ResponseEntity<List<PublishResponse>> filterPublishes(
             @RequestParam(value = "categories", required = false) List<Category> categories,
@@ -82,7 +84,7 @@ public class ManagePublishController {
         return ResponseEntity.ok(publishResponses);
     }
 
-    @Operation(summary = "Manage publishes: reset filters publishes")
+    @Operation(summary = "Reset filters publications")
     @ApiResponse(responseCode = "201", description = "Publishes filters successfully reset")
     @GetMapping("/resetFilter")
     public List<PublishResponse> resetFilter() {

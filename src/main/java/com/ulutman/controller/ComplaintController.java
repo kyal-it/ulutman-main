@@ -4,6 +4,10 @@ import com.ulutman.model.dto.ComplaintRequest;
 import com.ulutman.model.dto.ComplaintResponse;
 import com.ulutman.repository.ComplaintRepository;
 import com.ulutman.service.ComplaintService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,9 +18,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/users/complaints")
+@Tag(name = "Complaint")
+@SecurityRequirement(name = "Authorization")
 public class ComplaintController {
+
     private final ComplaintService complaintService;
-    private final ComplaintRepository complaintRepository;
+
+    @Operation(summary = "Create a complaint")
+    @ApiResponse(responseCode = "201", description = "The complaint created successfully")
     @PostMapping("/create")
     public ResponseEntity<ComplaintResponse> createComplaint(@RequestBody ComplaintRequest complaintRequest) {
         ComplaintResponse response = complaintService.createComplaint(complaintRequest);

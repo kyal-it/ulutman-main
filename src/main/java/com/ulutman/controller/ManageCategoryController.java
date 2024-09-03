@@ -8,6 +8,8 @@ import com.ulutman.service.ManageCategoryService;
 import com.ulutman.service.PublishService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -19,12 +21,14 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 @RequestMapping("/api/manage/category")
+@Tag(name = "Manage Category")
+@SecurityRequirement(name = "Authorization")
 public class ManageCategoryController {
 
     private final ManageCategoryService manageCategoryService;
     private final PublishService publishService;
 
-    @Operation(summary = "Manage  category: update user status")
+    @Operation(summary = "Update user status")
     @ApiResponse(responseCode = "201", description = "Updated category status successfully")
     @PutMapping("/{id}/categoryStatus")
     public ResponseEntity<PublishResponse> updateCategoryStatus(
@@ -35,19 +39,21 @@ public class ManageCategoryController {
         return ResponseEntity.ok(updatedPublish);
     }
 
-    @Operation(summary = "Manage category: get user publications ")
-    @ApiResponse(responseCode = "201", description = "Return list publications  of user")
+    @Operation(summary = "Get user publications ")
+    @ApiResponse(responseCode = "201", description = "Return the list of the user's publications")
     @GetMapping("/{userId}/publications")
     public UserPublishesResponse getUserWithPublications(@PathVariable Long userId) {
         return manageCategoryService.getUserWithPublications(userId);
     }
 
+    @Operation(summary = "Count user publications ")
+    @ApiResponse(responseCode = "201", description = "Return count of the user's publications")
     @GetMapping("/count/{userId}")
     public int getNumberOfPublications(@PathVariable Long userId) {
         return publishService.getNumberOfPublications(userId);
     }
 
-    @Operation(summary = "Manage category: filter ")
+    @Operation(summary = "Filter categories ")
     @ApiResponse(responseCode = "201", description = "category  successfully filtered")
     @GetMapping("/filter")
     public UserPublishesResponse getUserWithFilteredPublications(@RequestParam Long userId,
@@ -57,7 +63,7 @@ public class ManageCategoryController {
         return manageCategoryService.getUserWithFilteredPublications(userId, categories, categoryStatuses, minPublications);
     }
 
-    @Operation(summary = "Manage category: reset filters category")
+    @Operation(summary = "Reset filters categories")
     @ApiResponse(responseCode = "201", description = "Users filters successfully reset")
     @GetMapping("/resetFilter")
     public List<PublishResponse> resetFilter() {

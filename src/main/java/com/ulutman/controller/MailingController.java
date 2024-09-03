@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/api/mailing")
 @Slf4j
-@Tag(name = "Auth")
+@Tag(name = "Mailing")
 @SecurityRequirement(name = "Authorization")
 public class MailingController {
 
