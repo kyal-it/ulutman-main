@@ -4,6 +4,8 @@ import com.ulutman.model.dto.LoginResponse;
 import com.ulutman.model.entities.User;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+
 @Component
 public class LoginMapper {
 
@@ -11,6 +13,11 @@ public class LoginMapper {
         return LoginResponse.builder()
                 .token(token)
                 .roleName(user.getRole())
+                .userId(user.getId())
+                .name(user.getName())
+                .email(user.getEmail())
+                .status(user.getStatus())
+                .createDate(LocalDate.now())
                 .build();
     }
 }
