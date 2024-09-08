@@ -39,17 +39,4 @@ public class ComplaintService {
         Complaint savedComplaint = complaintRepository.save(complaint);
         return complaintMapper.mapToResponse(savedComplaint);
     }
-
-//    public ComplaintResponse createComplaint(ComplaintRequest complaintRequest) {
-//        Complaint complaint = new Complaint();
-//        complaint.setComplaintContent(complaintRequest.getComplaintContent());
-//        complaint.setComplaintType(complaintRequest.getComplaintType());
-//        complaint.setComplaintStatus(ComplaintStatus.ОЖИДАЕТ);
-//        complaint.setCreateDate(LocalDate.now());
-////
-////        Optional<User> user = userRepository.findById(complaintRequest.getUserId());
-////        user.ifPresent(complaint::setUser);
-////        Complaint savedComplaint = complaintRepository.save(complaint);
-//        return complaintMapper.mapToResponse(complaint);
-//    }
 }
