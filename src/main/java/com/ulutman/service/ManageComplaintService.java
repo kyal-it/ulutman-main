@@ -45,11 +45,9 @@ public class ManageComplaintService {
     }
 
     public List<ComplaintResponse> getAllComplaints() {
-        List<ComplaintResponse> complaintResponses = new ArrayList<>();
-        for (Complaint complaint : complaintRepository.findAll()) {
-            complaintResponses.add(complaintMapper.mapToResponse(complaint));
-        }
-        return complaintResponses;
+        return complaintRepository.findAll().stream()
+                .map(complaintMapper::mapToResponse)
+                .collect(Collectors.toList());
     }
 
     public ComplaintResponse updateComplaintStatus(Long complaintId, ComplaintRequest complaintRequest) {
@@ -80,7 +78,30 @@ public class ManageComplaintService {
             List<String> complaintTypes,
             List<LocalDate> createDates,
             List<String> complaintStatuses) {
+
+        // Проверка и замена пустых списков на null
+        users = (users == null || users.isEmpty()) ? null : users;
+        complaintTypes = (complaintTypes == null || complaintTypes.isEmpty()) ? null : complaintTypes;
+        createDates = (createDates == null || createDates.isEmpty()) ? null : createDates;
+        complaintStatuses = (complaintStatuses == null || complaintStatuses.isEmpty()) ? null : complaintStatuses;
+
+        // Выполнение фильтрации
         List<Complaint> complaintList = complaintRepository.complaintFilter(users, complaintTypes, createDates, complaintStatuses);
-        return complaintList.stream().map(complaintMapper::mapToResponse).collect(Collectors.toList());
+
+        // Маппинг и возврат результата
+        return complaintList.stream()
+                .map(complaintMapper::mapToResponse)
+                .collect(Collectors.toList());
     }
+
+
+
+//    public List<ComplaintResponse> getFilteredComplaints(
+//            List<User> users,
+//            List<String> complaintTypes,
+//            List<LocalDate> createDates,
+//            List<String> complaintStatuses) {
+//        List<Complaint> complaintList = complaintRepository.complaintFilter(users, complaintTypes, createDates, complaintStatuses);
+//        return complaintList.stream().map(complaintMapper::mapToResponse).collect(Collectors.toList());
+//    }
 }

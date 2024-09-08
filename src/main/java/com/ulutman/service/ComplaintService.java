@@ -22,6 +22,7 @@ import java.util.Optional;
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ComplaintService {
+
     private final UserRepository userRepository;
     private  final ComplaintRepository complaintRepository;
     private final ComplaintMapper complaintMapper;
@@ -32,10 +33,23 @@ public class ComplaintService {
         complaint.setComplaintType(complaintRequest.getComplaintType());
         complaint.setComplaintStatus(ComplaintStatus.ОЖИДАЕТ);
         complaint.setCreateDate(LocalDate.now());
-//
-//        Optional<User> user = userRepository.findById(complaintRequest.getUserId());
-//        user.ifPresent(complaint::setUser);
-//        Complaint savedComplaint = complaintRepository.save(complaint);
-        return complaintMapper.mapToResponse(complaint);
+
+        Optional<User> user = userRepository.findById(complaintRequest.getUserId());
+        user.ifPresent(complaint::setUser);
+        Complaint savedComplaint = complaintRepository.save(complaint);
+        return complaintMapper.mapToResponse(savedComplaint);
     }
+
+//    public ComplaintResponse createComplaint(ComplaintRequest complaintRequest) {
+//        Complaint complaint = new Complaint();
+//        complaint.setComplaintContent(complaintRequest.getComplaintContent());
+//        complaint.setComplaintType(complaintRequest.getComplaintType());
+//        complaint.setComplaintStatus(ComplaintStatus.ОЖИДАЕТ);
+//        complaint.setCreateDate(LocalDate.now());
+////
+////        Optional<User> user = userRepository.findById(complaintRequest.getUserId());
+////        user.ifPresent(complaint::setUser);
+////        Complaint savedComplaint = complaintRepository.save(complaint);
+//        return complaintMapper.mapToResponse(complaint);
+//    }
 }

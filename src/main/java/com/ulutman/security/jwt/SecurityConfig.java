@@ -52,7 +52,10 @@ public class SecurityConfig {
                                         "/",
                                         "/api/auth/**",
                                         "/swagger-ui/**",
-                                        "/v3/api-docs/**","/api/publishes/**","/api/users/**",
+                                        "/v3/api-docs/**",
+                                        "/api/publishes/**",
+                                        "/api/users/**",
+                                        "/api/users/complaints/**",
                                         "/api/auth/set-password",
                                         "/api/auth/forgot-password")
                                 .permitAll()
