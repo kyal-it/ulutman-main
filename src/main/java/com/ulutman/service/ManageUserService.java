@@ -91,14 +91,14 @@ public class ManageUserService {
     }
 
     public List<AuthResponse> filterUsers(List<Role> roles,
-                                          List<LocalDate> createDate,
+                                          List<LocalDate> createDates,
                                           List<Status> statuses) {
 
         if (roles != null && roles.stream().anyMatch(role -> role == null || role.toString().trim().isEmpty())) {
             throw new IllegalArgumentException("Роли не могут содержать нулевых или пустых значений.");
         }
 
-        if (createDate != null && createDate.stream().anyMatch(date -> date == null)) {
+        if (createDates != null && createDates.stream().anyMatch(date -> date == null)) {
             throw new IllegalArgumentException("Дата создания не может содержать нулевых значений.");
         }
 
@@ -106,7 +106,7 @@ public class ManageUserService {
             throw new IllegalArgumentException("Статусы не могут содержать нулевых или пустых значений.");
         }
 
-        List<User> users = userRepository.userFilter(roles, createDate, statuses);
+        List<User> users = userRepository.userFilter(roles, createDates, statuses);
 
         return users.stream()
                 .map(authMapper::mapToResponse)

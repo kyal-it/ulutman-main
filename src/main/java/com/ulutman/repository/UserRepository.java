@@ -28,9 +28,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
             SELECT user FROM User user WHERE
             (:roles IS NULL OR user.role IN :roles) AND
             (:statuses IS NULL OR user.status IN :statuses) AND
-            (:createDate IS NULL OR user.createDate IN :createDate)
+            (:createDates IS NULL OR user.createDate IN :createDates)
             """)
     List<User> userFilter(@Param("roles") List<Role> roles,
-                          @Param("createDate") List<LocalDate> createDate,
+                          @Param("createDates") List<LocalDate> createDates,
                           @Param("statuses") List<Status> statuses);
 }
