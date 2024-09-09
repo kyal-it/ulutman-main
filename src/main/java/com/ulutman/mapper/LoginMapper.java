@@ -17,7 +17,7 @@ public class LoginMapper {
                 .name(user.getName())
                 .email(user.getEmail())
                 .status(user.getStatus())
-                .createDate(LocalDate.now())
+                .createDate(user.getCreateDate())
                 .build();
     }
 }

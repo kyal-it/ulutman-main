@@ -24,7 +24,7 @@ public class CommentMapper {
                 .content(comment.getContent())
                 .moderatorStatus(comment.getModeratorStatus())
                 .username(comment.getUser().getUsername())
-                .createDate(LocalDate.now())
+                .createDate(comment.getCreateDate())
                 .build();
     }
 }
