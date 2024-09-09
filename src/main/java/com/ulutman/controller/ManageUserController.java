@@ -80,9 +80,9 @@ public class ManageUserController {
     @ApiResponse(responseCode = "201", description = "Users successfully filtered")
     @GetMapping("/filter")
     public List<AuthResponse> filterUsers(@RequestParam(required = false) List<Role> roles,
-                                          @RequestParam(required = false) List<LocalDate> createDate,
+                                          @RequestParam(required = false) List<LocalDate> createDates,
                                           @RequestParam(required = false) List<Status> statuses) {
-        return manageUserService.filterUsers(roles, createDate, statuses);
+        return manageUserService.filterUsers(roles, createDates, statuses);
     }
 
     @Operation(summary = "Reset filters users")
