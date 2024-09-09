@@ -26,6 +26,7 @@ public class PublishMapper {
         publish.setBank(publishRequest.getBank());
         publish.setPublishStatus(publishRequest.getPublishStatus());
         publish.setCategory(publishRequest.getCategory());
+        publish.setCreateDate(LocalDate.now());
         return publish;
     }
 
@@ -41,7 +42,7 @@ public class PublishMapper {
                 .image(publish.getImage())
                 .bank(publish.getBank())
                 .publishStatus(publish.getPublishStatus())
-                .createDate(LocalDate.now())
+                .createDate(publish.getCreateDate())
                 .categoryStatus(publish.getCategoryStatus())
                 .publishStatus(publish.getPublishStatus())
                 .user(mapUserToAuthResponse(publish.getUser()))
@@ -57,6 +58,9 @@ public class PublishMapper {
                 .id(user.getId())
                 .name(user.getName())
                 .email(user.getEmail())
+                .role(user.getRole())
+                .status(user.getStatus())
+                .createDate(user.getCreateDate())
                 .build();
     }
 }

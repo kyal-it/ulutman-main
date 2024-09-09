@@ -30,7 +30,7 @@ public class MessageMapper {
                 .content(message.getContent())
                 .username(message.getUser().getUsername())
                 .moderatorStatus(message.getModeratorStatus())
-                .createDate(LocalDate.now())
+                .createDate(message.getCreateDate())
                 .build();
     }
 }

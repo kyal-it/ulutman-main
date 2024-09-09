@@ -33,7 +33,7 @@ public class MailingMapper {
                 .mailingStatus(mailing.getMailingStatus())
                 .promotionStartDate(mailing.getPromotionStartDate())
                 .promotionEndDate(mailing.getPromotionEndDate())
-                .createDate(LocalDate.now())
+                .createDate(mailing.getCreateDate())
                 .build();
     }
 }
