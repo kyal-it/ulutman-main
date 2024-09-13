@@ -14,7 +14,7 @@ public class CommentResponse {
 
     Long id;
 
-    String username;
+    AuthResponse authResponse;
 
     String content;
 

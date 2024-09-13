@@ -12,6 +12,8 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 public class CommentMapper {
 
+    private final AuthMapper authMapper;
+
     public Comment mapToEntity(CommentRequest commentRequest) {
         Comment comment = new Comment();
         comment.setContent(commentRequest.getContent());
@@ -23,8 +25,8 @@ public class CommentMapper {
                 .id(comment.getId())
                 .content(comment.getContent())
                 .moderatorStatus(comment.getModeratorStatus())
-                .username(comment.getUser().getUsername())
                 .createDate(comment.getCreateDate())
+                .authResponse(comment.getUser()!=null?authMapper.mapToResponse(comment.getUser()):null)
                 .build();
     }
 }

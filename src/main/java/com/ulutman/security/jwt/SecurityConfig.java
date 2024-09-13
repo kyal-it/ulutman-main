@@ -44,7 +44,7 @@ public class SecurityConfig {
                         authorizeHttpRequests
                                 .requestMatchers("/api/manage/**",
                                         "/api/manage/users",
-                                        "/api/manage/complaints/",
+                                        "/api/manage/complaints",
                                         "/api/manage/moderator",
                                         "/api/manage/publishes",
                                         "/api/mailing").hasAuthority("ADMIN")
@@ -55,7 +55,9 @@ public class SecurityConfig {
                                         "/v3/api-docs/**",
                                         "/api/publishes/**",
                                         "/api/users/**",
-                                        "/api/users/complaints/**",
+                                        "/api/users/messages",
+                                        "/api/users/comments",
+                                        "/api/users/complaints",
                                         "/api/auth/set-password",
                                         "/api/auth/forgot-password")
                                 .permitAll()

@@ -17,7 +17,7 @@ public class MessageResponse {
 
     Long id;
 
-    String username;
+    AuthResponse authResponse;
 
     String content;
 

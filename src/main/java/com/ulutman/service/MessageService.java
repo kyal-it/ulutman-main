@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,18 +29,16 @@ public class MessageService {
     private final UserRepository userRepository;
     private final MessageMapper messageMapper;
 
-
-    public MessageResponse addMessage(MessageRequest messageRequest) {
-        User user = userRepository.findById(messageRequest.getUserId())
-                .orElseThrow(() -> new NotFoundException("Пользователь по идентификатору " + messageRequest.getUserId() + " не найден"));
-
+    public MessageResponse createMessage(MessageRequest messageRequest) {
         Message message = new Message();
         message.setContent(messageRequest.getContent());
-        message.setUser(user);
         message.setModeratorStatus(ModeratorStatus.ОЖИДАЕТ);
         message.setCreateDate(LocalDate.now());
-        messageRepository.save(message);
-        return messageMapper.mapToResponse(message);
+
+        Optional<User> user = userRepository.findById(messageRequest.getUserId());
+        user.ifPresent(message::setUser);
+        Message savedMessage = messageRepository.save(message);
+        return messageMapper.mapToResponse(savedMessage);
     }
 
     public MessageResponse updateMessageStatus(Long messageId, MessageRequest messageRequest) {
