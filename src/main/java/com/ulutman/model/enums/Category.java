@@ -10,7 +10,8 @@ public enum Category {
     WORK {
         @Override
         public List<Subcategory> getSubcategories() {
-            return Arrays.asList(Subcategory.PartTime, FullTime);
+            return Arrays.asList(Subcategory.PartTime,
+                    FullTime);
         }
     },
     RENT {

@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -27,16 +28,16 @@ public class CommentService {
     private final UserRepository userRepository;
     private final CommentMapper commentMapper;
 
-    public CommentResponse addComment(CommentRequest commentRequest) {
-        User user = userRepository.findById(commentRequest.getUserId())
-                .orElseThrow(() -> new NotFoundException("Пользователь по идентификатору " + commentRequest.getUserId() + " не найден"));
+    public CommentResponse createComment(CommentRequest commentRequest) {
         Comment comment = new Comment();
-        comment.setUser(user);
         comment.setContent(commentRequest.getContent());
         comment.setModeratorStatus(ModeratorStatus.ОЖИДАЕТ);
         comment.setCreateDate(LocalDate.now());
-        commentRepository.save(comment);
-        return commentMapper.mapToResponse(comment);
+
+        Optional<User> user = userRepository.findById(commentRequest.getUserId());
+        user.ifPresent(comment::setUser);
+        Comment savedComment = commentRepository.save(comment);
+        return commentMapper.mapToResponse(savedComment);
     }
 
     public CommentResponse updateCommentStatus(Long commentId, CommentRequest commentRequest) {

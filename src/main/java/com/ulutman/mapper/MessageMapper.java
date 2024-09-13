@@ -4,17 +4,15 @@ package com.ulutman.mapper;
 import com.ulutman.model.dto.MessageRequest;
 import com.ulutman.model.dto.MessageResponse;
 import com.ulutman.model.entities.Message;
-import com.ulutman.repository.MessageRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
 
 @Component
 @RequiredArgsConstructor
 public class MessageMapper {
 
-    private final MessageRepository messageRepository;
+    private final AuthMapper authMapper;
 
     public Message mapToEntity(MessageRequest messageRequest) {
         Message message = new Message();
@@ -28,9 +26,11 @@ public class MessageMapper {
         return MessageResponse.builder()
                 .id(message.getId())
                 .content(message.getContent())
-                .username(message.getUser().getUsername())
                 .moderatorStatus(message.getModeratorStatus())
                 .createDate(message.getCreateDate())
+                .authResponse(message.getUser() != null ? authMapper.mapToResponse(message.getUser()) : null)
                 .build();
     }
+
+
 }

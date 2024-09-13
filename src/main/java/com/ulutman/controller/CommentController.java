@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/manage/comments")
+@RequestMapping("/api/users/comments")
 @Tag(name = "Comment")
 @SecurityRequirement(name = "Authorization")
 public class CommentController {
@@ -22,9 +22,9 @@ public class CommentController {
 
     @Operation(summary = "Create a comment")
     @ApiResponse(responseCode = "201", description = "The comment created successfully")
-    @PostMapping("/add")
+    @PostMapping("/create")
     public ResponseEntity<CommentResponse> addComment(@RequestBody CommentRequest request) {
-        CommentResponse response = commentService.addComment(request);
+        CommentResponse response = commentService.createComment(request);
         return ResponseEntity.ok(response);
     }
 
