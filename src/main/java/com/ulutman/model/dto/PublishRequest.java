@@ -22,6 +22,8 @@ public class PublishRequest {
 
     String image;
 
+    double price;
+
     Category category;
 
     Subcategory subcategory;

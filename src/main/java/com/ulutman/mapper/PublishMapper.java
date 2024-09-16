@@ -21,6 +21,7 @@ public class PublishMapper {
         publish.setAddress(publishRequest.getAddress());
         publish.setPhone(publishRequest.getPhoneNumber());
         publish.setImage(publishRequest.getImage());
+        publish.setPrice(publishRequest.getPrice());
         publish.setCategory(publishRequest.getCategory());
         publish.setSubCategory(publishRequest.getSubcategory());
         publish.setBank(publishRequest.getBank());
@@ -40,6 +41,7 @@ public class PublishMapper {
                 .address(publish.getAddress())
                 .phoneNumber(publish.getPhone())
                 .image(publish.getImage())
+                .price(publish.getPrice())
                 .bank(publish.getBank())
                 .publishStatus(publish.getPublishStatus())
                 .createDate(publish.getCreateDate())
@@ -49,7 +51,6 @@ public class PublishMapper {
                 .build();
     }
 
-    // Вспомогательный метод для маппинга User в AuthResponse
     private AuthResponse mapUserToAuthResponse(User user) {
         if (user == null) {
             return null;
