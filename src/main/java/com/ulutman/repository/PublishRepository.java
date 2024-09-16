@@ -18,6 +18,9 @@ public interface PublishRepository extends JpaRepository<Publish, Long> {
     @Query("SELECT p FROM Publish p WHERE p.user.id = :userId")
     List<Publish> findAllByUserId(@Param("userId") Long userId);
 
+    @Query("SELECT p FROM Publish p WHERE p.user.id = :userId")
+    List<Publish> findByUserId(@Param("userId") Long userId);
+
     @Query("""
             SELECT publish FROM Publish publish WHERE
             (:categories IS NULL OR publish.category IN :categories) AND

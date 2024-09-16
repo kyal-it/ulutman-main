@@ -65,6 +65,14 @@ public class ManagePublishController {
         return "Публикация успешно удалена";
     }
 
+    @Operation(summary = "Delete publication by userId")
+    @ApiResponse(responseCode = "201", description = "Deleted the publication by userId successfully")
+    @DeleteMapping("/delete/user/{userId}")
+    public String deletePublicationsByUserId(@PathVariable Long userId) {
+        managePublicationsService.deletePublicationsByUserId(userId);
+        return ("Все публикации пользователя с идентификатором " + userId + " успешно удалены");
+    }
+
     @Operation(summary = "Filter  users by name")
     @ApiResponse(responseCode = "201", description = "Users  by name successfully filtered")
     @GetMapping("/name/filter")

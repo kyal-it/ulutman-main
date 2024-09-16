@@ -26,6 +26,8 @@ public class Publish {
 
     private String description;
 
+    private double price;
+
     @Enumerated(EnumType.STRING)
     private Category category;
 
@@ -64,7 +66,7 @@ public class Publish {
     @ManyToMany(cascade = CascadeType.ALL, mappedBy = "publishes")
     List<Favorite> favorites;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 }

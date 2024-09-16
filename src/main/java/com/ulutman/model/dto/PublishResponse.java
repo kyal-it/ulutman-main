@@ -24,6 +24,8 @@ public class PublishResponse {
 
     String image;
 
+    double price;
+
     Category category;
 
     Integer numberOfPublications;

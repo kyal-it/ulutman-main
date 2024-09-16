@@ -70,6 +70,18 @@ public class ManagePublishService {
                 .collect(Collectors.toList());
     }
 
+    public void deletePublicationsByUserId(Long userId) {
+        List<Publish> userPublications = publishRepository.findByUserId(userId);
+
+        if (userPublications.isEmpty()) {
+            throw new EntityNotFoundException("Публикации для пользователя с идентификатором " + userId + " не найдены.");
+        }
+
+        publishRepository.deleteAll(userPublications);
+        log.info("Все публикации для пользователя с идентификатором " + userId + " успешно удалены.");
+    }
+
+
     public void deletePublish(Long productId) {
         this.publishRepository.findById(productId).orElseThrow(() -> {
             return new EntityNotFoundException("Публикация  по идентификатору " + productId + " успешно удалена");
