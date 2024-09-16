@@ -1,5 +1,6 @@
 package com.ulutman.service;
 
+import com.ulutman.mapper.AuthMapper;
 import com.ulutman.mapper.CommentMapper;
 import com.ulutman.mapper.MessageMapper;
 import com.ulutman.model.dto.*;
@@ -16,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,20 +32,23 @@ public class ManageModeratorService {
     private final MessageRepository messageRepository;
     private final CommentMapper commentMapper;
     private final MessageMapper messageMapper;
+    private final AuthMapper authMapper;
 
     public List<ModeratorCommentResponse> getUserComments(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Пользователь по идентификатору " + userId + " не нвйден"));
+                .orElseThrow(() -> new RuntimeException("Пользователь по идентификатору " + userId + " не найден"));
 
         List<Comment> comments = commentRepository.findByUserId(userId);
+
         return comments.stream()
-                .map(comment -> new ModeratorCommentResponse(
-                        comment.getId(),
-                        user.getUsername(),
-                        comment.getContent(),
-                        comment.getCreateDate(),
-                        comment.getModeratorStatus()
-                ))
+                .map(comment -> ModeratorCommentResponse.builder()
+                        .commentId(comment.getId()) // commentId
+                        .username(user.getUsername()) // username
+                        .authResponse(authMapper.mapToResponse(comment.getUser())) // authResponse
+                        .commentContent(comment.getContent()) // content
+                        .createDate(comment.getCreateDate()) // createDate
+                        .moderatorStatus(comment.getModeratorStatus()) // moderatorStatus
+                        .build())
                 .collect(Collectors.toList());
     }
 
@@ -52,17 +57,18 @@ public class ManageModeratorService {
                 .orElseThrow(() -> new RuntimeException("Пользователь по идентификатору " + userId + " не найден"));
 
         List<Message> messages = messageRepository.findByUserId(userId);
+
         return messages.stream()
-                .map(message -> new ModeratorMessageResponse(
-                        message.getId(),
-                        user.getUsername(),
-                        message.getContent(),
-                        message.getCreateDate(),
-                        message.getModeratorStatus()
-                ))
+                .map(message -> ModeratorMessageResponse.builder()
+                        .messageId(message.getId()) // messageId
+                        .username(user.getUsername()) // username
+                        .authResponse(authMapper.mapToResponse(message.getUser())) // authResponse
+                        .content(message.getContent()) // content
+                        .createDate(message.getCreateDate()) // createDate
+                        .moderatorStatus(message.getModeratorStatus()) // moderatorStatus
+                        .build())
                 .collect(Collectors.toList());
     }
-
 
     public UserCommentsMessagesResponse getUserCommentsAndMessages(Long userId) {
         User user = userRepository.findById(userId)
@@ -77,6 +83,50 @@ public class ManageModeratorService {
                 comments,
                 messages
         );
+    }
+
+    public List<UserCommentsMessagesResponse> getAllUserCommentsAndMessages() {
+        List<User> users = userRepository.findAll(); // Получаем всех пользователей
+        List<UserCommentsMessagesResponse> responses = new ArrayList<>(); // Создаем список для хранения ответов
+
+        for (User user : users) {
+
+            List<Comment> userComments = commentRepository.findByUserId(user.getId());
+            List<Message> userMessages = messageRepository.findByUserId(user.getId());
+
+            List<ModeratorCommentResponse> commentResponses = userComments.stream()
+                    .map(comment -> ModeratorCommentResponse.builder()
+                            .commentId(comment.getId())
+                            .username(user.getUsername()) // Устанавливаем username здесь
+                            .authResponse(authMapper.mapToResponse(comment.getUser()))
+                            .commentContent(comment.getContent())
+                            .createDate(comment.getCreateDate())
+                            .moderatorStatus(comment.getModeratorStatus())
+                            .build())
+                    .collect(Collectors.toList());
+
+            List<ModeratorMessageResponse> messageResponses = userMessages.stream()
+                    .map(message -> ModeratorMessageResponse.builder()
+                            .messageId(message.getId())
+                            .username(user.getUsername()) // Устанавливаем username здесь
+                            .authResponse(authMapper.mapToResponse(message.getUser()))
+                            .content(message.getContent())
+                            .createDate(message.getCreateDate())
+                            .moderatorStatus(message.getModeratorStatus())
+                            .build())
+                    .collect(Collectors.toList());
+
+            UserCommentsMessagesResponse userResponse = new UserCommentsMessagesResponse(
+                    user.getId(),
+                    user.getUsername(),
+                    commentResponses,
+                    messageResponses
+            );
+
+            responses.add(userResponse);
+        }
+
+        return responses;
     }
 
     public List<CommentResponse> getCommentsByFilters(List<User> users, List<String> content, List<LocalDate> createDates, List<String> moderatorStatus) {

@@ -19,16 +19,19 @@ public class ModeratorMessageResponse {
 
     String username;
 
+    AuthResponse authResponse;
+
     String content;
 
     LocalDate createDate;
 
     ModeratorStatus moderatorStatus;
 
-    public ModeratorMessageResponse(Long messageId, String username, String content, LocalDate createDate, ModeratorStatus moderatorStatus) {
+    public ModeratorMessageResponse(Long messageId, String username, AuthResponse authResponse, String content, LocalDate createDate, ModeratorStatus moderatorStatus) {
         this.messageId = messageId;
         this.username = username;
-        this.content= content;
+        this.authResponse = authResponse;
+        this.content = content;
         this.createDate = createDate;
         this.moderatorStatus = moderatorStatus;
     }
