@@ -51,6 +51,18 @@ public class ManageModeratorController {
         return ResponseEntity.ok(response);
     }
 
+    @Operation(summary = "Get all users comments and messages")
+    @ApiResponse(responseCode = "201", description = "Return list  users comments and messages")
+    @GetMapping("/users/comments-messages")
+    public ResponseEntity<List<UserCommentsMessagesResponse>> getAllUsersCommentsAndMessages() {
+        try {
+            List<UserCommentsMessagesResponse> responses = manageModeratorService.getAllUserCommentsAndMessages();
+            return ResponseEntity.ok(responses);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
     @Operation(summary = "Update comment status")
     @ApiResponse(responseCode = "201", description = "Updated comment status successfully")
     @PutMapping("/{commentId}/status")

@@ -3,6 +3,9 @@ package com.ulutman.mapper;
 
 import com.ulutman.model.dto.MessageRequest;
 import com.ulutman.model.dto.MessageResponse;
+import com.ulutman.model.dto.ModeratorCommentResponse;
+import com.ulutman.model.dto.ModeratorMessageResponse;
+import com.ulutman.model.entities.Comment;
 import com.ulutman.model.entities.Message;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -32,5 +35,13 @@ public class MessageMapper {
                 .build();
     }
 
-
+    public ModeratorMessageResponse mapToModeratorMessageResponse(Message message) {
+        return ModeratorMessageResponse.builder()
+                .messageId(message.getId())
+                .content(message.getContent())
+                .moderatorStatus(message.getModeratorStatus())
+                .createDate(message.getCreateDate())
+                .authResponse(message.getUser()!=null?authMapper.mapToResponse(message.getUser()):null)
+                .build();
+    }
 }

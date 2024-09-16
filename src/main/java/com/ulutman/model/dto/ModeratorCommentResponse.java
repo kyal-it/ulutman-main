@@ -20,15 +20,18 @@ public class ModeratorCommentResponse {
 
     String username;
 
+    AuthResponse authResponse;
+
     String commentContent;
 
     LocalDate createDate;
 
     ModeratorStatus moderatorStatus;
 
-    public ModeratorCommentResponse(Long commentId, String username, String content, LocalDate createDate, ModeratorStatus moderatorStatus) {
+    public ModeratorCommentResponse(Long commentId, String username,AuthResponse authResponse, String content, LocalDate createDate, ModeratorStatus moderatorStatus) {
         this.commentId = commentId;
         this.username = username;
+        this.authResponse = authResponse;
         this.commentContent = content;
         this.createDate = createDate;
         this.moderatorStatus = moderatorStatus;
