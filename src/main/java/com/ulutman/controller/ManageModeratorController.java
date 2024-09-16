@@ -43,7 +43,7 @@ public class ManageModeratorController {
         return ResponseEntity.ok(responses);
     }
 
-    @Operation(summary = "Get comments and messages of user")
+    @Operation(summary = "Get users comments and messages ")
     @ApiResponse(responseCode = "201", description = "Return list  comments and messages of user")
     @GetMapping("/users/{userId}/details")
     public ResponseEntity<UserCommentsMessagesResponse> getUserCommentsAndMessages(@PathVariable Long userId) {
