@@ -33,7 +33,7 @@ public interface PublishRepository extends JpaRepository<Publish, Long> {
             SELECT publish FROM Publish publish WHERE
             (:categories IS NULL OR publish.category IN :categories) AND
             (:publishStatuses IS NULL OR publish.publishStatus IN :publishStatuses) AND
-            (:createDates IS NULL OR publish.createDate >= :createDates)
+            (:createDates IS NULL OR publish.createDate IN :createDates)
             """)
     List<Publish> filterPublishes(
             @Param("categories") List<Category> categories,

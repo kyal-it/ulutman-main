@@ -86,7 +86,7 @@ public class ManagePublishController {
     public ResponseEntity<List<PublishResponse>> filterPublishes(
             @RequestParam(value = "categories", required = false) List<Category> categories,
             @RequestParam(value = "publishStatuses", required = false) List<PublishStatus> publishStatuses,
-            @RequestParam(value = "createDate", required = false) List<LocalDate> createDates
+            @RequestParam(value = "createDates", required = false) List<LocalDate> createDates
     ) {
         List<PublishResponse> publishResponses = managePublicationsService.filterPublishes(categories, publishStatuses, createDates);
         return ResponseEntity.ok(publishResponses);
