@@ -1,12 +1,15 @@
 package com.ulutman.service;
 
 import com.ulutman.exception.NotFoundException;
+import com.ulutman.mapper.AuthMapper;
 import com.ulutman.mapper.ComplaintMapper;
+import com.ulutman.model.dto.AuthResponse;
 import com.ulutman.model.dto.ComplaintRequest;
 import com.ulutman.model.dto.ComplaintResponse;
 import com.ulutman.model.entities.Complaint;
 import com.ulutman.model.entities.User;
 import com.ulutman.model.enums.ComplaintStatus;
+import com.ulutman.model.enums.ComplaintType;
 import com.ulutman.repository.ComplaintRepository;
 import com.ulutman.repository.UserRepository;
 import lombok.AccessLevel;
@@ -16,7 +19,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -30,6 +32,7 @@ public class ManageComplaintService {
     private final ComplaintRepository complaintRepository;
     private final UserRepository userRepository;
     private final ComplaintMapper complaintMapper;
+    private final AuthMapper authMapper;
 
     public ComplaintResponse createComplaint(ComplaintRequest complaintRequest) {
         Complaint complaint = new Complaint();
@@ -51,57 +54,56 @@ public class ManageComplaintService {
     }
 
     public ComplaintResponse updateComplaintStatus(Long complaintId, ComplaintRequest complaintRequest) {
-        // Проверка, что идентификатор жалобы и запрос не равны null
         if (complaintId == null || complaintRequest == null) {
             throw new IllegalArgumentException("Идентификатор жалобы и запрос на подачу жалобы не могут быть пустыми");
         }
 
-        // Поиск жалобы по идентификатору
         Complaint complaint = complaintRepository.findById(complaintId)
                 .orElseThrow(() -> new NotFoundException("Жалоба по идентификатору " + complaintId + " не найдена"));
 
-        // Получение статуса из запроса
         ComplaintStatus newStatus = complaintRequest.getComplaintStatus();
 
-        // Проверка на изменение статуса перед сохранением
         if (newStatus != null && !newStatus.equals(complaint.getComplaintStatus())) {
             complaint.setComplaintStatus(newStatus);
             complaintRepository.save(complaint);
         }
 
-        // Преобразование и возврат ответа
         return complaintMapper.mapToResponse(complaint);
     }
 
-    public List<ComplaintResponse> getFilteredComplaints(
-            List<User> users,
-            List<String> complaintTypes,
-            List<LocalDate> createDates,
-            List<String> complaintStatuses) {
+    public List<AuthResponse> filterUsersByName(String name) {
 
-        // Проверка и замена пустых списков на null
-        users = (users == null || users.isEmpty()) ? null : users;
-        complaintTypes = (complaintTypes == null || complaintTypes.isEmpty()) ? null : complaintTypes;
-        createDates = (createDates == null || createDates.isEmpty()) ? null : createDates;
-        complaintStatuses = (complaintStatuses == null || complaintStatuses.isEmpty()) ? null : complaintStatuses;
+        if (name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("Имя не может быть пустым или содержать только пробелы.");
+        }
 
-        // Выполнение фильтрации
-        List<Complaint> complaintList = complaintRepository.complaintFilter(users, complaintTypes, createDates, complaintStatuses);
+        name = name.toLowerCase() + "%";
 
-        // Маппинг и возврат результата
-        return complaintList.stream()
-                .map(complaintMapper::mapToResponse)
+        return userRepository.userFilterByName(name).stream()
+                .map(authMapper::mapToResponse)
                 .collect(Collectors.toList());
     }
 
+    public List<ComplaintResponse> filterComplaints(
+            List<ComplaintType> complaintTypes,
+            List<LocalDate> createDates, List<ComplaintStatus> complaintStatuses) {
 
+        if ( complaintTypes!=null && complaintTypes.stream().anyMatch(category -> category == null)){
+            throw new IllegalArgumentException("Тип жалоб не могут содержать нулевых значений.");
+        }
 
-//    public List<ComplaintResponse> getFilteredComplaints(
-//            List<User> users,
-//            List<String> complaintTypes,
-//            List<LocalDate> createDates,
-//            List<String> complaintStatuses) {
-//        List<Complaint> complaintList = complaintRepository.complaintFilter(users, complaintTypes, createDates, complaintStatuses);
-//        return complaintList.stream().map(complaintMapper::mapToResponse).collect(Collectors.toList());
-//    }
+        if (createDates != null && createDates.stream().anyMatch(date -> date == null)) {
+            throw new IllegalArgumentException("Даты создания не могут содержать нулевых значений.");
+        }
+
+        if (complaintStatuses != null && complaintStatuses.stream().anyMatch(status -> status == null)) {
+            throw new IllegalArgumentException("Статус жалоб не могут содержать нулевых значений.");
+        }
+
+        List<Complaint> complaints = complaintRepository.complaintFilter(complaintTypes, createDates,complaintStatuses);
+
+        return complaints.stream()
+                .map(complaintMapper::mapToResponse)
+                .collect(Collectors.toList());
+    }
 }

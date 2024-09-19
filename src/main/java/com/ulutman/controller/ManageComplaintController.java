@@ -1,8 +1,10 @@
 package com.ulutman.controller;
 
+import com.ulutman.model.dto.AuthResponse;
 import com.ulutman.model.dto.ComplaintRequest;
 import com.ulutman.model.dto.ComplaintResponse;
-import com.ulutman.model.entities.User;
+import com.ulutman.model.enums.ComplaintStatus;
+import com.ulutman.model.enums.ComplaintType;
 import com.ulutman.repository.UserRepository;
 import com.ulutman.service.ManageComplaintService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -56,41 +58,24 @@ public class ManageComplaintController {
         return ResponseEntity.ok(updatedComplaint);
     }
 
+    @Operation(summary = "Filter  users by name")
+    @ApiResponse(responseCode = "201", description = "Users  by name successfully filtered")
+    @GetMapping("/name/filter")
+    public List<AuthResponse> filterUsers(@RequestParam(required = false) String name) {
+        return manageComplaintService.filterUsersByName(name);
+    }
+
     @Operation(summary = "Filter complaints")
     @ApiResponse(responseCode = "201", description = "Complaints successfully filtered")
     @GetMapping("/filter")
     public ResponseEntity<List<ComplaintResponse>> filterComplaints(
-            @RequestParam(required = false) List<Long> userIds,
-            @RequestParam(required = false) List<String> complaintTypes,
+            @RequestParam(required = false) List<ComplaintType> complaintTypes,
             @RequestParam(required = false)  List<LocalDate> createDates,
-            @RequestParam(required = false) List<String> complaintStatuses) {
+            @RequestParam(required = false) List<ComplaintStatus> complaintStatuses) {
+        List<ComplaintResponse> filteredComplaints =manageComplaintService.filterComplaints(complaintTypes,createDates,complaintStatuses);
 
-        // Получаем список пользователей по их ID (если переданы)
-        List<User> users = null;
-        if (userIds != null && !userIds.isEmpty()) {
-            users = userRepository.findAllById(userIds); // Например, через репозиторий получаем пользователей
-        }
-
-        // Вызов сервиса фильтрации жалоб
-        List<ComplaintResponse> filteredComplaints = manageComplaintService.getFilteredComplaints(
-                users,
-                complaintTypes,
-                createDates,
-                complaintStatuses
-        );
-
-        // Возврат результата
         return ResponseEntity.ok(filteredComplaints);
     }
-//    @GetMapping("/filter")
-//    public List<ComplaintResponse> filterComplaints(
-//            @RequestParam(value = "user", required = false) List<User> users,
-//            @RequestParam(value = "complaintType", required = false) List<String> complaintTypes,
-//            @RequestParam(value = "createDate", required = false) List<LocalDate> createDates,
-//            @RequestParam(value = "complaintStatus", required = false) List<String> complaintStatuses) {
-//
-//        return manageComplaintService.getFilteredComplaints(users, complaintTypes, createDates, complaintStatuses);
-//    }
 
     @Operation(summary = "Reset filters complaints")
     @ApiResponse(responseCode = "201", description = "Complaints filters successfully reset")
