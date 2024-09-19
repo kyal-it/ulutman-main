@@ -81,7 +81,6 @@ public class ManagePublishService {
         log.info("Все публикации для пользователя с идентификатором " + userId + " успешно удалены.");
     }
 
-
     public void deletePublish(Long productId) {
         this.publishRepository.findById(productId).orElseThrow(() -> {
             return new EntityNotFoundException("Публикация  по идентификатору " + productId + " успешно удалена");
