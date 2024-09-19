@@ -1,7 +1,8 @@
 package com.ulutman.repository;
 
 import com.ulutman.model.entities.Complaint;
-import com.ulutman.model.entities.User;
+import com.ulutman.model.enums.ComplaintStatus;
+import com.ulutman.model.enums.ComplaintType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,27 +14,14 @@ import java.util.List;
 @Repository
 public interface ComplaintRepository extends JpaRepository<Complaint, Long> {
 
-//    @Query("SELECT c FROM Complaint c WHERE " +
-//           "(:users IS NULL OR  c.user=:users) AND" +
-//           "(:complaintTypes IS NULL OR c.complaintType = :complaintTypes) AND " +
-//           "(:createDates IS NULL OR c.createDate = :createDates) AND " +
-//           "(:complaintStatuses IS NULL OR c.complaintStatus = :complaintStatuses)")
-//    List<Complaint> complaintFilter(
-//            @Param("users") List<User> users,
-//            @Param("complaintTypes") List<String> complaintTypes,
-//            @Param("createDates") List<LocalDate> createDates,
-//            @Param("complaintStatuses") List<String> complaintStatuses
-//    );
 @Query("SELECT c FROM Complaint c WHERE " +
-       "(:users IS NULL OR c.user IN :users) AND " +
        "(:complaintTypes IS NULL OR c.complaintType IN :complaintTypes) AND " +
        "(:createDates IS NULL OR c.createDate IN :createDates) AND " +
        "(:complaintStatuses IS NULL OR c.complaintStatus IN :complaintStatuses)")
 List<Complaint> complaintFilter(
-        @Param("users") List<User> users,
-        @Param("complaintTypes") List<String> complaintTypes,
+        @Param("complaintTypes") List<ComplaintType> complaintTypes,
         @Param("createDates") List<LocalDate> createDates,
-        @Param("complaintStatuses") List<String> complaintStatuses
+        @Param("complaintStatuses") List<ComplaintStatus> complaintStatuses
 );
 }
 
