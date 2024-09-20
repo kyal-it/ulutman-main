@@ -71,6 +71,10 @@ public class ManageComplaintService {
         return complaintMapper.mapToResponse(complaint);
     }
 
+    public void deleteComplaint(Long complaintId) {
+        complaintRepository.deleteById(complaintId);
+    }
+
     public List<AuthResponse> filterUsersByName(String name) {
 
         if (name == null || name.trim().isEmpty()) {

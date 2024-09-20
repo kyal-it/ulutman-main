@@ -57,6 +57,13 @@ public class ManageComplaintController {
         ComplaintResponse updatedComplaint = complaintService.updateComplaintStatus(id, complaintRequest);
         return ResponseEntity.ok(updatedComplaint);
     }
+    @Operation(summary = "Delete complaint by id")
+    @ApiResponse(responseCode = "201", description = "Deleted complaint by id successfully")
+    @DeleteMapping("/deleteById/{id}")
+    public String deleteById(@PathVariable Long id) {
+        manageComplaintService.deleteComplaint(id);
+        return "Жалоба успешно удалена";
+    }
 
     @Operation(summary = "Filter  users by name")
     @ApiResponse(responseCode = "201", description = "Users  by name successfully filtered")
@@ -70,9 +77,9 @@ public class ManageComplaintController {
     @GetMapping("/filter")
     public ResponseEntity<List<ComplaintResponse>> filterComplaints(
             @RequestParam(required = false) List<ComplaintType> complaintTypes,
-            @RequestParam(required = false)  List<LocalDate> createDates,
+            @RequestParam(required = false) List<LocalDate> createDates,
             @RequestParam(required = false) List<ComplaintStatus> complaintStatuses) {
-        List<ComplaintResponse> filteredComplaints =manageComplaintService.filterComplaints(complaintTypes,createDates,complaintStatuses);
+        List<ComplaintResponse> filteredComplaints = manageComplaintService.filterComplaints(complaintTypes, createDates, complaintStatuses);
 
         return ResponseEntity.ok(filteredComplaints);
     }
