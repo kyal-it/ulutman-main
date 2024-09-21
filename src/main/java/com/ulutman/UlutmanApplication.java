@@ -11,11 +11,15 @@ public class UlutmanApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(UlutmanApplication.class, args);
+		System.out.println("testPush");
 	}
 
 	@GetMapping
 	public String greetings(){
 		return "index";
 	}
+
+
+
 
 }
