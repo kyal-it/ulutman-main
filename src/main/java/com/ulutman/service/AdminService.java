@@ -46,16 +46,4 @@ public class AdminService {
         userRepository.save(user);
         return authMapper.mapToResponse(user);
     }
-
-    //    TODO Добавила Admin через init method чтобы проверить
-    @PostConstruct
-    public void initAdmin(){
-        User user = new User();
-        user.setName("Admin");
-        user.setEmail("admin@gmail.com");
-        user.setStatus(Status.АКТИВНЫЙ);
-        user.setRole(Role.ADMIN);
-        user.setPassword(passwordEncoder.encode("admin123"));
-        userRepository.save(user);
-    }
 }
