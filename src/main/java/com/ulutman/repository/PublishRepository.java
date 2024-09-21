@@ -40,4 +40,17 @@ public interface PublishRepository extends JpaRepository<Publish, Long> {
             @Param("publishStatuses") List<PublishStatus> publishStatuses,
             @Param("createDates")List<LocalDate> createDates
     );
+
+    @Query("SELECT publish FROM Publish publish WHERE publish.category=('WORK')")
+    List<Publish>findByCategoryWork();
+    @Query("SELECT publish FROM Publish publish WHERE publish.category=('RENT')")
+    List<Publish> findByCategoryRent();
+    @Query("SELECT publish FROM Publish publish WHERE publish.category=('SELL')")
+    List<Publish>findByCategorySell();
+    @Query("SELECT publish FROM Publish publish WHERE publish.category=('HOTEL')")
+    List<Publish> findByCategoryHotel();
+    @Query("SELECT publish FROM Publish publish WHERE publish.category =('AUTO')")
+    List<Publish> findByCategoryServices();
+    @Query("SELECT publish FROM Publish publish WHERE publish.category=('REAL_ESTATE')")
+    List<Publish> findByCategoryRealEstate();
 }
