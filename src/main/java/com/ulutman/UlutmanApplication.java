@@ -11,7 +11,7 @@ public class UlutmanApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(UlutmanApplication.class, args);
-		System.out.println("testPush");
+		System.out.println("testPush1.1");
 	}
 
 	@GetMapping
