@@ -47,6 +47,8 @@ public class User implements UserDetails {
     @Column(name = "create_date")
     LocalDate createDate;
 
+    int pinCode;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Payment> payments;
 

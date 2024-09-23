@@ -58,8 +58,8 @@ public class SecurityConfig {
                                         "/api/users/messages",
                                         "/api/users/comments",
                                         "/api/users/complaints",
-                                        "/api/auth/set-password",
-                                        "/api/auth/forgot-password")
+                                        "/api/mailing/sendPasswordResetCode",
+                                        "/api/mailing/resetPassword")
                                 .permitAll()
                                 .anyRequest()
                                 .authenticated())
