@@ -15,6 +15,7 @@ import java.util.List;
 public class UserAccount {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_id")
     private Long id;
     private String username;
     private String number;
@@ -30,8 +31,13 @@ public class UserAccount {
     @OneToOne(mappedBy = "userAccount", cascade = CascadeType.ALL)
     private MyPublish myPublish;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_id")
-    private User user;
+//    @OneToOne(cascade = CascadeType.ALL)
+//    @JoinColumn(name = "user_id")
+//    private User user;
+
+//     @Column(name = "user_id")
+//     private Long userId;
+
+
 
 }

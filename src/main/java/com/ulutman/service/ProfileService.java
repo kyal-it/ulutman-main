@@ -23,7 +23,6 @@ public class ProfileService {
         UserAccount userAccount = user.getUserAccount();
         if (userAccount == null) {
             userAccount = new UserAccount();
-            userAccount.setUser(user);
             user.setUserAccount(userAccount);
         }
 
@@ -32,9 +31,14 @@ public class ProfileService {
         userAccount.setNumber(phoneNumber);
         userAccount.setGmail(emailAddress);
 
+        user.setName(username); // Предполагается, что у User есть поле name
+        user.setEmail(emailAddress);
+        userRepository.save(user);
+
         return userAccontRepository.save(userAccount);
     }
-        public UserAccount updateUserAccount(Long userId, String username, String lastName, String phoneNumber, String emailAddress) {
+
+    public UserAccount updateUserAccount(Long userId, String username, String lastName, String phoneNumber, String emailAddress) {
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new IllegalArgumentException("Колдонуучу табылган жок"));
 
@@ -48,6 +52,10 @@ public class ProfileService {
             userAccount.setLastName(lastName);
             userAccount.setNumber(phoneNumber);
             userAccount.setGmail(emailAddress);
+
+            user.setName(username); // Предполагается, что у User есть поле name
+            user.setEmail(emailAddress);
+            userRepository.save(user);
 
             return userAccontRepository.save(userAccount);
         }
