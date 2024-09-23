@@ -45,6 +45,7 @@ public class PublishService {
         User user = userRepository.findById(publishRequest.getUserId())
                 .orElseThrow(() -> new RuntimeException("Пользователь не найден"+ publishRequest.getUserId()));
         publish.setUser(user);
+        publish.setPublishStatus(PublishStatus.ОДОБРЕН);
         publish.setCategoryStatus(CategoryStatus.АКТИВНО);
 
         Publish savedPublish = publishRepository.save(publish);
