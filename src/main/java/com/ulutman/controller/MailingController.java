@@ -49,11 +49,14 @@ public class MailingController {
         }
     }
 
+    @Operation(summary = "Send pinCode")
+    @ApiResponse(responseCode = "201", description = "Mailing sent pinCode  successfully")
     @GetMapping("/sendPasswordResetCode")
     public void sendPasswordResetCode(@RequestParam String email) throws EntityNotFoundException {
         mailingService.sendPasswordResetCode(email);
     }
-
+    @Operation(summary = "Reset password")
+    @ApiResponse(responseCode = "201", description = "Reset password  successfully")
     @PostMapping("/resetPassword")
     public String resetPassword( @RequestParam String email, @RequestParam int pinCode,
                                  @RequestParam String newPassword, @RequestParam String confirmPassword)
