@@ -9,6 +9,7 @@ CREATE TABLE users
     user_id          BIGINT, -- Изменено с `user` на `user_id`
     role             VARCHAR(255),
     status           VARCHAR(255),
+    pinCode          BIGINT,
     PRIMARY KEY (id)
 );
 create table comments
