@@ -14,6 +14,8 @@ public class PublishResponse {
 
     Long id;
 
+    String title;
+
     String description;
 
     Metro metro;

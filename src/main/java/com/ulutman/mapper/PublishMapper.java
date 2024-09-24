@@ -16,6 +16,7 @@ public class PublishMapper {
 
     public Publish mapToEntity(PublishRequest publishRequest) {
         Publish publish = new Publish();
+        publish.setTitle(publishRequest.getTitle());
         publish.setDescription(publishRequest.getDescription());
         publish.setMetro(publishRequest.getMetro());
         publish.setAddress(publishRequest.getAddress());
@@ -34,6 +35,7 @@ public class PublishMapper {
     public PublishResponse mapToResponse(Publish publish) {
         return PublishResponse.builder()
                 .id(publish.getId())
+                .title(publish.getTitle())
                 .description(publish.getDescription())
                 .metro(publish.getMetro())
                 .category(publish.getCategory())
