@@ -12,6 +12,8 @@ import lombok.Setter;
 @AllArgsConstructor
 public class PublishRequest {
 
+    String title;
+
     String description;
 
     Metro metro;
