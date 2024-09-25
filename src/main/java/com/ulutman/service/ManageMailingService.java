@@ -99,25 +99,20 @@ public class ManageMailingService {
                                                List<MailingStatus> mailingStatuses,
                                                List<LocalDate> createDates) {
 
-        // Проверяем mailingTypes
         if (mailingTypes != null && mailingTypes.stream().anyMatch(Objects::isNull)) {
             throw new IllegalArgumentException("Типы рассылок не могут содержать нулевых значений.");
         }
 
-        // Проверяем mailingStatuses
         if (mailingStatuses != null && mailingStatuses.stream().anyMatch(Objects::isNull)) {
             throw new IllegalArgumentException("Статусы рассылок не могут содержать нулевых значений.");
         }
 
-        // Проверяем createDates
         if (createDates != null && createDates.stream().anyMatch(Objects::isNull)) {
             throw new IllegalArgumentException("Даты создания не могут содержать нулевых значений.");
         }
 
-        // Выполняем фильтрацию
         List<Mailing> mailings = mailingRepository.filterMailing(mailingTypes, mailingStatuses, createDates);
 
-        // Преобразуем в ответный формат
         return mailings.stream()
                 .map(mailingMapper::mapToResponse)
                 .collect(Collectors.toList());
