@@ -1,11 +1,16 @@
 package com.ulutman.mapper;
 
+import com.ulutman.model.dto.AuthResponse;
 import com.ulutman.model.dto.MailingRequest;
 import com.ulutman.model.dto.MailingResponse;
 import com.ulutman.model.entities.Mailing;
+import com.ulutman.model.entities.User;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
+import java.util.Collections;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Component
 public class MailingMapper {
@@ -34,6 +39,26 @@ public class MailingMapper {
                 .promotionStartDate(mailing.getPromotionStartDate())
                 .promotionEndDate(mailing.getPromotionEndDate())
                 .createDate(mailing.getCreateDate())
+                .recipients(Optional.ofNullable(mailing.getRecipients())
+                        .orElse(Collections.emptyList()) // Возвращаем пустой список, если null
+                        .stream()
+                        .map(this::mapUserToAuthResponse)
+                        .collect(Collectors.toList()))
+
+                .build();
+    }
+
+    private AuthResponse mapUserToAuthResponse(User user) {
+        if (user == null) {
+            return null;
+        }
+        return AuthResponse.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .email(user.getEmail())
+                .role(user.getRole())
+                .status(user.getStatus())
+                .createDate(user.getCreateDate())
                 .build();
     }
 }
