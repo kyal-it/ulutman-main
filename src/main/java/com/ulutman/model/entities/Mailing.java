@@ -10,6 +10,8 @@ import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 
@@ -47,4 +49,14 @@ public class Mailing {
 
     @ManyToMany(mappedBy = "mailings")
     private Set<User> users;
+
+    @ManyToMany(mappedBy = "mailings")
+    private List<User> recipients;
+
+//    @ManyToMany(cascade = CascadeType.PERSIST)
+//    @JoinTable(
+//            name = "mailing_user",
+//            joinColumns = @JoinColumn(name = "mailing_id"),
+//            inverseJoinColumns = @JoinColumn(name = "user_id"))
+//    private List<User> recipients;
 }

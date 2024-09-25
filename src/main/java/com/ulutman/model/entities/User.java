@@ -76,7 +76,7 @@ public class User implements UserDetails {
             joinColumns = @JoinColumn(name = "user_id"),   // Колонка внешнего ключа для User
             inverseJoinColumns = @JoinColumn(name = "mailing_id")  // Колонка внешнего ключа для Mailing
     )
-    private Set<Mailing> mailings;
+    private List<Mailing> mailings;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
