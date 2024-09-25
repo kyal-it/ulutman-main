@@ -3,9 +3,12 @@ package com.ulutman.service;
 import com.ulutman.mapper.MailingMapper;
 import com.ulutman.model.dto.MailingResponse;
 import com.ulutman.model.entities.Mailing;
+import com.ulutman.model.entities.User;
 import com.ulutman.model.enums.MailingStatus;
 import com.ulutman.model.enums.MailingType;
 import com.ulutman.repository.MailingRepository;
+import com.ulutman.repository.UserRepository;
+import jakarta.mail.MessagingException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -25,31 +28,49 @@ public class ManageMailingService {
 
     private final MailingRepository mailingRepository;
     private final MailingMapper mailingMapper;
+    private final MailingService mailingService;
+    private final UserRepository userRepository;
 
-    // Получение информации о рассылках
+    // Новый метод для рассылки всем пользователям
+    public void sendMailingToAllUsers(Long mailingId) {
+        List<User> users = userRepository.findAll();
+        System.out.println("ВСЕ полльзователи " +users);// Получаем всех пользователей
+
+        users.forEach(user -> {
+            try {
+                // Вызываем метод из MailingService для каждого пользователя
+                mailingService.sendMailing(mailingId, user.getEmail());
+            } catch (MessagingException e) {
+                // Логируем ошибку отправки для конкретного пользователя
+                System.err.println("Ошибка отправки письма пользователю: " + user.getEmail());
+            }
+        });
+    }
+
     public List<MailingResponse> getAllMailings() {
         List<Mailing> mailings = mailingRepository.findAll();
+
         return mailings.stream()
                 .map(mailingMapper::mapToResponse)
                 .collect(Collectors.toList());
     }
 
-    // Метод для обновления статуса рассылки
-    public MailingResponse updateMailingStatus(Long id, MailingStatus status) {
+    public MailingResponse updateMailingStatus(Long id, MailingStatus newStatus) {
         Mailing mailing = mailingRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Mailing not found"));
-        mailing.setMailingStatus(status);
-        mailingRepository.save(mailing);
+
+        if (newStatus != null && mailing.getMailingStatus() != newStatus) {
+            mailing.setMailingStatus(newStatus);
+            mailingRepository.save(mailing);
+        }
         return mailingMapper.mapToResponse(mailing);
     }
 
     public List<MailingResponse> filterMailingByTitle(String title) {
-        // Проверяем, является ли строка пустой или содержащей только пробелы
         if (title == null || title.trim().isEmpty()) {
             throw new RuntimeException("Название не может быть пустым или содержать только пробелы.");
         }
 
-        // Преобразуем строку в нижний регистр и добавляем подстановочные символы
         String formattedTitle = "%" + title.trim().toLowerCase() + "%";
 
         // Выполняем запрос и маппим результаты в DTO
@@ -101,5 +122,4 @@ public class ManageMailingService {
                 .map(mailingMapper::mapToResponse)
                 .collect(Collectors.toList());
     }
-
 }

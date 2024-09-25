@@ -24,6 +24,12 @@ public class ManageMailingController {
 
     private final ManageMailingService manageMailingService;
 
+    @PostMapping("/send-to-all")
+    public ResponseEntity<String> sendMailingToAllUsers(@RequestParam("mailingId") Long mailingId) {
+        manageMailingService.sendMailingToAllUsers(mailingId);
+        return ResponseEntity.ok("Рассылка успешно отправлена всем пользователям.");
+    }
+
     // Получить все рассылки
     @GetMapping("/all")
     public ResponseEntity<List<MailingResponse>> getAllMailings() {
@@ -33,8 +39,9 @@ public class ManageMailingController {
 
     // Обновить статус рассылки
     @PutMapping("/{id}/status")
-    public ResponseEntity<MailingResponse> updateMailingStatus(@PathVariable Long id, @RequestParam MailingStatus status) {
-        MailingResponse response = manageMailingService.updateMailingStatus(id, status);
+    public ResponseEntity<MailingResponse> updateMailingStatus(@PathVariable Long id,
+                                                               @RequestParam MailingStatus  newStatus) {
+        MailingResponse response = manageMailingService.updateMailingStatus(id, newStatus);
         return ResponseEntity.ok(response);
     }
 
