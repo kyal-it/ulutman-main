@@ -32,7 +32,6 @@ public class ManagePublishService {
     private final PublishMapper publishMapper;
     private final PublishRepository publishRepository;
     private final AuthMapper authMapper;
-    private final PublishService publishService;
     private final UserRepository userRepository;
 
     public List<PublishResponse> getAllPublish() {

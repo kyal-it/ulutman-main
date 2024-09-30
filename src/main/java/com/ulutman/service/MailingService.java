@@ -22,8 +22,8 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.security.Principal;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Random;
 
 @Service
@@ -38,7 +38,6 @@ public class MailingService {
     private final PasswordEncoder passwordEncoder;
 
     public MailingResponse createMailing(MailingRequest mailingRequest) {
-
         Mailing mailing = mailingMapper.mapToEntity(mailingRequest);
         mailing.setTitle(mailingRequest.getTitle());
         mailing.setMessage(mailingRequest.getMessage());
@@ -47,7 +46,16 @@ public class MailingService {
         mailing.setPromotionStartDate(mailingRequest.getPromotionStartDate());
         mailing.setPromotionEndDate(mailingRequest.getPromotionEndDate());
         mailing.setCreateDate(LocalDate.now());
+
+        List<User> users = userRepository.findAll();
+        mailing.setRecipients(users);
+
+        for (User user : users) {
+            user.getMailings().add(mailing); // Обновляем связь у пользователя
+        }
         mailingRepository.save(mailing);
+        userRepository.saveAll(users);
+
         return mailingMapper.mapToResponse(mailing);
     }
 
@@ -101,7 +109,8 @@ public class MailingService {
             throw new MailSendingException("Не удалось отправить код для сброса пароля", e);
         }
     }
-    public String resetPassword( String email, int pinCode, String newPassword, String confirmPassword)
+
+    public String resetPassword(String email, int pinCode, String newPassword, String confirmPassword)
             throws EntityNotFoundException, PasswordsDoNotMatchException {
         if (!newPassword.equals(confirmPassword)) {
             throw new PasswordsDoNotMatchException("Пароли не совпадают");
@@ -118,6 +127,7 @@ public class MailingService {
             return "Неверный PIN-код";
         }
     }
+
     private int generatePinCode() {
         Random random = new Random();
         return random.nextInt(100000, 1000000);
