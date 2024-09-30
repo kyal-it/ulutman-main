@@ -26,30 +26,37 @@ public class ManageMailingController {
 
     private final ManageMailingService manageMailingService;
 
+    @Operation(summary = "Send to all users")
+    @ApiResponse(responseCode = "201", description = "A mailing sent to all users ")
     @PostMapping("/send-to-all")
     public ResponseEntity<String> sendMailingToAllUsers(@RequestParam("mailingId") Long mailingId) {
         manageMailingService.sendMailingToAllUsers(mailingId);
         return ResponseEntity.ok("Рассылка успешно отправлена всем пользователям.");
     }
-
+    @Operation(summary = "Get all users mailing")
+    @ApiResponse(responseCode = "201", description = "Return the list of  users mailings")
     @GetMapping("/users-with-mailings")
     public List<User> getAllUsersWithMailings() {
         return manageMailingService.getAllUsersWithMailings();
     }
 
+    @Operation(summary = "Get all mailing")
+    @ApiResponse(responseCode = "201", description = "Return the list of mailings")
     @GetMapping("/all")
     public ResponseEntity<List<MailingResponse>> getAllMailings() {
         List<MailingResponse> mailings = manageMailingService.getAllMailings();
         return ResponseEntity.ok(mailings); // Возвращаем ответ с кодом 200 и списком рассылок
     }
-
+    @Operation(summary = "Update a mailing status")
+    @ApiResponse(responseCode = "201", description = "Updated the mailing status by id successfully")
     @PutMapping("/{id}/status")
     public ResponseEntity<MailingResponse> updateMailingStatus(@PathVariable Long id,
                                                                @RequestParam MailingStatus newStatus) {
         MailingResponse response = manageMailingService.updateMailingStatus(id, newStatus);
         return ResponseEntity.ok(response);
     }
-
+    @Operation(summary = "Filter mailings by title")
+    @ApiResponse(responseCode = "201", description = "Mailings by title successfully filtered")
     @GetMapping("title/filter") // Эндпоинт для фильтрации
     public ResponseEntity<List<MailingResponse>> filterMailingByTitle(@RequestParam String title) {
         try {
