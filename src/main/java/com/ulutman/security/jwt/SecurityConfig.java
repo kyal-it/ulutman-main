@@ -47,6 +47,7 @@ public class SecurityConfig {
                                         "/api/manage/complaints",
                                         "/api/manage/moderator",
                                         "/api/manage/publishes",
+                                        "/api/manage/mailing",
                                         "/api/mailing").hasAuthority("ADMIN")
                                 .requestMatchers(
                                         "/",

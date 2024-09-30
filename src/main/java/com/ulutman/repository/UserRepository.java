@@ -33,4 +33,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> userFilter(@Param("roles") List<Role> roles,
                           @Param("createDates") List<LocalDate> createDates,
                           @Param("statuses") List<Status> statuses);
+
+    @Query("SELECT DISTINCT u FROM User u JOIN u.mailings m")
+    List<User> findAllUsersWithMailings();
 }

@@ -8,6 +8,7 @@ import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Setter
@@ -29,4 +30,6 @@ public class MailingRequest {
     LocalDate promotionEndDate;
 
     LocalDate createDate;
+
+    List<Long> recipientIds;
 }

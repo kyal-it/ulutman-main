@@ -70,13 +70,9 @@ public class User implements UserDetails {
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "user")
     private Favorite favorites;
 
-    @ManyToMany
-    @JoinTable(
-            name = "mailing_user",       // Имя таблицы связи
-            joinColumns = @JoinColumn(name = "user_id"),   // Колонка внешнего ключа для User
-            inverseJoinColumns = @JoinColumn(name = "mailing_id")  // Колонка внешнего ключа для Mailing
-    )
-    private Set<Mailing> mailings;
+    @ManyToMany(mappedBy = "recipients")
+    private List<Mailing> mailings = new ArrayList<>();
+
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

@@ -10,8 +10,8 @@ import lombok.ToString;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
-import java.util.Set;
-
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "mailing")
@@ -45,6 +45,12 @@ public class Mailing {
 
     LocalDate createDate;
 
-    @ManyToMany(mappedBy = "mailings")
-    private Set<User> users;
+
+    @ManyToMany
+    @JoinTable(
+            name = "mailing_user",
+            joinColumns = @JoinColumn(name = "mailing_id"),
+            inverseJoinColumns = @JoinColumn(name = "user_id")
+    )
+    private List<User> recipients = new ArrayList<>();
 }
