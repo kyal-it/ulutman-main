@@ -15,18 +15,6 @@ import java.util.List;
 @Repository
 public interface MailingRepository extends JpaRepository<Mailing, Long> {
 
-//    @Query("""
-//    SELECT mailing FROM Mailing mailing WHERE
-//    (:titles IS NULL OR LOWER(mailing.title) LIKE LOWER(CONCAT('%', :titles, '%')))
-//    """)
-//    List<Mailing> mailingFilterByTitle(@Param("titles") String titles);
-
-
-    //    @Query("""
-//        SELECT mailing FROM Mailing mailing WHERE
-//        (:titles IS NULL OR LOWER(mailing.title) LIKE LOWER(CONCAT(:titles, '%')))
-//        """)
-//    List<Mailing> mailingFilterByTitle(@Param("titles") String titles);
     @Query("""
                 SELECT mailing FROM Mailing mailing WHERE
                 (:titles IS NULL OR LOWER(mailing.title) LIKE LOWER(CONCAT('%', :titles, '%')))

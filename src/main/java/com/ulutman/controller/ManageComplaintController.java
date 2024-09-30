@@ -57,6 +57,7 @@ public class ManageComplaintController {
         ComplaintResponse updatedComplaint = complaintService.updateComplaintStatus(id, complaintRequest);
         return ResponseEntity.ok(updatedComplaint);
     }
+
     @Operation(summary = "Delete complaint by id")
     @ApiResponse(responseCode = "201", description = "Deleted complaint by id successfully")
     @DeleteMapping("/deleteById/{id}")
