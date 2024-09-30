@@ -48,6 +48,7 @@ public class MailingMapper {
                 .build();
     }
 
+
     private AuthResponse mapUserToAuthResponse(User user) {
         if (user == null) {
             return null;

@@ -13,10 +13,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Repository
-public interface MailingRepository extends JpaRepository<Mailing,Long> {
-
-    @Query("SELECT m.recipients FROM Mailing m WHERE m.id = :mailingId")
-    List<User> findRecipientsByMailingId(@Param("mailingId") Long mailingId);
+public interface MailingRepository extends JpaRepository<Mailing, Long> {
 
 //    @Query("""
 //    SELECT mailing FROM Mailing mailing WHERE
@@ -25,18 +22,24 @@ public interface MailingRepository extends JpaRepository<Mailing,Long> {
 //    List<Mailing> mailingFilterByTitle(@Param("titles") String titles);
 
 
+    //    @Query("""
+//        SELECT mailing FROM Mailing mailing WHERE
+//        (:titles IS NULL OR LOWER(mailing.title) LIKE LOWER(CONCAT(:titles, '%')))
+//        """)
+//    List<Mailing> mailingFilterByTitle(@Param("titles") String titles);
     @Query("""
-        SELECT mailing FROM Mailing mailing WHERE
-        (:titles IS NULL OR LOWER(mailing.title) LIKE LOWER(CONCAT(:titles, '%')))
-        """)
+                SELECT mailing FROM Mailing mailing WHERE
+                (:titles IS NULL OR LOWER(mailing.title) LIKE LOWER(CONCAT('%', :titles, '%')))
+            """)
     List<Mailing> mailingFilterByTitle(@Param("titles") String titles);
 
+
     @Query("""
-        SELECT mailing FROM Mailing mailing WHERE
-        (:mailingTypes IS NULL OR mailing.mailingType IN :mailingTypes) AND
-        (:mailingStatuses IS NULL OR mailing.mailingStatus IN :mailingStatuses) AND
-        (:createDates IS NULL OR mailing.createDate IN :createDates)
-        """)
+            SELECT mailing FROM Mailing mailing WHERE
+            (:mailingTypes IS NULL OR mailing.mailingType IN :mailingTypes) AND
+            (:mailingStatuses IS NULL OR mailing.mailingStatus IN :mailingStatuses) AND
+            (:createDates IS NULL OR mailing.createDate IN :createDates)
+            """)
     List<Mailing> filterMailing(
             @Param("mailingTypes") List<MailingType> mailingTypes,
             @Param("mailingStatuses") List<MailingStatus> mailingStatuses,
