@@ -99,22 +99,6 @@ public class ManageMailingService {
                 .collect(Collectors.toList());
     }
 
-
-//    public List<MailingResponse> filterMailingByTitle(String title) {
-//
-//        // Проверяем, является ли строка пустой после обрезки пробелов
-//        if (title != null && title.isEmpty()) {
-//            throw new RuntimeException("Название не может быть пустым или содержать только пробелы.");
-//        }
-//        title = title.toLowerCase() + "%";
-//
-//        // Выполняем запрос и маппим результаты
-//        return mailingRepository.mailingFilterByTitle(title).stream()
-//                .map(mailingMapper::mapToResponse)
-//                .collect(Collectors.toList());
-//    }
-
-
     public List<MailingResponse> filterMailing(List<MailingType> mailingTypes,
                                                List<MailingStatus> mailingStatuses,
                                                List<LocalDate> createDates) {
