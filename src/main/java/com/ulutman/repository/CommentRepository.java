@@ -1,7 +1,7 @@
 package com.ulutman.repository;
 
 import com.ulutman.model.entities.Comment;
-import com.ulutman.model.entities.User;
+import com.ulutman.model.enums.ModeratorStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,14 +15,17 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     List<Comment> findByUserId(Long postId);
 
+    @Query("""
+        SELECT comment FROM Comment comment WHERE 
+        (:content IS NULL OR LOWER(comment.content)LIKE LOWER(CONCAT('%', :content, '%') ))
+
+        """)
+    List<Comment> CommentsFilterByContents(@Param("content") String content);
+
     @Query("SELECT c FROM Comment c WHERE " +
-           "(:users IS NULL OR c.user.id = :users) AND " +
-           "(:content IS NULL OR LOWER(c.content)  IN :content) AND " +
            "(:createDates IS NULL OR c.createDate IN :createDates) AND " +
-           "(:moderatorStatuses IS NULL OR LOWER(c.moderatorStatus)  IN :moderatorStatuses)")
+           "(:moderatorStatuses IS NULL OR c.moderatorStatus IN :moderatorStatuses)")
     List<Comment> findCommentsByFilters(
-            @Param("users") List<User> users,
-            @Param("content") List<String> content,
             @Param("createDates") List<LocalDate> createDates,
-            @Param("moderatorStatuses") List<String> moderatorStatuses);
+            @Param("moderatorStatuses") List<ModeratorStatus> moderatorStatuses);
 }
