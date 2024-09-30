@@ -1,6 +1,7 @@
 package com.ulutman.controller;
 
 import com.ulutman.model.dto.MailingResponse;
+import com.ulutman.model.entities.User;
 import com.ulutman.model.enums.MailingStatus;
 import com.ulutman.model.enums.MailingType;
 import com.ulutman.service.ManageMailingService;
@@ -9,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,31 +32,32 @@ public class ManageMailingController {
         return ResponseEntity.ok("Рассылка успешно отправлена всем пользователям.");
     }
 
-    // Получить все рассылки
+    @GetMapping("/users-with-mailings")
+    public List<User> getAllUsersWithMailings() {
+        return manageMailingService.getAllUsersWithMailings();
+    }
+
     @GetMapping("/all")
     public ResponseEntity<List<MailingResponse>> getAllMailings() {
         List<MailingResponse> mailings = manageMailingService.getAllMailings();
-        return ResponseEntity.ok(mailings);
+        return ResponseEntity.ok(mailings); // Возвращаем ответ с кодом 200 и списком рассылок
     }
 
-    // Обновить статус рассылки
     @PutMapping("/{id}/status")
     public ResponseEntity<MailingResponse> updateMailingStatus(@PathVariable Long id,
-                                                               @RequestParam MailingStatus  newStatus) {
+                                                               @RequestParam MailingStatus newStatus) {
         MailingResponse response = manageMailingService.updateMailingStatus(id, newStatus);
         return ResponseEntity.ok(response);
     }
 
-    //    @GetMapping("/title/filter") // Путь для фильтрации по заголовку
-//    public List<MailingResponse> filterMailingByTitle(@RequestParam(required = false) String titles) {
-//        return manageMailingService.filterMailingByTitle(titles);
-//    }
-    @GetMapping("/title/filter")
-    public ResponseEntity<List<MailingResponse>> filterMailingsByTitle(
-            @RequestParam(value = "title") String title) {
-
-        List<MailingResponse> mailingResponses = manageMailingService.filterMailingByTitle(title);
-        return ResponseEntity.ok(mailingResponses);
+    @GetMapping("title/filter") // Эндпоинт для фильтрации
+    public ResponseEntity<List<MailingResponse>> filterMailingByTitle(@RequestParam String title) {
+        try {
+            List<MailingResponse> mailings = manageMailingService.filterMailingByTitle(title);
+            return new ResponseEntity<>(mailings, HttpStatus.OK); // Возвращаем список с кодом 200
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST); // Если ошибка, возвращаем 400
+        }
     }
 
     @Operation(summary = "Filter mailings")

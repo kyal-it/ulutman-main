@@ -1,6 +1,8 @@
 package com.ulutman.service;
 
+import com.ulutman.mapper.AuthMapper;
 import com.ulutman.mapper.MailingMapper;
+import com.ulutman.model.dto.AuthResponse;
 import com.ulutman.model.dto.MailingResponse;
 import com.ulutman.model.entities.Mailing;
 import com.ulutman.model.entities.User;
@@ -30,8 +32,8 @@ public class ManageMailingService {
     private final MailingMapper mailingMapper;
     private final MailingService mailingService;
     private final UserRepository userRepository;
+    private final AuthMapper authMapper;
 
-    // Новый метод для рассылки всем пользователям
     public void sendMailingToAllUsers(Long mailingId) {
         List<User> users = userRepository.findAll();
         System.out.println("ВСЕ полльзователи " +users);// Получаем всех пользователей
@@ -47,12 +49,29 @@ public class ManageMailingService {
         });
     }
 
+    public List<User> getAllUsersWithMailings() {
+        return userRepository.findAllUsersWithMailings();
+    }
+
     public List<MailingResponse> getAllMailings() {
         List<Mailing> mailings = mailingRepository.findAll();
 
         return mailings.stream()
-                .map(mailingMapper::mapToResponse)
+                .map(this::mapMailingToResponse)
                 .collect(Collectors.toList());
+    }
+
+    private MailingResponse mapMailingToResponse(Mailing mailing) {
+        MailingResponse response = mailingMapper.mapToResponse(mailing);
+
+        // Добавляем всех пользователей, кому была отправлена рассылка
+        List<AuthResponse> recipients = mailing.getRecipients().stream()
+                .map(authMapper::mapToResponse) // Преобразуем User в UserResponse
+                .collect(Collectors.toList());
+
+        response.setRecipients(recipients);
+
+        return response;
     }
 
     public MailingResponse updateMailingStatus(Long id, MailingStatus newStatus) {
@@ -71,7 +90,7 @@ public class ManageMailingService {
             throw new RuntimeException("Название не может быть пустым или содержать только пробелы.");
         }
 
-        String formattedTitle = "%" + title.trim().toLowerCase() + "%";
+        String formattedTitle = title.trim(); // Просто убираем пробелы
 
         // Выполняем запрос и маппим результаты в DTO
         List<Mailing> mailings = mailingRepository.mailingFilterByTitle(formattedTitle);
@@ -79,6 +98,7 @@ public class ManageMailingService {
                 .map(mailingMapper::mapToResponse)
                 .collect(Collectors.toList());
     }
+
 
 //    public List<MailingResponse> filterMailingByTitle(String title) {
 //
