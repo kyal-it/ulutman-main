@@ -32,14 +32,6 @@ public class ManageModeratorController {
         return ResponseEntity.ok(responses);
     }
 
-    @Operation(summary = "Get all user comments")
-    @ApiResponse(responseCode = "200", description = "Retrieved all user comments successfully")
-    @GetMapping("/all")
-    public ResponseEntity<List<UserCommentsResponse>> getAllUserComments() {
-        List<UserCommentsResponse> userComments = manageModeratorService.getAllUserComments();
-        return ResponseEntity.ok(userComments);
-    }
-
     @Operation(summary = "Update comment status")
     @ApiResponse(responseCode = "201", description = "Updated comment status successfully")
     @PutMapping("/{commentId}/status")

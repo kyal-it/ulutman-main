@@ -49,49 +49,6 @@ public class ManageModeratorService {
                 .collect(Collectors.toList());
     }
 
-    public List<UserCommentsResponse> getAllUserComments() {
-        // Получаем всех пользователей
-        List<User> users = userRepository.findAll();
-
-        // Создаем список для хранения ответов
-        return users.stream().map(user -> {
-            // Получаем комментарии пользователя
-            List<Comment> userComments = commentRepository.findByUserId(user.getId());
-
-            // Проверка, есть ли комментарии
-            if (userComments.isEmpty()) {
-                System.out.println("No comments found for user: " + user.getUsername());
-            }
-
-            // Преобразуем комментарии в ModeratorCommentResponse
-            List<ModeratorCommentResponse> commentResponses = userComments.stream()
-                    .map(comment -> {
-                        // Проверка, есть ли пользователь для комментария
-                        User commentUser = comment.getUser();
-                        if (commentUser == null) {
-                            System.out.println("User for comment " + comment.getId() + " is null");
-                        }
-
-                        return ModeratorCommentResponse.builder()
-                                .commentId(comment.getId())
-                                .username(user.getUsername()) // Устанавливаем username здесь
-                                .authResponse(authMapper.mapToResponse(commentUser))
-                                .commentContent(comment.getContent())
-                                .createDate(comment.getCreateDate())
-                                .moderatorStatus(comment.getModeratorStatus())
-                                .build();
-                    })
-                    .collect(Collectors.toList());
-
-            // Создаем объект UserCommentsResponse для текущего пользователя
-            return new UserCommentsResponse(
-                    user.getId(),
-                    user.getUsername(),
-                    commentResponses
-            );
-        }).collect(Collectors.toList()); // Сбор всех UserCommentsResponse в список
-    }
-
     public CommentResponse updateCommentStatus(Long id, ModeratorStatus newStatus) {
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Комментарий по идентификатору " + id + " не найден"));
