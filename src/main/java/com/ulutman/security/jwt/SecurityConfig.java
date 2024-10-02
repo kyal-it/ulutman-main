@@ -62,7 +62,8 @@ public class SecurityConfig {
                                         "/api/mailing/sendPasswordResetCode",
                                         "/api/mailing/resetPassword",
                                         "/api/S3/**",
-                                        "/api/favorites/check")
+                                        "/api/favorites/check",
+                                        "/api/user-accounts/{userId}")
                                 .permitAll()
                                 .anyRequest()
                                 .authenticated())

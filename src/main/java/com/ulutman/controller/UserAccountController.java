@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,26 +16,13 @@ import org.springframework.web.bind.annotation.*;
 
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/user-accounts")
 @Tag(name = "Profile")
 @SecurityRequirement(name = "Authorization")
 public class UserAccountController {
-    @Autowired
-    private ProfileService userAccountService;
 
-    @Operation(summary = "Create a profile")
-    @ApiResponse(responseCode = "201", description = "The profile created successfully")
-    @PostMapping
-    public ResponseEntity<UserAccount> createUserAccount(@RequestBody UserAccountCreateRequest request) {
-        UserAccount userAccount = userAccountService.createUserAccount(
-                request.getUserId(),
-                request.getUsername(),
-                request.getLastName(),
-                request.getPhoneNumber(),
-                request.getEmailAddress()
-        );
-        return new ResponseEntity<>(userAccount, HttpStatus.CREATED);
-    }
+    private  final ProfileService userAccountService;
 
     @Operation(summary = "Update a profile")
     @ApiResponse(responseCode = "201", description = "The profile updated successfully")

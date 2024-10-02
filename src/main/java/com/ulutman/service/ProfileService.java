@@ -16,14 +16,14 @@ public class ProfileService {
     private final UserRepository userRepository;
     private final UserAccontRepository userAccontRepository;
 
-    public UserAccount createUserAccount(Long userId, String username, String lastName, String phoneNumber, String emailAddress) {
+    public UserAccount updateUserAccount(Long userId, String username, String lastName, String phoneNumber, String emailAddress) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Колдонуучу табылган жок"));
 
         UserAccount userAccount = user.getUserAccount();
+
         if (userAccount == null) {
-            userAccount = new UserAccount();
-            user.setUserAccount(userAccount);
+            throw new IllegalArgumentException("Жеке кабинет табылган жок");
         }
 
         userAccount.setUsername(username);
@@ -31,34 +31,11 @@ public class ProfileService {
         userAccount.setNumber(phoneNumber);
         userAccount.setGmail(emailAddress);
 
-        user.setName(username); // Предполагается, что у User есть поле name
+        user.setName(username);
         user.setEmail(emailAddress);
         userRepository.save(user);
 
         return userAccontRepository.save(userAccount);
     }
-
-    public UserAccount updateUserAccount(Long userId, String username, String lastName, String phoneNumber, String emailAddress) {
-            User user = userRepository.findById(userId)
-                    .orElseThrow(() -> new IllegalArgumentException("Колдонуучу табылган жок"));
-
-            UserAccount userAccount = user.getUserAccount();
-
-            if (userAccount == null) {
-                throw new IllegalArgumentException("Жеке кабинет табылган жок");
-            }
-
-            userAccount.setUsername(username);
-            userAccount.setLastName(lastName);
-            userAccount.setNumber(phoneNumber);
-            userAccount.setGmail(emailAddress);
-
-            user.setName(username); // Предполагается, что у User есть поле name
-            user.setEmail(emailAddress);
-            userRepository.save(user);
-
-            return userAccontRepository.save(userAccount);
-        }
-
-    }
+}
 

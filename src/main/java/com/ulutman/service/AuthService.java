@@ -10,6 +10,7 @@ import com.ulutman.model.dto.LoginRequest;
 import com.ulutman.model.dto.LoginResponse;
 import com.ulutman.model.entities.Favorite;
 import com.ulutman.model.entities.User;
+import com.ulutman.model.entities.UserAccount;
 import com.ulutman.model.enums.Role;
 import com.ulutman.model.enums.Status;
 import com.ulutman.repository.UserRepository;
@@ -54,6 +55,11 @@ public class AuthService {
         Favorite basket = new Favorite();
         user.setFavorites(basket);
         basket.setUser(user);
+
+        UserAccount userAccount = new UserAccount();
+        user.setUserAccount(userAccount);
+        userAccount.setUsername(user.getUsername());
+        userAccount.setGmail(user.getEmail());
 
         userRepository.save(user);
         return authMapper.mapToResponse(user);
