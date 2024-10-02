@@ -67,4 +67,12 @@ public class PublishController {
         this.publishService.deletePublish(id);
         return "Delete publish with id:" + id + " successfully delete";
     }
+
+    @Operation(summary = "My publishes")
+    @ApiResponse(responseCode = "201", description = "return list of my publishes successfully")
+    @GetMapping("/my")
+    public ResponseEntity<List<PublishResponse>> getMyPublishes(@RequestParam Long userId) {
+        List<PublishResponse> publishes = publishService.myPublishes(userId);
+        return ResponseEntity.ok(publishes);
+    }
 }

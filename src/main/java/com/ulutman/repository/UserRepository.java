@@ -1,5 +1,6 @@
 package com.ulutman.repository;
 
+import com.ulutman.model.entities.Publish;
 import com.ulutman.model.entities.User;
 import com.ulutman.model.enums.Role;
 import com.ulutman.model.enums.Status;
@@ -36,4 +37,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("SELECT DISTINCT u FROM User u JOIN u.mailings m")
     List<User> findAllUsersWithMailings();
+
+    @Query("select app from Publish app join app.user user where user.id = :id")
+    List<Publish> getAllPublishByUserId(@Param("id") Long id);
 }
