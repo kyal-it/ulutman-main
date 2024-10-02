@@ -15,6 +15,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -90,5 +91,13 @@ public class PublishService {
             return new EntityNotFoundException("Публикация  по идентификатору " + productId + " успешно удалено");
         });
         this.publishRepository.deleteById(productId);
+    }
+    public List<PublishResponse> myPublishes(Long userId) {
+        List<Publish> myPublish = userRepository.getAllPublishByUserId(userId);
+        List<PublishResponse> appResponses = new ArrayList<>();
+        for (Publish publish : myPublish) {
+            appResponses.add(publishMapper.mapToResponse(publish));
+        }
+        return appResponses;
     }
 }
