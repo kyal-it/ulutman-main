@@ -51,4 +51,12 @@ public class FavoriteController {
         favoriteService.deleteAllFavorites(principal);
         return ResponseEntity.ok("Ваш список избранного был успешно очищен");
     }
+
+    @Operation(summary = "Check favorites status")
+    @ApiResponse(responseCode = "201", description = "Checked favorites status  successfully")
+    @GetMapping("/favorites/check")
+    public ResponseEntity<Boolean> isPublishInFavorites(@RequestParam Long productId, Principal principal) {
+        boolean isInFavorites = favoriteService.isPublishInFavorites(productId, principal);
+        return ResponseEntity.ok(isInFavorites);
+    }
 }
