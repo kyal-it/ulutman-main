@@ -90,5 +90,19 @@ public class FavoriteService {
             throw new RuntimeException("Your favorites list is empty");
         }
     }
+
+    public boolean isPublishInFavorites(Long productId, Principal principal) {
+        User user = userRepository.findByEmail(principal.getName())
+                .orElseThrow(() -> new NotFoundException("User not found"));
+
+        Favorite favorites = favoriteRepository.getFavoritesByUserId(user.getId());
+
+        if (favorites == null || favorites.getPublishes() == null || favorites.getPublishes().isEmpty()) {
+            return false;
+        }
+
+        return favorites.getPublishes().stream()
+                .anyMatch(publish -> publish.getId().equals(productId));
+    }
 }
 
