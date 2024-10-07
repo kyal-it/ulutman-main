@@ -2,8 +2,6 @@ package com.ulutman.controller;
 
 import com.ulutman.model.dto.AuthResponse;
 import com.ulutman.model.dto.PublishResponse;
-import com.ulutman.model.dto.UserPublishesResponse;
-import com.ulutman.model.entities.Publish;
 import com.ulutman.model.enums.Category;
 import com.ulutman.model.enums.CategoryStatus;
 import com.ulutman.service.ManageCategoryService;
@@ -16,10 +14,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -33,6 +29,20 @@ public class ManageCategoryController {
     private final ManageCategoryService manageCategoryService;
     private final PublishService publishService;
 
+    @Operation(summary = "Get user publications")
+    @ApiResponse(responseCode = "201", description = "Return the list of the user's publications")
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<PublishResponse>> getAllPublishesByUser(@PathVariable Long userId) {
+        List<PublishResponse> publishes = manageCategoryService.getAllPublishesByUser(userId);
+        return ResponseEntity.ok(publishes);
+    }
+
+    @GetMapping("/with-publishes")
+    public ResponseEntity<List<AuthResponse>> getAllUsersWithPublishes() {
+        List<AuthResponse> users = manageCategoryService.getAllUsersWithPublishes();
+        return ResponseEntity.ok(users);
+    }
+
     @Operation(summary = "Update user status")
     @ApiResponse(responseCode = "201", description = "Updated category status successfully")
     @PutMapping("/{id}/categoryStatus")
@@ -43,13 +53,6 @@ public class ManageCategoryController {
         PublishResponse updatedPublish = manageCategoryService.updateCategoryStatus(id, newStatus);
         return ResponseEntity.ok(updatedPublish);
     }
-
-//    @Operation(summary = "Get user publications ")
-//    @ApiResponse(responseCode = "201", description = "Return the list of the user's publications")
-//    @GetMapping("/{userId}/publications")
-//    public UserPublishesResponse getUserWithPublications(@PathVariable Long userId) {
-//        return manageCategoryService.getUserWithFilteredPublications(userId);
-//    }
 
     @Operation(summary = "Count user publications ")
     @ApiResponse(responseCode = "201", description = "Return count of the user's publications")
@@ -65,8 +68,10 @@ public class ManageCategoryController {
         return manageCategoryService.filterUsersByName(name);
     }
 
+    @Operation(summary = "Filter by title ")
+    @ApiResponse(responseCode = "201", description = "title  successfully filtered")
     @GetMapping("/title/filter")
-    public List<Publish> getProductsByTitle(@RequestParam(required = false) String title) {
+    public List<PublishResponse> getProductsByTitle(@RequestParam(required = false) String title) {
         return manageCategoryService.getProductsByTitle(title);
     }
 
@@ -84,25 +89,16 @@ public class ManageCategoryController {
         return manageCategoryService.filterPublicationsByCategoryAndStatus(categories, categoryStatuses);
     }
 
-//    @Operation(summary = "Filter categories by count ")
-//    @ApiResponse(responseCode = "201", description = "category  successfully filtered")
-//    @GetMapping("/filterByMinCount")
-//    public ResponseEntity<?> filterPublicationsByCount(
-//            @RequestParam Integer minPublications) {
-//
-//        try {
-//            List<PublishResponse> filteredPublications = manageCategoryService.filterPublicationsByMinCount(minPublications);
-//            return ResponseEntity.ok(filteredPublications);
-//        } catch (IllegalArgumentException e) {
-//            log.info("Ошибка при фильтрации публикаций: {}", e.getMessage());
-//
-//            return ResponseEntity.badRequest().body("Ошибка: " + e.getMessage());
-//        } catch (Exception e) {
-//            log.info("Доступ запрещен: {}", e.getMessage());
-//
-//            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Ошибка: Доступ запрещен.");
-//        }
-//    }
+    @GetMapping("/count/filter")
+    public ResponseEntity<List<PublishResponse>> filterByPublicationCount(@RequestParam(required = false) Integer minCount,
+                                                                          @RequestParam(required = false) Integer maxCount) {
+        try {
+            List<PublishResponse> responses = manageCategoryService.getProductsByPublicationCount(minCount, maxCount);
+            return new ResponseEntity<>(responses, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        }
+    }
 
     @Operation(summary = "Reset filters categories")
     @ApiResponse(responseCode = "201", description = "Users filters successfully reset")

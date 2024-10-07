@@ -21,7 +21,8 @@ public interface PublishRepository extends JpaRepository<Publish, Long> {
     @Query("SELECT p FROM Publish p WHERE p.user.id = :userId")
     List<Publish> findByUserId(@Param("userId") Long userId);
 
-    @Query("SELECT p FROM Publish p WHERE (:title IS NULL OR p.title LIKE %:title%)")
+    @Query("SELECT p FROM Publish p WHERE " +
+           "(:title IS NULL OR :title = '' OR LOWER(p.title) LIKE LOWER(CONCAT(:title, '%')))")
     List<Publish> findProductsByTitle(@Param("title") String title);
 
     @Query("""
@@ -43,6 +44,11 @@ public interface PublishRepository extends JpaRepository<Publish, Long> {
             @Param("publishStatuses") List<PublishStatus> publishStatuses,
             @Param("createDates")List<LocalDate> createDates
     );
+
+    @Query("SELECT p FROM Publish p WHERE " +
+           "(:minCount IS NULL OR (SELECT COUNT(p2) FROM Publish p2 WHERE p2.category = p.category) >= :minCount) " +
+           "AND (:maxCount IS NULL OR (SELECT COUNT(p2) FROM Publish p2 WHERE p2.category = p.category) <= :maxCount)")
+    List<Publish> findProductsByPublicationCount(@Param("minCount") Integer minCount, @Param("maxCount") Integer maxCount);
 
     @Query("SELECT publish FROM Publish publish WHERE publish.category=('WORK')")
     List<Publish>findByCategoryWork();

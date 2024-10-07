@@ -79,7 +79,6 @@ create table publishes
     payment_id     bigint,
     user_id        bigint,
     price          double,
-    count          bigint,
     address        varchar(255),
     bank           varchar(255) check (bank in ('SBERBANK', 'TINKPOFF', 'ALFABANK', 'VTB', 'MTS')),
     category       varchar(255) check (category in

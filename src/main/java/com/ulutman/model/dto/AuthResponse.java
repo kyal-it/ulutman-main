@@ -6,6 +6,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Getter
 @Setter
@@ -24,4 +25,8 @@ public class AuthResponse {
     Status status;
 
     LocalDate createDate;
+
+    List<PublishResponse> publishes;
+
+    private int numberOfPublications;
 }
