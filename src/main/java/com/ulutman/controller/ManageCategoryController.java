@@ -37,6 +37,8 @@ public class ManageCategoryController {
         return ResponseEntity.ok(publishes);
     }
 
+    @Operation(summary = "Get all users with publications")
+    @ApiResponse(responseCode = "201", description = "Return the list of the user's publications")
     @GetMapping("/with-publishes")
     public ResponseEntity<List<AuthResponse>> getAllUsersWithPublishes() {
         List<AuthResponse> users = manageCategoryService.getAllUsersWithPublishes();
@@ -89,6 +91,8 @@ public class ManageCategoryController {
         return manageCategoryService.filterPublicationsByCategoryAndStatus(categories, categoryStatuses);
     }
 
+    @Operation(summary = "Filter by count ")
+    @ApiResponse(responseCode = "201", description = "count  successfully filtered")
     @GetMapping("/count/filter")
     public ResponseEntity<List<PublishResponse>> filterByPublicationCount(@RequestParam(required = false) Integer minCount,
                                                                           @RequestParam(required = false) Integer maxCount) {
