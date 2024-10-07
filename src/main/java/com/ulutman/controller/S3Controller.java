@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,8 +29,8 @@ public class S3Controller {
 
     @Operation(summary = "Загрузить файл в AWS")
     @ApiResponse(responseCode = "201", description = "Uploads the file to AWS and returns the url of the downloaded file")
-    @PostMapping("/upload")
-    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
+    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<String> uploadFile(@RequestPart("file") MultipartFile file) {
         String fileName = file.getOriginalFilename();
         if (fileName == null || file.isEmpty()) {
             return ResponseEntity.badRequest().body("Файл не найден");
