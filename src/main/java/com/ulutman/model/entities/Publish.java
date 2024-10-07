@@ -46,6 +46,8 @@ public class Publish {
 
     private String image;
 
+    private Integer count;
+
     @Column(name = "create_date")
     private LocalDate createDate;
 
