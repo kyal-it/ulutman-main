@@ -65,7 +65,7 @@ public class ManagePublishService {
     public List<PublishResponse> getAllPublishesByUser(Long userId) {
         List<Publish> publishes = publishRepository.findAllByUserId(userId);
         return publishes.stream()
-                .map(publishMapper::mapToResponse)  // Маппинг публикации в DTO
+                .map(publishMapper::mapToResponse)
                 .collect(Collectors.toList());
     }
 
