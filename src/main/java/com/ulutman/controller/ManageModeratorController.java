@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -48,16 +47,11 @@ public class ManageModeratorController {
         return manageModeratorService.filterUsersByName(name);
     }
 
-    @Operation(summary = "Filter mailings by title")
-    @ApiResponse(responseCode = "201", description = "Mailings by title successfully filtered")
+    @Operation(summary = "Filter comments by content")
+    @ApiResponse(responseCode = "201", description = "Comment by content successfully filtered")
     @GetMapping("content/filter")
-    public ResponseEntity<List<CommentResponse>> filterMailingByContent(@RequestParam String content) {
-        try {
-            List<CommentResponse> comments = manageModeratorService.filterCommentsByContent(content);
-            return new ResponseEntity<>(comments, HttpStatus.OK); // Возвращаем список с кодом 200
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST); // Если ошибка, возвращаем 400
-        }
+    public List<CommentResponse> filterComments(@RequestParam(required = false) String content) {
+        return manageModeratorService.filterCommentsByContent(content);
     }
 
     @Operation(summary = "Filter comments")

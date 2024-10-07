@@ -32,6 +32,7 @@ public class ManageModeratorService {
     private final AuthMapper authMapper;
 
     public List<ModeratorCommentResponse> getUserComments(Long userId) {
+
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Пользователь по идентификатору " + userId + " не найден"));
 
@@ -50,10 +51,9 @@ public class ManageModeratorService {
     }
 
     public CommentResponse updateCommentStatus(Long id, ModeratorStatus newStatus) {
+
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Комментарий по идентификатору " + id + " не найден"));
-
-        // Проверяем, нужно ли обновлять статус
         if (comment.getModeratorStatus() != newStatus) {
             comment.setModeratorStatus(newStatus);
             commentRepository.save(comment);
@@ -77,10 +77,12 @@ public class ManageModeratorService {
 
     public List<CommentResponse> filterCommentsByContent(String content) {
 
-        if (content != null && content.trim().isEmpty()) {
-            throw new IllegalArgumentException("Содержимое комментариев не может содержать нулевых значений.");
+        if (content == null || content.trim().isEmpty()) {
+            throw new IllegalArgumentException("Содержимое комментариев не может содержать только пробелы или быть пустым.");
         }
+
         List<Comment> comments = commentRepository.CommentsFilterByContents(content);
+
         return comments.stream()
                 .map(commentMapper::mapToResponse)
                 .collect(Collectors.toList());
@@ -94,6 +96,11 @@ public class ManageModeratorService {
 
         if (moderatorStatuses != null && moderatorStatuses.stream().anyMatch(Objects::isNull)) {
             throw new IllegalArgumentException("Статусы модерации не могут содержать нулевых значений.");
+        }
+
+        if ((createDates == null || createDates.isEmpty()) &&
+            (moderatorStatuses == null || moderatorStatuses.isEmpty())) {
+            throw new IllegalArgumentException("Должен быть указан хотя бы один фильтр: дата создания или статус модерации.");
         }
 
         List<Comment> comments = commentRepository.findCommentsByFilters(createDates, moderatorStatuses);
