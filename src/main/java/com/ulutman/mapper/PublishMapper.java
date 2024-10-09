@@ -50,6 +50,7 @@ public class PublishMapper {
                 .categoryStatus(publish.getCategoryStatus())
                 .publishStatus(publish.getPublishStatus())
                 .user(mapUserToAuthResponse(publish.getUser()))
+                .propertyDetails(publish.getPropertyDetails())
                 .build();
     }
 

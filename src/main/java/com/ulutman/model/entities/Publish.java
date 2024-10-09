@@ -69,4 +69,8 @@ public class Publish {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "property_details_id",referencedColumnName = "id")
+    private PropertyDetails propertyDetails;
 }
