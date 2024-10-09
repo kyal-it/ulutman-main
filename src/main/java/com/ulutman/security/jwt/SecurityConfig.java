@@ -62,7 +62,7 @@ public class SecurityConfig {
                                         "/api/users/complaints",
                                         "/api/mailing/sendPasswordResetCode",
                                         "/api/mailing/resetPassword",
-                                        "/api/S3/**",
+                                        "/api/S3/upload",
                                         "/api/favorites/check",
                                         "/api/user-accounts/{userId}")
                                 .permitAll()
