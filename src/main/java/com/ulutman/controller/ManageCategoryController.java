@@ -56,12 +56,12 @@ public class ManageCategoryController {
         return ResponseEntity.ok(updatedPublish);
     }
 
-    @Operation(summary = "Count user publications ")
-    @ApiResponse(responseCode = "201", description = "Return count of the user's publications")
-    @GetMapping("/count/{userId}")
-    public int getNumberOfPublications(@PathVariable Long userId) {
-        return publishService.getNumberOfPublications(userId);
-    }
+//    @Operation(summary = "Count user publications ")
+//    @ApiResponse(responseCode = "201", description = "Return count of the user's publications")
+//    @GetMapping("/count/{userId}")
+//    public int getNumberOfPublications(@PathVariable Long userId) {
+//        return publishService.getNumberOfPublications(userId);
+//    }
 
     @Operation(summary = "Filter  users by name")
     @ApiResponse(responseCode = "201", description = "Users  by name successfully filtered")
@@ -104,10 +104,10 @@ public class ManageCategoryController {
         }
     }
 
-    @Operation(summary = "Reset filters categories")
-    @ApiResponse(responseCode = "201", description = "Users filters successfully reset")
-    @GetMapping("/resetFilter")
-    public List<PublishResponse> resetFilter() {
-        return publishService.getAll();
-    }
+//    @Operation(summary = "Reset filters categories")
+//    @ApiResponse(responseCode = "201", description = "Users filters successfully reset")
+//    @GetMapping("/resetFilter")
+//    public List<PublishResponse> resetFilter() {
+//        return publishService.getAll();
+//    }
 }

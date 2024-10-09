@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,6 +17,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 @RequestMapping("/api/publishes")
 @Tag(name = "Publish")
 @SecurityRequirement(name = "Authorization")
@@ -35,6 +37,22 @@ public class PublishController {
         } catch (RuntimeException e) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
+    }
+
+    @Operation(summary = "Create a publication with details")
+    @ApiResponse(responseCode = "201", description = "The publish with details  created successfully")
+    @PostMapping("/createDetails")
+    public ResponseEntity<PublishResponse> createPublicationDetails(@RequestBody PublishRequest publishRequest) {
+        try {
+            PublishResponse publishResponse = publishService.createPublishDetails(publishRequest);
+            return new ResponseEntity<>(publishResponse, HttpStatus.CREATED);
+        } catch (IllegalArgumentException e) {
+            log.error("Ошибка при создании публикации: ", e);
+            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+        }
+
     }
 
     @Operation(summary = "Get all publications")

@@ -1,5 +1,6 @@
 package com.ulutman.model.dto;
 
+import com.ulutman.model.entities.PropertyDetails;
 import com.ulutman.model.enums.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -43,4 +44,6 @@ public class PublishResponse {
     AuthResponse user;
 
     CategoryStatus categoryStatus;
+
+    PropertyDetails propertyDetails; // Добавьте это поле
 }

@@ -1,5 +1,6 @@
 package com.ulutman.model.dto;
 
+import com.ulutman.model.entities.PropertyDetails;
 import com.ulutman.model.enums.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -37,4 +38,6 @@ public class PublishRequest {
     Long userId;
 
     CategoryStatus categoryStatus;
+
+    PropertyDetails propertyDetails;
 }

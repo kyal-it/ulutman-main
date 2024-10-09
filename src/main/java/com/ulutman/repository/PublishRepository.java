@@ -4,6 +4,7 @@ import com.ulutman.model.entities.Publish;
 import com.ulutman.model.enums.Category;
 import com.ulutman.model.enums.CategoryStatus;
 import com.ulutman.model.enums.PublishStatus;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -20,6 +21,11 @@ public interface PublishRepository extends JpaRepository<Publish, Long> {
 
     @Query("SELECT p FROM Publish p WHERE p.user.id = :userId")
     List<Publish> findByUserId(@Param("userId") Long userId);
+
+    @Query("SELECT COUNT(p) FROM Publish p WHERE p.user.id = :userId")
+    @Cacheable("false")
+        // Отключаем кэширование для этого запроса
+    Integer countPublicationsByUserId(@Param("userId") Long userId);
 
     @Query("SELECT p FROM Publish p WHERE " +
            "(:title IS NULL OR :title = '' OR LOWER(p.title) LIKE LOWER(CONCAT(:title, '%')))")
@@ -42,7 +48,7 @@ public interface PublishRepository extends JpaRepository<Publish, Long> {
     List<Publish> filterPublishes(
             @Param("categories") List<Category> categories,
             @Param("publishStatuses") List<PublishStatus> publishStatuses,
-            @Param("createDates")List<LocalDate> createDates
+            @Param("createDates") List<LocalDate> createDates
     );
 
     @Query("SELECT p FROM Publish p WHERE " +
@@ -51,15 +57,20 @@ public interface PublishRepository extends JpaRepository<Publish, Long> {
     List<Publish> findProductsByPublicationCount(@Param("minCount") Integer minCount, @Param("maxCount") Integer maxCount);
 
     @Query("SELECT publish FROM Publish publish WHERE publish.category=('WORK')")
-    List<Publish>findByCategoryWork();
+    List<Publish> findByCategoryWork();
+
     @Query("SELECT publish FROM Publish publish WHERE publish.category=('RENT')")
     List<Publish> findByCategoryRent();
+
     @Query("SELECT publish FROM Publish publish WHERE publish.category=('SELL')")
-    List<Publish>findByCategorySell();
+    List<Publish> findByCategorySell();
+
     @Query("SELECT publish FROM Publish publish WHERE publish.category=('HOTEL')")
     List<Publish> findByCategoryHotel();
+
     @Query("SELECT publish FROM Publish publish WHERE publish.category =('AUTO')")
     List<Publish> findByCategoryServices();
+
     @Query("SELECT publish FROM Publish publish WHERE publish.category=('REAL_ESTATE')")
     List<Publish> findByCategoryRealEstate();
 }

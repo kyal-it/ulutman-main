@@ -17,6 +17,7 @@ public class UserAccount {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private Long id;
+
     private String username;
     private String number;
     private String lastName;
@@ -25,19 +26,10 @@ public class UserAccount {
     @OneToMany(mappedBy = "userAccount", cascade = CascadeType.ALL)
     private List<Message> messages;
 
-//    @OneToOne(mappedBy = "userAccount",cascade = CascadeType.ALL)
-//    private Favorite favorite;
-
     @OneToOne(mappedBy = "userAccount", cascade = CascadeType.ALL)
     private MyPublish myPublish;
 
-//    @OneToOne(cascade = CascadeType.ALL)
-//    @JoinColumn(name = "user_id")
-//    private User user;
-
-//     @Column(name = "user_id")
-//     private Long userId;
-
-
-
+    @OneToOne(cascade = CascadeType.ALL) // Убедитесь, что используете CascadeType для создания UserAccount
+    @JoinColumn(name = "user_id", referencedColumnName = "id") // Указываем имя столбца для связи
+    private User user; // Это поле связывает UserAccount с User
 }
