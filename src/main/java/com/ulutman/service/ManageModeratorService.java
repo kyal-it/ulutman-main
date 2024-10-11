@@ -98,10 +98,10 @@ public class ManageModeratorService {
             throw new IllegalArgumentException("Статусы модерации не могут содержать нулевых значений.");
         }
 
-        if ((createDates == null || createDates.isEmpty()) &&
-            (moderatorStatuses == null || moderatorStatuses.isEmpty())) {
-            throw new IllegalArgumentException("Должен быть указан хотя бы один фильтр: дата создания или статус модерации.");
-        }
+//        if ((createDates == null || createDates.isEmpty()) &&
+//            (moderatorStatuses == null || moderatorStatuses.isEmpty())) {
+//            throw new IllegalArgumentException("Должен быть указан хотя бы один фильтр: дата создания или статус модерации.");
+//        }
 
         List<Comment> comments = commentRepository.findCommentsByFilters(createDates, moderatorStatuses);
 
