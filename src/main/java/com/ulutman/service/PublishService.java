@@ -121,7 +121,7 @@ public class PublishService {
         return publishResponse;
     }
 
-    private Integer getNumberOfPublications(Long userId) {
+    public Integer getNumberOfPublications(Long userId) {
         return publishRepository.countPublicationsByUserId(userId);
     }
 

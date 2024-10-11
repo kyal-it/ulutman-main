@@ -6,8 +6,6 @@ import com.ulutman.model.entities.User;
 import com.ulutman.model.enums.Role;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
-
 @Component
 public class AuthMapper {
 
@@ -23,6 +21,7 @@ public class AuthMapper {
     }
 
     public AuthResponse mapToResponse(User user) {
+
         return AuthResponse.builder()
                 .id(user.getId())
                 .name(user.getName())

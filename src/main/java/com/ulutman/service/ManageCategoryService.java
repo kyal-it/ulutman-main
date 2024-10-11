@@ -3,7 +3,6 @@ package com.ulutman.service;
 import com.ulutman.exception.NotFoundException;
 import com.ulutman.mapper.AuthMapper;
 import com.ulutman.mapper.PublishMapper;
-import com.ulutman.mapper.UserPublishesMapper;
 import com.ulutman.model.dto.AuthResponse;
 import com.ulutman.model.dto.PublishResponse;
 import com.ulutman.model.entities.Publish;
@@ -90,6 +89,25 @@ public class ManageCategoryService {
                 .collect(Collectors.toList());
     }
 
+    public List<PublishResponse> filterPublicationsByUserIdAndUserName(Long userId, String name) {
+        if (userId == null || name == null || name.trim().isEmpty()) {
+            throw new IllegalArgumentException("ID пользователя и имя не могут быть пустыми.");
+        }
+
+        List<Publish> filteredPublications = publishRepository.filterPublicationsByUserIdAndUserName(userId, name);
+
+        return filteredPublications.stream()
+                .map(pub -> PublishResponse.builder()
+                        .id(pub.getId())
+                        .title(pub.getTitle())
+                        .description(pub.getDescription())
+                        .price(pub.getPrice())
+                        .category(pub.getCategory())
+                        .createDate(pub.getCreateDate())
+                        .build()
+                ).collect(Collectors.toList());
+    }
+
     public List<PublishResponse> getProductsByTitle(String title) {
 
         if (title == null || title.trim().isEmpty()) {
@@ -128,4 +146,5 @@ public class ManageCategoryService {
                 .map(publishMapper::mapToResponse)
                 .collect(Collectors.toList());
     }
+
 }

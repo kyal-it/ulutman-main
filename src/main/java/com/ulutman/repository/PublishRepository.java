@@ -51,6 +51,13 @@ public interface PublishRepository extends JpaRepository<Publish, Long> {
             @Param("createDates") List<LocalDate> createDates
     );
 
+    @Query("SELECT p FROM Publish p WHERE p.user.id = :userId AND LOWER(p.user.name) LIKE LOWER(CONCAT('%', :name, '%'))")
+    List<Publish> filterPublicationsByUserIdAndUserName(@Param("userId") Long userId, @Param("name") String name);
+
+//    @Query("SELECT p FROM Publish p WHERE p.user.id = :userId AND p.user.name LIKE %:name%")
+//    @Cacheable("false")
+//    List<Publish> filterPublicationsByUserIdAndUserName(@Param("userId") Long userId, @Param("name") String name);
+
     @Query("SELECT p FROM Publish p WHERE " +
            "(:minCount IS NULL OR (SELECT COUNT(p2) FROM Publish p2 WHERE p2.category = p.category) >= :minCount) " +
            "AND (:maxCount IS NULL OR (SELECT COUNT(p2) FROM Publish p2 WHERE p2.category = p.category) <= :maxCount)")
