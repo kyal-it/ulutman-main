@@ -17,7 +17,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
 @Slf4j
@@ -56,18 +55,31 @@ public class ManageCategoryController {
         return ResponseEntity.ok(updatedPublish);
     }
 
-//    @Operation(summary = "Count user publications ")
-//    @ApiResponse(responseCode = "201", description = "Return count of the user's publications")
-//    @GetMapping("/count/{userId}")
-//    public int getNumberOfPublications(@PathVariable Long userId) {
-//        return publishService.getNumberOfPublications(userId);
-//    }
+    @Operation(summary = "Count user publications ")
+    @ApiResponse(responseCode = "201", description = "Return count of the user's publications")
+    @GetMapping("/count/{userId}")
+    public int getNumberOfPublications(@PathVariable Long userId) {
+        return publishService.getNumberOfPublications(userId);
+    }
 
     @Operation(summary = "Filter  users by name")
     @ApiResponse(responseCode = "201", description = "Users  by name successfully filtered")
     @GetMapping("/name/filter")
     public List<AuthResponse> filterUsers(@RequestParam(required = false) String name) {
         return manageCategoryService.filterUsersByName(name);
+    }
+
+    @GetMapping("/user/filter")
+    public ResponseEntity<List<PublishResponse>> filterPublicationsByUserIdAndUserName(
+            @RequestParam Long userId,
+            @RequestParam String name) {
+
+        List<PublishResponse> publishResponses = manageCategoryService.filterPublicationsByUserIdAndUserName(userId, name);
+        if (publishResponses.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(publishResponses);
     }
 
     @Operation(summary = "Filter by title ")
@@ -104,10 +116,10 @@ public class ManageCategoryController {
         }
     }
 
-//    @Operation(summary = "Reset filters categories")
-//    @ApiResponse(responseCode = "201", description = "Users filters successfully reset")
-//    @GetMapping("/resetFilter")
-//    public List<PublishResponse> resetFilter() {
-//        return publishService.getAll();
-//    }
+    @Operation(summary = "Reset filters categories")
+    @ApiResponse(responseCode = "201", description = "Users filters successfully reset")
+    @GetMapping("/resetFilter")
+    public List<PublishResponse> resetFilter() {
+        return publishService.getAll();
+    }
 }
