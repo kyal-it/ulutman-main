@@ -7,6 +7,7 @@ import com.ulutman.model.entities.Favorite;
 import com.ulutman.model.entities.User;
 import com.ulutman.model.enums.Role;
 import com.ulutman.repository.UserRepository;
+import jakarta.annotation.PostConstruct;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -21,6 +22,12 @@ import java.time.LocalDate;
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AdminService {
+
+    @PostConstruct
+    public void init() {
+
+        System.out.println("AdminService инициализирован!");
+    }
 
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
