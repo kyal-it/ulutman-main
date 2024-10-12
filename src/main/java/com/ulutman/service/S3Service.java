@@ -11,6 +11,9 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class S3Service {
@@ -27,7 +30,6 @@ public class S3Service {
                      @Value("${aws.s3.secret-access-key}") String secretAccessKey,
                      @Value("${aws.s3.region}") String region) {
 
-        // Настройка AWS Credentials и инициализация клиента S3
         AwsBasicCredentials awsCredentials = AwsBasicCredentials.create(accessKeyId, secretAccessKey);
         s3Client = S3Client.builder()
                 .region(Region.of(region))
@@ -35,21 +37,44 @@ public class S3Service {
                 .build();
     }
 
-    public String uploadFile(String fileName, Path filePath) {
-        try {
+    public List<String> uploadFiles(Map<String, Path> files) {
+        List<String> fileUrls = new ArrayList<>();
 
-            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-                    .bucket(bucketName)
-                    .key(fileName)
-                    .build();
+        for (Map.Entry<String, Path> entry : files.entrySet()) {
+            String fileName = entry.getKey();
+            Path filePath = entry.getValue();
 
-            s3Client.putObject(putObjectRequest, filePath);
+            try {
+                PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                        .bucket(bucketName)
+                        .key(fileName)
+                        .build();
 
-            return getFileUrl(fileName);
-        } catch (S3Exception | IOException e) {
-            throw new RuntimeException("Ошибка при загрузке файла: " + e.getMessage());
+                s3Client.putObject(putObjectRequest, filePath);
+                fileUrls.add(getFileUrl(fileName));
+            } catch (S3Exception | IOException e) {
+                throw new RuntimeException("Ошибка при загрузке файла " + fileName + ": " + e.getMessage());
+            }
         }
+
+        return fileUrls;
     }
+
+//    public String uploadFile(String fileName, Path filePath) {
+//        try {
+//
+//            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+//                    .bucket(bucketName)
+//                    .key(fileName)
+//                    .build();
+//
+//            s3Client.putObject(putObjectRequest, filePath);
+//
+//            return getFileUrl(fileName);
+//        } catch (S3Exception | IOException e) {
+//            throw new RuntimeException("Ошибка при загрузке файла: " + e.getMessage());
+//        }
+//    }
 
     public String getFileUrl(String fileName) {
         return "https://" + bucketName + ".s3." + awsRegion + ".amazonaws.com/" + fileName;
