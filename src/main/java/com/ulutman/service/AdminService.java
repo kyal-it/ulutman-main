@@ -28,7 +28,7 @@ public class AdminService {
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
     private final AuthMapper authMapper;
-//
+
 //    @PostConstruct
 //    public void initAdmin() {
 //        User user = new User();
@@ -39,6 +39,7 @@ public class AdminService {
 //        user.setPassword(passwordEncoder.encode("admin123"));
 //        userRepository.save(user);
 //    }
+
 
     public AuthResponse saveAdmin(AuthRequest request) {
         User user = authMapper.mapToEntity(request);
