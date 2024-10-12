@@ -29,16 +29,16 @@ public class AdminService {
     private final UserRepository userRepository;
     private final AuthMapper authMapper;
 
-    @PostConstruct
-    public void initAdmin() {
-        User user = new User();
-        user.setName("Admin");
-        user.setEmail("admin@gmail.com");
-        user.setStatus(Status.АКТИВНЫЙ);
-        user.setRole(Role.ADMIN);
-        user.setPassword(passwordEncoder.encode("admin123"));
-        userRepository.save(user);
-    }
+//    @PostConstruct
+//    public void initAdmin() {
+//        User user = new User();
+//        user.setName("Admin");
+//        user.setEmail("admin@gmail.com");
+//        user.setStatus(Status.АКТИВНЫЙ);
+//        user.setRole(Role.ADMIN);
+//        user.setPassword(passwordEncoder.encode("admin123"));
+//        userRepository.save(user);
+//    }
 
 
     public AuthResponse saveAdmin(AuthRequest request) {
