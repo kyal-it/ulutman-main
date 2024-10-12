@@ -17,10 +17,9 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     @Query("""
         SELECT comment FROM Comment comment WHERE 
-        (:content IS NULL OR LOWER(comment.content)LIKE LOWER(CONCAT('%', :content, '%') ))
-
-        """)
-    List<Comment> CommentsFilterByContents(@Param("content") String content);
+        (:content IS NULL OR :content = '' OR LOWER(comment.content) LIKE LOWER(CONCAT('%', :content, '%')))
+    """)
+    List<Comment> commentsFilterByContents(@Param("content") String content);
 
     @Query("SELECT c FROM Comment c WHERE " +
            "(:createDates IS NULL OR c.createDate IN :createDates) AND " +

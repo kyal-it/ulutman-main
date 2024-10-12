@@ -4,7 +4,6 @@ import com.ulutman.model.entities.Publish;
 import com.ulutman.model.enums.Category;
 import com.ulutman.model.enums.CategoryStatus;
 import com.ulutman.model.enums.PublishStatus;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -23,13 +22,11 @@ public interface PublishRepository extends JpaRepository<Publish, Long> {
     List<Publish> findByUserId(@Param("userId") Long userId);
 
     @Query("SELECT COUNT(p) FROM Publish p WHERE p.user.id = :userId")
-    @Cacheable("false")
-        // Отключаем кэширование для этого запроса
     Integer countPublicationsByUserId(@Param("userId") Long userId);
 
     @Query("SELECT p FROM Publish p WHERE " +
-           "(:title IS NULL OR :title = '' OR LOWER(p.title) LIKE LOWER(CONCAT(:title, '%')))")
-    List<Publish> findProductsByTitle(@Param("title") String title);
+           "(:title IS NULL OR :title = '' OR LOWER(p.title) LIKE CONCAT(LOWER(:title), '%'))")
+    List<Publish> filterPublishesByTitle(@Param("title") String title);
 
     @Query("""
             SELECT publish FROM Publish publish WHERE
@@ -50,13 +47,6 @@ public interface PublishRepository extends JpaRepository<Publish, Long> {
             @Param("publishStatuses") List<PublishStatus> publishStatuses,
             @Param("createDates") List<LocalDate> createDates
     );
-
-    @Query("SELECT p FROM Publish p WHERE p.user.id = :userId AND LOWER(p.user.name) LIKE LOWER(CONCAT('%', :name, '%'))")
-    List<Publish> filterPublicationsByUserIdAndUserName(@Param("userId") Long userId, @Param("name") String name);
-
-//    @Query("SELECT p FROM Publish p WHERE p.user.id = :userId AND p.user.name LIKE %:name%")
-//    @Cacheable("false")
-//    List<Publish> filterPublicationsByUserIdAndUserName(@Param("userId") Long userId, @Param("name") String name);
 
     @Query("SELECT p FROM Publish p WHERE " +
            "(:minCount IS NULL OR (SELECT COUNT(p2) FROM Publish p2 WHERE p2.category = p.category) >= :minCount) " +

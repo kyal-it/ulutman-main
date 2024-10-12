@@ -75,17 +75,15 @@ public class ManageModeratorService {
                 .collect(Collectors.toList());
     }
 
-    public List<CommentResponse> filterCommentsByContent(String content) {
-
+    public List<CommentResponse> filterPublishesByContent(String content) {
         if (content == null || content.trim().isEmpty()) {
-            throw new IllegalArgumentException("Содержимое комментариев не может содержать только пробелы или быть пустым.");
+            throw new IllegalArgumentException("Название комментария не может быть пустым или содержать только пробелы.");
         }
 
-        List<Comment> comments = commentRepository.CommentsFilterByContents(content);
-
-        return comments.stream()
+        return commentRepository.commentsFilterByContents(content).stream()
                 .map(commentMapper::mapToResponse)
                 .collect(Collectors.toList());
+
     }
 
     public List<CommentResponse> getCommentsByFilters(List<LocalDate> createDates, List<ModeratorStatus> moderatorStatuses) {

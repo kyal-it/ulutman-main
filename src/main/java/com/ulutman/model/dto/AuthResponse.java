@@ -28,5 +28,7 @@ public class AuthResponse {
 
     List<PublishResponse> publishes;
 
+    List<CommentResponse> comments;
+
     private int numberOfPublications;
 }
