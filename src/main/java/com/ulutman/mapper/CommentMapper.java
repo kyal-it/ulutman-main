@@ -7,7 +7,6 @@ import com.ulutman.model.entities.Comment;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDate;
 
 @Component
 @RequiredArgsConstructor
