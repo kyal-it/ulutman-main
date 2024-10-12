@@ -88,6 +88,7 @@ public class ManageCategoryService {
                 .map(authMapper::mapToResponse)
                 .collect(Collectors.toList());
     }
+
     public List<PublishResponse> filterPublishesByTitle(String title) {
         if (title == null || title.trim().isEmpty()) {
             throw new IllegalArgumentException("Название не может быть пустым или содержать только пробелы.");
