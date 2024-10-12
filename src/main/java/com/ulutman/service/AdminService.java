@@ -40,7 +40,6 @@ public class AdminService {
         userRepository.save(user);
     }
 
-
     public AuthResponse saveAdmin(AuthRequest request) {
         User user = authMapper.mapToEntity(request);
         user.setCreateDate(LocalDate.now());
