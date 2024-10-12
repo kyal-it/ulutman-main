@@ -49,9 +49,14 @@ public class ManageModeratorController {
 
     @Operation(summary = "Filter comments by content")
     @ApiResponse(responseCode = "201", description = "Comment by content successfully filtered")
-    @GetMapping("content/filter")
-    public List<CommentResponse> filterComments(@RequestParam(required = false) String content) {
-        return manageModeratorService.filterCommentsByContent(content);
+    @GetMapping("/content/filter")
+    public ResponseEntity<?> getPublishesByContent(@RequestParam("content") String content) {
+        try {
+            List<CommentResponse> commentResponses = manageModeratorService.filterPublishesByContent(content);
+            return ResponseEntity.ok(commentResponses);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
     @Operation(summary = "Filter comments")

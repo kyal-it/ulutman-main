@@ -25,14 +25,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
             """)
     List<User> userFilterByName(@Param("names") String names);
 
-//    @Query("""
-//        SELECT user FROM User user
-//        LEFT JOIN FETCH user.publishes publications
-//        WHERE (:names IS NULL OR LOWER(user.name) LIKE LOWER(CONCAT(:names, '%')))
-//        """)
-//    List<User> userFilterByName(@Param("names") String names);
-
-
     @Query("""
             SELECT user FROM User user WHERE
             (:roles IS NULL OR user.role IN :roles) AND

@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @Slf4j
@@ -69,25 +70,24 @@ public class ManageCategoryController {
         return manageCategoryService.filterUsersByName(name);
     }
 
-    @GetMapping("/user/filter")
-    public ResponseEntity<List<PublishResponse>> filterPublicationsByUserIdAndUserName(
-            @RequestParam Long userId,
-            @RequestParam String name) {
-
-        List<PublishResponse> publishResponses = manageCategoryService.filterPublicationsByUserIdAndUserName(userId, name);
-        if (publishResponses.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
-
-        return ResponseEntity.ok(publishResponses);
-    }
-
     @Operation(summary = "Filter by title ")
     @ApiResponse(responseCode = "201", description = "title  successfully filtered")
     @GetMapping("/title/filter")
-    public List<PublishResponse> getProductsByTitle(@RequestParam(required = false) String title) {
-        return manageCategoryService.getProductsByTitle(title);
+    public ResponseEntity<?> getPublishesByTitle(@RequestParam("title") String title) {
+        try {
+            List<PublishResponse> publishResponses = manageCategoryService.filterPublishesByTitle(title);
+            return ResponseEntity.ok(publishResponses);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
+//Фильтрации по title по нижнему регистру
+//    @Operation(summary = "Filter by title ")
+//    @ApiResponse(responseCode = "201", description = "title  successfully filtered")
+//    @GetMapping("/title/filter")
+//    public List<PublishResponse> getProductsByTitle(@RequestParam(required = false) String title) {
+//        return manageCategoryService.getProductsByTitle(title);
+//    }
 
     @ExceptionHandler(IllegalArgumentException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)

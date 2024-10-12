@@ -88,38 +88,26 @@ public class ManageCategoryService {
                 .map(authMapper::mapToResponse)
                 .collect(Collectors.toList());
     }
-
-    public List<PublishResponse> filterPublicationsByUserIdAndUserName(Long userId, String name) {
-        if (userId == null || name == null || name.trim().isEmpty()) {
-            throw new IllegalArgumentException("ID пользователя и имя не могут быть пустыми.");
-        }
-
-        List<Publish> filteredPublications = publishRepository.filterPublicationsByUserIdAndUserName(userId, name);
-
-        return filteredPublications.stream()
-                .map(pub -> PublishResponse.builder()
-                        .id(pub.getId())
-                        .title(pub.getTitle())
-                        .description(pub.getDescription())
-                        .price(pub.getPrice())
-                        .category(pub.getCategory())
-                        .createDate(pub.getCreateDate())
-                        .build()
-                ).collect(Collectors.toList());
-    }
-
-    public List<PublishResponse> getProductsByTitle(String title) {
-
+    public List<PublishResponse> filterPublishesByTitle(String title) {
         if (title == null || title.trim().isEmpty()) {
             throw new IllegalArgumentException("Название не может быть пустым или содержать только пробелы.");
         }
 
-        title = title.toLowerCase();
-
-        return publishRepository.findProductsByTitle(title).stream()
+        return publishRepository.filterPublishesByTitle(title).stream()
                 .map(publishMapper::mapToResponse)
                 .collect(Collectors.toList());
+
     }
+    // Фильтрация по title по нижнему регистру
+//    public  List<PublishResponse> filterPublishesByTitle(String title) {
+//        if (title == null || title.trim().isEmpty()) {
+//            throw new IllegalArgumentException("Название не может быть пустым или содержать только пробелы.");
+//        }
+//        return publishRepository.findAll().stream()
+//                .filter(p -> p.getTitle().toLowerCase().startsWith(title.toLowerCase()))
+//                .map(publishMapper::mapToResponse)
+//                .collect(Collectors.toList());
+//    }
 
     public List<PublishResponse> filterPublicationsByCategoryAndStatus(List<Category> categories,
                                                                        List<CategoryStatus> categoryStatuses) {
@@ -146,5 +134,4 @@ public class ManageCategoryService {
                 .map(publishMapper::mapToResponse)
                 .collect(Collectors.toList());
     }
-
 }
