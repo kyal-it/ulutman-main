@@ -59,7 +59,6 @@ public class AuthService {
         UserAccount userAccount = new UserAccount();
         user.setUserAccount(userAccount);
         userAccount.setUsername(user.getUsername());
-        userAccount.setGmail(user.getEmail());
 
         userRepository.save(user);
         return authMapper.mapToResponse(user);
