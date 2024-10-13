@@ -20,4 +20,8 @@ public class MyPublish {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_account_id")
     private UserAccount userAccount;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "publish_id")
+    private Publish publish;
 }
