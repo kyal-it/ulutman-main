@@ -4,10 +4,12 @@ import com.ulutman.mapper.PropertyDetailsMapper;
 import com.ulutman.mapper.PublishMapper;
 import com.ulutman.model.dto.PublishRequest;
 import com.ulutman.model.dto.PublishResponse;
+import com.ulutman.model.entities.MyPublish;
 import com.ulutman.model.entities.PropertyDetails;
 import com.ulutman.model.entities.Publish;
 import com.ulutman.model.entities.User;
 import com.ulutman.model.enums.*;
+import com.ulutman.repository.MyPublishRepository;
 import com.ulutman.repository.PublishRepository;
 import com.ulutman.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -31,6 +33,7 @@ public class PublishService {
     private final PublishRepository publishRepository;
     private final UserRepository userRepository;
     private final PropertyDetailsMapper propertyDetailsMapper;
+    private final MyPublishRepository myPublishRepository;
 
     public PublishResponse createPublish(PublishRequest publishRequest) {
 
@@ -65,6 +68,12 @@ public class PublishService {
         }
 
         Publish savedPublish = publishRepository.save(publish);
+
+        MyPublish myPublish = new MyPublish();
+        myPublish.setUserAccount(user.getUserAccount()); // Предполагается, что у пользователя есть метод getUserAccount()
+        myPublish.setPublish(savedPublish); // Устанавливаем созданную публикацию
+
+        myPublishRepository.save(myPublish);
 
         Integer numberOfPublications = getNumberOfPublications(user.getId());
 
