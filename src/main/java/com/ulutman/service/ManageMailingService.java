@@ -36,14 +36,12 @@ public class ManageMailingService {
 
     public void sendMailingToAllUsers(Long mailingId) {
         List<User> users = userRepository.findAll();
-        System.out.println("ВСЕ полльзователи " +users);// Получаем всех пользователей
+        System.out.println("ВСЕ полльзователи " +users);
 
         users.forEach(user -> {
             try {
-                // Вызываем метод из MailingService для каждого пользователя
                 mailingService.sendMailing(mailingId, user.getEmail());
             } catch (MessagingException e) {
-                // Логируем ошибку отправки для конкретного пользователя
                 System.err.println("Ошибка отправки письма пользователю: " + user.getEmail());
             }
         });
@@ -64,7 +62,6 @@ public class ManageMailingService {
     private MailingResponse mapMailingToResponse(Mailing mailing) {
         MailingResponse response = mailingMapper.mapToResponse(mailing);
 
-        // Добавляем всех пользователей, кому была отправлена рассылка
         List<AuthResponse> recipients = mailing.getRecipients().stream()
                 .map(authMapper::mapToResponse) // Преобразуем User в UserResponse
                 .collect(Collectors.toList());
@@ -90,9 +87,8 @@ public class ManageMailingService {
             throw new RuntimeException("Название не может быть пустым или содержать только пробелы.");
         }
 
-        String formattedTitle = title.trim(); // Просто убираем пробелы
+        String formattedTitle = title.trim();
 
-        // Выполняем запрос и маппим результаты в DTO
         List<Mailing> mailings = mailingRepository.mailingFilterByTitle(formattedTitle);
         return mailings.stream()
                 .map(mailingMapper::mapToResponse)

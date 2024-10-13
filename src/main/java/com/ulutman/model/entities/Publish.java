@@ -52,6 +52,9 @@ public class Publish {
     @Enumerated(EnumType.STRING)
     private PublishStatus publishStatus;
 
+    @Column(nullable = false)
+    private boolean detailFavorite;
+
     @Enumerated(EnumType.STRING)
     private CategoryStatus categoryStatus;
 
@@ -73,4 +76,8 @@ public class Publish {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "property_details_id",referencedColumnName = "id")
     private PropertyDetails propertyDetails;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "conditions_id",referencedColumnName = "id")
+    private Conditions conditions;
 }

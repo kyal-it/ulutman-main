@@ -19,7 +19,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT user FROM User user WHERE user.email=:email")
     Optional<User> findByEmail(@Param("email") String email);
 
-    @Query("""
+        @Query("""
             SELECT user FROM User user WHERE
             (:names IS NULL OR LOWER(user.name) LIKE LOWER(CONCAT(:names, '%')))
             """)

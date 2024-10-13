@@ -30,7 +30,11 @@ public class Comment {
     @Column(name = "create_date")
     LocalDate createDate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @ManyToOne // Обратная связь с User
+    @JoinColumn(name = "user_id", nullable = false)
     User user;
+
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name = "user_id")
+//    User user;
 }

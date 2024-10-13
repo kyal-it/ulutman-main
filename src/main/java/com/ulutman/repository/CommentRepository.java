@@ -15,6 +15,8 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     List<Comment> findByUserId(Long postId);
 
+    List<Comment> findByUserName(String userName);
+
     @Query("""
         SELECT comment FROM Comment comment WHERE 
         (:content IS NULL OR :content = '' OR LOWER(comment.content) LIKE LOWER(CONCAT('%', :content, '%')))
