@@ -1,13 +1,11 @@
 package com.ulutman.service;
 
+import com.ulutman.mapper.ConditionsMapper;
 import com.ulutman.mapper.PropertyDetailsMapper;
 import com.ulutman.mapper.PublishMapper;
 import com.ulutman.model.dto.PublishRequest;
 import com.ulutman.model.dto.PublishResponse;
-import com.ulutman.model.entities.MyPublish;
-import com.ulutman.model.entities.PropertyDetails;
-import com.ulutman.model.entities.Publish;
-import com.ulutman.model.entities.User;
+import com.ulutman.model.entities.*;
 import com.ulutman.model.enums.*;
 import com.ulutman.repository.MyPublishRepository;
 import com.ulutman.repository.PublishRepository;
@@ -19,6 +17,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,6 +33,7 @@ public class PublishService {
     private final UserRepository userRepository;
     private final PropertyDetailsMapper propertyDetailsMapper;
     private final MyPublishRepository myPublishRepository;
+    private final ConditionsMapper conditionsMapper;
 
     public PublishResponse createPublish(PublishRequest publishRequest) {
 
@@ -46,6 +46,7 @@ public class PublishService {
         }
 
         Publish publish = publishMapper.mapToEntity(publishRequest);
+//        publish.setDetailFavorite(!publish.isDetailFavorite());
 
         User user = userRepository.findById(publishRequest.getUserId())
                 .orElseThrow(() -> new RuntimeException("Пользователь не найден " + publishRequest.getUserId()));
@@ -59,19 +60,28 @@ public class PublishService {
             if (publishRequest.getPropertyDetails() == null) {
                 throw new IllegalArgumentException("Необходимо заполнить данные о недвижимости (PropertyDetails) для категории REAL_ESTATE или RENT.");
             }
-            // Маппим PropertyDetails из DTO в сущность
+
             PropertyDetails propertyDetails = propertyDetailsMapper.mapToEntity(publishRequest.getPropertyDetails());
             publish.setPropertyDetails(propertyDetails);
+            if (publishRequest.getConditions() == null) {
+                throw new IllegalArgumentException("Необходимо заполнить данные о условиях (Conditions) для категории REAL_ESTATE или RENT.");
+            }
+            Conditions conditions = conditionsMapper.mapToEntity(publishRequest.getConditions());
+            publish.setConditions(conditions);
         } else {
             // Если категория не совпадает с RENT или REAL_ESTATE, устанавливаем null
             publish.setPropertyDetails(null);
+            publish.setConditions(null);
         }
+   if(publishRequest.getPropertyDetails() != null) {
+       throw new IllegalArgumentException("Необходимо заполнить данные о недвижимости (Conditions) для категории REAL_ESTATE или RENT.");
+   }
 
         Publish savedPublish = publishRepository.save(publish);
 
         MyPublish myPublish = new MyPublish();
-        myPublish.setUserAccount(user.getUserAccount()); // Предполагается, что у пользователя есть метод getUserAccount()
-        myPublish.setPublish(savedPublish); // Устанавливаем созданную публикацию
+        myPublish.setUserAccount(user.getUserAccount());
+        myPublish.setPublish(savedPublish);
 
         myPublishRepository.save(myPublish);
 
@@ -103,20 +113,28 @@ public class PublishService {
                 .orElseThrow(() -> new RuntimeException("Пользователь не найден " + publishRequest.getUserId()));
         publish.setUser(user);
 
+        if (publish.getId() == null) {
+            publish.setCreateDate(LocalDate.now());
+        }
+
         publish.setPublishStatus(PublishStatus.ОДОБРЕН);
         publish.setCategoryStatus(CategoryStatus.АКТИВНО);
 
         if (publishRequest.getCategory() == Category.REAL_ESTATE || publishRequest.getCategory() == Category.RENT) {
-
             if (publishRequest.getPropertyDetails() == null) {
                 throw new IllegalArgumentException("Необходимо заполнить данные о недвижимости (PropertyDetails) для категории REAL_ESTATE или RENT.");
             }
-
             PropertyDetails propertyDetails = propertyDetailsMapper.mapToEntity(publishRequest.getPropertyDetails());
             publish.setPropertyDetails(propertyDetails);
         } else {
             throw new IllegalArgumentException("Неверная категория. Для этой категории не требуются данные PropertyDetails.");
         }
+
+        if (publishRequest.getConditions() == null) {
+            throw new IllegalArgumentException("Необходимо заполнить данные о условиях (Conditions) для категории REAL_ESTATE или RENT.");
+        }
+        Conditions conditions = conditionsMapper.mapToEntity(publishRequest.getConditions());
+        publish.setConditions(conditions);
 
         Publish savedPublish = publishRepository.save(publish);
 
@@ -124,13 +142,12 @@ public class PublishService {
         System.out.println("Counting publications for userId: " + user.getId());
 
         PublishResponse publishResponse = publishMapper.mapToResponse(savedPublish);
-
         publishResponse.setNumberOfPublications(numberOfPublications);
 
         return publishResponse;
     }
 
-    public Integer getNumberOfPublications(Long userId) {
+        public Integer getNumberOfPublications(Long userId) {
         return publishRepository.countPublicationsByUserId(userId);
     }
 
@@ -173,19 +190,5 @@ public class PublishService {
             appResponses.add(publishMapper.mapToResponse(publish));
         }
         return appResponses;
-    }
-
-    public PublishResponse getPropertyDetails(Long productId) {
-        Publish publish = publishRepository.findById(productId)
-                .orElseThrow(() -> new EntityNotFoundException("Публикация по идентификатору " + productId + " не найдена"));
-
-
-        // Используем PropertyDetailsMapper для преобразования PropertyDetails в PropertyDetailsDTO
-        propertyDetailsMapper.mapToResponse(publish.getPropertyDetails());
-
-        // Устанавливаем PropertyDetailsDTO в PublishResponse
-        publish.setPropertyDetails(publish.getPropertyDetails());
-
-        return publishMapper.mapToResponse(publish);
     }
 }

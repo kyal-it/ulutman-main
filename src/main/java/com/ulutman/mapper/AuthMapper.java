@@ -8,6 +8,7 @@ import com.ulutman.model.enums.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,9 +31,15 @@ public class AuthMapper {
 
     public AuthResponse mapToResponse(User user) {
 
-        List<PublishResponse> publishResponses = user.getPublishes().stream()
-                .map(publishMapper::mapToResponse) // Используем publishMapper
-                .collect(Collectors.toList());
+        if (user == null) {
+            throw new IllegalArgumentException("User cannot be null");
+        }
+
+        List<PublishResponse> publishResponses = user.getPublishes() != null ?
+                user.getPublishes().stream()
+                        .map(publishMapper::mapToResponse)
+                        .collect(Collectors.toList())
+                : Collections.emptyList();
 
         return AuthResponse.builder()
                 .id(user.getId())

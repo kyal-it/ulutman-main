@@ -52,7 +52,6 @@ public class PublishController {
         } catch (RuntimeException e) {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
-
     }
 
     @Operation(summary = "Get all publications")

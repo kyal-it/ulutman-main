@@ -47,10 +47,12 @@ public class PublishMapper {
                 .bank(publish.getBank())
                 .publishStatus(publish.getPublishStatus())
                 .createDate(publish.getCreateDate())
+                .detailFavorite(publish.isDetailFavorite())
                 .categoryStatus(publish.getCategoryStatus())
                 .publishStatus(publish.getPublishStatus())
                 .user(mapUserToAuthResponse(publish.getUser()))
                 .propertyDetails(publish.getPropertyDetails())
+                .conditions(publish.getConditions())
                 .build();
     }
 
@@ -61,10 +63,10 @@ public class PublishMapper {
         return AuthResponse.builder()
                 .id(user.getId())
                 .name(user.getName())
-                .email(user.getEmail())
-                .role(user.getRole())
-                .status(user.getStatus())
-                .createDate(user.getCreateDate())
+//                .email(user.getEmail())
+//                .role(user.getRole())
+//                .status(user.getStatus())
+//                .createDate(user.getCreateDate())
                 .build();
     }
 }

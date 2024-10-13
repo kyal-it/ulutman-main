@@ -47,6 +47,11 @@ public class ManageModeratorController {
         return manageModeratorService.filterUsersByName(name);
     }
 
+//    @GetMapping("/filter/{userName}")
+//    public List<Comment> getCommentsByUserName(@RequestParam("name") String userName) {
+//        return manageModeratorService.getCommentsByUserName(userName);
+//    }
+
     @Operation(summary = "Filter comments by content")
     @ApiResponse(responseCode = "201", description = "Comment by content successfully filtered")
     @GetMapping("/content/filter")

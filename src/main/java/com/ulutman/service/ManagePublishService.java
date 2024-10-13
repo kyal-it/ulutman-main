@@ -7,6 +7,7 @@ import com.ulutman.model.dto.AuthResponse;
 import com.ulutman.model.dto.PublishRequest;
 import com.ulutman.model.dto.PublishResponse;
 import com.ulutman.model.entities.Publish;
+import com.ulutman.model.entities.User;
 import com.ulutman.model.enums.Category;
 import com.ulutman.model.enums.PublishStatus;
 import com.ulutman.repository.PublishRepository;
@@ -119,7 +120,6 @@ public class ManagePublishService {
 
         List<Publish> publishes = publishRepository.filterPublishes(categories, publishStatuses, createDates);
 
-        // Преобразование списка Publish в список PublishResponse
         return publishes.stream()
                 .map(publishMapper::mapToResponse)
                 .collect(Collectors.toList());

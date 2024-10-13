@@ -1,16 +1,16 @@
 package com.ulutman.model.dto;
 
+import com.ulutman.model.entities.Conditions;
 import com.ulutman.model.entities.PropertyDetails;
 import com.ulutman.model.enums.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class PublishRequest {
 
     String title;
@@ -40,4 +40,6 @@ public class PublishRequest {
     CategoryStatus categoryStatus;
 
     PropertyDetails propertyDetails;
+
+    Conditions conditions;
 }
