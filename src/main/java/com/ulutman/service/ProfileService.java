@@ -29,10 +29,8 @@ public class ProfileService {
         userAccount.setUsername(username);
         userAccount.setLastName(lastName);
         userAccount.setNumber(phoneNumber);
-        userAccount.setGmail(emailAddress);
 
         user.setName(username);
-        user.setEmail(emailAddress);
         userRepository.save(user);
 
         return userAccontRepository.save(userAccount);

@@ -21,7 +21,6 @@ public class UserAccount {
     private String username;
     private String number;
     private String lastName;
-    private String gmail;
 
     @OneToMany(mappedBy = "userAccount", cascade = CascadeType.ALL)
     private List<Message> messages;
