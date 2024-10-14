@@ -158,9 +158,9 @@ create table publishes
     primary key (id)
 );
 
--- Если вам нужно добавить столбец в существующую таблицу
-ALTER TABLE publishes
-    ADD COLUMN detail_favorite BOOLEAN DEFAULT FALSE;
+-- -- Если вам нужно добавить столбец в существующую таблицу
+-- ALTER TABLE publishes
+--     ADD COLUMN detail_favorite BOOLEAN DEFAULT FALSE;
 
 create table user_accounts
 (
