@@ -1,5 +1,7 @@
 package com.ulutman.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.ulutman.model.entities.Conditions;
 import com.ulutman.model.entities.PropertyDetails;
 import com.ulutman.model.enums.*;
@@ -45,6 +47,7 @@ public class PublishResponse {
 
     boolean detailFavorite;
 
+    @JsonBackReference
     AuthResponse user;
 
     CategoryStatus categoryStatus;
@@ -53,5 +56,6 @@ public class PublishResponse {
 
     Conditions conditions;
 
+    @JsonManagedReference
     List<CommentResponse> comments;
 }

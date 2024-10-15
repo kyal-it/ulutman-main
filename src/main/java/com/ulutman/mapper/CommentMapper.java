@@ -26,7 +26,7 @@ public class CommentMapper {
                 .content(comment.getContent())
                 .moderatorStatus(comment.getModeratorStatus())
                 .createDate(comment.getCreateDate())
-                .authResponse(comment.getUser()!=null?authMapper.mapToResponse(comment.getUser()):null)
+//                .authResponse(comment.getUser()!=null?authMapper.mapToResponse(comment.getUser()):null)
                 .build();
     }
 

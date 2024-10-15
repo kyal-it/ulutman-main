@@ -1,5 +1,6 @@
 package com.ulutman.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.ulutman.model.enums.ModeratorStatus;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -21,4 +22,7 @@ public class CommentResponse {
     ModeratorStatus moderatorStatus;
 
     LocalDate createDate;
+
+    @JsonBackReference
+    PublishResponse publish;
 }

@@ -1,5 +1,6 @@
 package com.ulutman.model.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.ulutman.model.enums.ComplaintStatus;
 import com.ulutman.model.enums.ComplaintType;
 import jakarta.persistence.*;
@@ -34,6 +35,7 @@ public class Complaint {
     @Column(name = "create_date")
     LocalDate createDate;
 
+    @JsonBackReference // Обратная связь с User
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     User user;

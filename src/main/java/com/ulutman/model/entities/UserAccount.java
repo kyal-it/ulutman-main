@@ -1,5 +1,7 @@
 package com.ulutman.model.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,10 +27,12 @@ public class UserAccount {
     @OneToMany(mappedBy = "userAccount", cascade = CascadeType.ALL)
     private List<Message> messages;
 
+    @JsonManagedReference // Это поле будет ссылаться на myPublishes
     @OneToOne(mappedBy = "userAccount", cascade = CascadeType.ALL)
     private MyPublish myPublish;
 
-    @OneToOne(cascade = CascadeType.ALL) // Убедитесь, что используете CascadeType для создания UserAccount
+    @JsonBackReference // Обратная связь с User
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id", referencedColumnName = "id") // Указываем имя столбца для связи
     private User user; // Это поле связывает UserAccount с User
 }

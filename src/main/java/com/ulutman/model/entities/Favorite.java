@@ -1,5 +1,6 @@
 package com.ulutman.model.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -23,10 +24,12 @@ public class Favorite {
     @JoinColumn(name = "user_id")
     User user;
 
+    @JsonBackReference // Обратная связь с userAccount
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_account_id")
     private UserAccount userAccount;
 
+    @JsonBackReference // Обратная связь с Publish
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(name = "favorites_publishes",
             joinColumns = @JoinColumn(name = "favorite_id"),
