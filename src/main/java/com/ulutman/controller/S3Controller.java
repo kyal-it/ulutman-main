@@ -36,69 +36,71 @@ public class S3Controller {
         this.s3Service = s3Service;
     }
 
-
     @Operation(summary = "Загрузить файлы в AWS")
     @ApiResponse(responseCode = "201", description = "Uploads the files to AWS and returns the URLs of the uploaded files")
     @PostMapping("/upload")
-    public ResponseEntity<List<String>> uploadFiles(
-            @RequestPart(value = "files", required = true) MultipartFile[] files) { // Убедитесь, что здесь используется @RequestPart
-
+//    @ApiParam(value = "Файлы для загрузки", required = true)
+    public ResponseEntity<List<String>> uploadFiles(@RequestPart("files") MultipartFile[] files) {
         Map<String, Path> filesToUpload = new HashMap<>();
-        List<String> fileUrls = new ArrayList<>();
-        List<String> errors = new ArrayList<>();
 
         for (MultipartFile file : files) {
             try {
-                // Создаем временный файл для каждого загружаемого файла
+                // Сохраняем файл на временную директорию
                 Path tempFilePath = Files.createTempFile(file.getOriginalFilename(), null);
                 file.transferTo(tempFilePath.toFile()); // Перемещаем файл во временное место
                 filesToUpload.put(file.getOriginalFilename(), tempFilePath);
             } catch (IOException e) {
-                // Собираем ошибки для дальнейшей обработки
-                errors.add("Ошибка при сохранении файла: " + file.getOriginalFilename() + " - " + e.getMessage());
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .body(List.of("Ошибка при сохранении файла: " + e.getMessage()));
             } catch (java.io.IOException e) {
                 throw new RuntimeException(e);
             }
         }
 
-        if (!filesToUpload.isEmpty()) {
-            fileUrls = s3Service.uploadFiles(filesToUpload);
-        }
+        List<String> fileUrls = s3Service.uploadFiles(filesToUpload);
 
-        // Возвращаем ошибки, если есть
-        if (!errors.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT)
-                    .body(errors);
-        }
-
-        return ResponseEntity.status(HttpStatus.CREATED)
-                .body(fileUrls);
+        return ResponseEntity.ok(fileUrls);
     }
+
+
 //    @Operation(summary = "Загрузить файлы в AWS")
 //    @ApiResponse(responseCode = "201", description = "Uploads the files to AWS and returns the URLs of the uploaded files")
 //    @PostMapping("/upload")
-//    @ApiParam(value = "Файлы для загрузки", required = true)
-//    public ResponseEntity<List<String>> uploadFiles(@RequestPart("files") MultipartFile[] files) {
+//    public ResponseEntity<List<String>> uploadFiles(
+//            @RequestPart(value = "files", required = true) MultipartFile[] files) { // Убедитесь, что здесь используется @RequestPart
+//
 //        Map<String, Path> filesToUpload = new HashMap<>();
+//        List<String> fileUrls = new ArrayList<>();
+//        List<String> errors = new ArrayList<>();
 //
 //        for (MultipartFile file : files) {
 //            try {
-//                // Сохраняем файл на временную директорию
+//                // Создаем временный файл для каждого загружаемого файла
 //                Path tempFilePath = Files.createTempFile(file.getOriginalFilename(), null);
 //                file.transferTo(tempFilePath.toFile()); // Перемещаем файл во временное место
 //                filesToUpload.put(file.getOriginalFilename(), tempFilePath);
 //            } catch (IOException e) {
-//                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-//                        .body(List.of("Ошибка при сохранении файла: " + e.getMessage()));
+//                // Собираем ошибки для дальнейшей обработки
+//                errors.add("Ошибка при сохранении файла: " + file.getOriginalFilename() + " - " + e.getMessage());
 //            } catch (java.io.IOException e) {
 //                throw new RuntimeException(e);
 //            }
 //        }
 //
-//        List<String> fileUrls = s3Service.uploadFiles(filesToUpload);
+//        if (!filesToUpload.isEmpty()) {
+//            fileUrls = s3Service.uploadFiles(filesToUpload);
+//        }
 //
-//        return ResponseEntity.ok(fileUrls);
+//        // Возвращаем ошибки, если есть
+//        if (!errors.isEmpty()) {
+//            return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT)
+//                    .body(errors);
+//        }
+//
+//        return ResponseEntity.status(HttpStatus.CREATED)
+//                .body(fileUrls);
 //    }
+
 
 
 //    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
