@@ -4,6 +4,7 @@ import com.ulutman.service.S3Service;
 import io.jsonwebtoken.io.IOException;
 import io.swagger.annotations.ApiParam;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -35,11 +36,11 @@ public class S3Controller {
         this.s3Service = s3Service;
     }
 
-    @Operation(summary = "Загрузить файл в AWS")
-    @ApiResponse(responseCode = "201", description = "Uploads the file to AWS and returns the url of the downloaded file")
+    @Operation(summary = "Загрузить файлы в AWS")
+    @ApiResponse(responseCode = "201", description = "Uploads the files to AWS and returns the URLs of the uploaded files")
     @PostMapping("/upload")
     public ResponseEntity<List<String>> uploadFiles(
-            @ApiParam(value = "Файлы для загрузки", required = true) @RequestParam("files") MultipartFile[] files) {
+            @ApiParam(value = "Файлы для загрузки", required = true) @RequestPart("files") MultipartFile[] files) {
 
         Map<String, Path> filesToUpload = new HashMap<>();
         List<String> fileUrls = new ArrayList<>();
@@ -72,6 +73,8 @@ public class S3Controller {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(fileUrls);
     }
+
+
 
 //    @ApiParam(value = "Файлы для загрузки", required = true)
 //    public ResponseEntity<List<String>> uploadFiles(@RequestParam("files") MultipartFile[] files) {
