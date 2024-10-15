@@ -155,6 +155,7 @@ create table publishes
                                         'Clothes', 'HouseAppliances', 'Electronics', 'MEDICAL', 'LEGAL', 'BEAUTY',
                                         'AIRTICKET', 'TAXIANDTRACK', 'REPAIR', 'DIFFERENT')),
     title          varchar(255),
+    detail_favorite BOOLEAN DEFAULT FALSE;
     primary key (id)
 );
 

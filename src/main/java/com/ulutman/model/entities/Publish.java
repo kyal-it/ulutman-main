@@ -52,8 +52,8 @@ public class Publish {
     @Enumerated(EnumType.STRING)
     private PublishStatus publishStatus;
 
-//    @Column(nullable = false)
-//    private boolean detailFavorite;
+    @Column(nullable = false)
+    private boolean detailFavorite;
 
     @Enumerated(EnumType.STRING)
     private CategoryStatus categoryStatus;

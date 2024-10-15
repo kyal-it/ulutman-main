@@ -43,7 +43,7 @@ public class PublishResponse {
 
     LocalDate createDate;
 
-//    boolean detailFavorite;
+    boolean detailFavorite;
 
     AuthResponse user;
 
