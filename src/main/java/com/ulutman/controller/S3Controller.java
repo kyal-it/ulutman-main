@@ -34,7 +34,7 @@ public class S3Controller {
 
     @Operation(summary = "Загрузить файлы в AWS")
     @ApiResponse(responseCode = "201", description = "Uploads the files to AWS and returns the URLs of the uploaded files")
-    @PostMapping("/upload")
+    @PostMapping(value = "/upload", consumes = "multipart/form-data") // Указание на обработку multipart/form-data
     public ResponseEntity<List<String>> uploadFiles(@RequestPart("files") MultipartFile[] files) {
         Map<String, Path> filesToUpload = new HashMap<>();
 
@@ -52,11 +52,13 @@ public class S3Controller {
             }
         }
 
+        // Загружаем файлы на S3
         List<String> fileUrls = s3Service.uploadFiles(filesToUpload);
 
         return ResponseEntity.ok(fileUrls);
     }
 }
+
 
 //    @Operation(summary = "Загрузить файлы в AWS")
 //    @ApiResponse(responseCode = "201", description = "Uploads the files to AWS and returns the URLs of the uploaded files")
