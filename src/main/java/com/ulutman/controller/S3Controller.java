@@ -2,14 +2,12 @@ package com.ulutman.controller;
 
 import com.ulutman.service.S3Service;
 import io.jsonwebtoken.io.IOException;
-import io.swagger.annotations.ApiParam;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -37,27 +35,26 @@ public class S3Controller {
     @Operation(summary = "Загрузить файлы в AWS")
     @ApiResponse(responseCode = "201", description = "Uploads the files to AWS and returns the URLs of the uploaded files")
     @PostMapping("/upload")
-    public ResponseEntity<List<String>> uploadFiles(
-            @ApiParam(value = "Файлы для загрузки", required = true)
-            @RequestPart(value = "files") MultipartFile[] files) {
-
+    public ResponseEntity<List<String>> uploadFiles(@RequestPart("files") MultipartFile[] files) {
         Map<String, Path> filesToUpload = new HashMap<>();
 
         for (MultipartFile file : files) {
             try {
-                // Сохраняем файл на временную директорию
+
                 Path tempFilePath = Files.createTempFile(file.getOriginalFilename(), null);
-                file.transferTo(tempFilePath.toFile()); // Перемещаем файл во временное место
+                file.transferTo(tempFilePath.toFile());
                 filesToUpload.put(file.getOriginalFilename(), tempFilePath);
-            } catch (IOException | java.io.IOException e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+            } catch (IOException e) {
+                return ResponseEntity.internalServerError()
                         .body(List.of("Ошибка при сохранении файла: " + e.getMessage()));
+            } catch (java.io.IOException e) {
+                throw new RuntimeException(e);
             }
         }
 
         List<String> fileUrls = s3Service.uploadFiles(filesToUpload);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(fileUrls);
+        return ResponseEntity.ok(fileUrls);
     }
 }
 
@@ -85,8 +82,6 @@ public class S3Controller {
 //
 //        return ResponseEntity.ok(fileUrls);
 //    }
-
-
 
 
 //    @Operation(summary = "Загрузить файлы в AWS")
