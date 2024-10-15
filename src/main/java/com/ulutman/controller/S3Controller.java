@@ -2,6 +2,7 @@ package com.ulutman.controller;
 
 import com.ulutman.service.S3Service;
 import io.jsonwebtoken.io.IOException;
+import io.swagger.annotations.ApiParam;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -15,6 +16,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,27 +38,63 @@ public class S3Controller {
     @Operation(summary = "Загрузить файл в AWS")
     @ApiResponse(responseCode = "201", description = "Uploads the file to AWS and returns the url of the downloaded file")
     @PostMapping("/upload")
-    public ResponseEntity<List<String>> uploadFiles(@RequestParam("files") MultipartFile[] files) {
+    public ResponseEntity<List<String>> uploadFiles(
+            @ApiParam(value = "Файлы для загрузки", required = true) @RequestParam("files") MultipartFile[] files) {
+
         Map<String, Path> filesToUpload = new HashMap<>();
+        List<String> fileUrls = new ArrayList<>();
+        List<String> errors = new ArrayList<>();
 
         for (MultipartFile file : files) {
             try {
-                // Сохраняем файл на временную директорию
+                // Создаем временный файл для каждого загружаемого файла
                 Path tempFilePath = Files.createTempFile(file.getOriginalFilename(), null);
                 file.transferTo(tempFilePath.toFile()); // Перемещаем файл во временное место
                 filesToUpload.put(file.getOriginalFilename(), tempFilePath);
             } catch (IOException e) {
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                        .body(List.of("Ошибка при сохранении файла: " + e.getMessage()));
+                // Собираем ошибки для дальнейшей обработки
+                errors.add("Ошибка при сохранении файла: " + file.getOriginalFilename() + " - " + e.getMessage());
             } catch (java.io.IOException e) {
                 throw new RuntimeException(e);
             }
         }
 
-        List<String> fileUrls = s3Service.uploadFiles(filesToUpload);
+        if (!filesToUpload.isEmpty()) {
+            fileUrls = s3Service.uploadFiles(filesToUpload);
+        }
 
-        return ResponseEntity.ok(fileUrls);
+        // Возвращаем ошибки, если есть
+        if (!errors.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.PARTIAL_CONTENT)
+                    .body(errors);
+        }
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(fileUrls);
     }
+
+//    @ApiParam(value = "Файлы для загрузки", required = true)
+//    public ResponseEntity<List<String>> uploadFiles(@RequestParam("files") MultipartFile[] files) {
+//        Map<String, Path> filesToUpload = new HashMap<>();
+//
+//        for (MultipartFile file : files) {
+//            try {
+//                // Сохраняем файл на временную директорию
+//                Path tempFilePath = Files.createTempFile(file.getOriginalFilename(), null);
+//                file.transferTo(tempFilePath.toFile()); // Перемещаем файл во временное место
+//                filesToUpload.put(file.getOriginalFilename(), tempFilePath);
+//            } catch (IOException e) {
+//                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                        .body(List.of("Ошибка при сохранении файла: " + e.getMessage()));
+//            } catch (java.io.IOException e) {
+//                throw new RuntimeException(e);
+//            }
+//        }
+//
+//        List<String> fileUrls = s3Service.uploadFiles(filesToUpload);
+//
+//        return ResponseEntity.ok(fileUrls);
+//    }
 //    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
 //    public ResponseEntity<String> uploadFile(@RequestPart("file") MultipartFile file) {
 //        String fileName = file.getOriginalFilename();
