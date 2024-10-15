@@ -1,5 +1,6 @@
 package com.ulutman.model.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.ulutman.model.enums.ModeratorStatus;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -30,11 +31,8 @@ public class Comment {
     @Column(name = "create_date")
     LocalDate createDate;
 
+    @JsonBackReference // Обратная связь с User
     @ManyToOne // Обратная связь с User
     @JoinColumn(name = "user_id", nullable = false)
     User user;
-
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "user_id")
-//    User user;
 }

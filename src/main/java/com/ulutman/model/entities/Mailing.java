@@ -1,5 +1,6 @@
 package com.ulutman.model.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.ulutman.model.enums.MailingStatus;
 import com.ulutman.model.enums.MailingType;
 import jakarta.persistence.*;
@@ -45,7 +46,7 @@ public class Mailing {
 
     LocalDate createDate;
 
-
+    @JsonBackReference // Обратная связь с User
     @ManyToMany
     @JoinTable(
             name = "mailing_user",

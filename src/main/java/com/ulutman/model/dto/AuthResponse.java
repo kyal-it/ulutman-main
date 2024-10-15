@@ -1,5 +1,7 @@
 package com.ulutman.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.ulutman.model.enums.Role;
 import com.ulutman.model.enums.Status;
 import lombok.*;
@@ -26,8 +28,10 @@ public class AuthResponse {
 
     LocalDate createDate;
 
+    @JsonManagedReference
     List<PublishResponse> publishes;
 
+//    @JsonManagedReference
     List<CommentResponse> comments;
 
     private int numberOfPublications;

@@ -1,5 +1,6 @@
 package com.ulutman.model.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,6 +35,7 @@ public class Conditions {
 
     private Double realtorRating; // Рейтинг риэлтора
 
+    @JsonBackReference // Обратная связь с publish
     @OneToOne(mappedBy = "conditions")
     private Publish publish;
 }

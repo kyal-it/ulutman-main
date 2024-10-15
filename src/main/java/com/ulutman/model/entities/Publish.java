@@ -1,5 +1,7 @@
 package com.ulutman.model.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.ulutman.model.enums.*;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -66,17 +68,21 @@ public class Publish {
     )
     private Payment payment;
 
+    @JsonManagedReference // Это поле будет ссылаться на Favorite
     @ManyToMany(cascade = CascadeType.ALL, mappedBy = "publishes")
     List<Favorite> favorites;
 
+    @JsonBackReference // Обратная связь с User
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
+    @JsonManagedReference // Это поле будет ссылаться на PropertyDetails
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "property_details_id",referencedColumnName = "id")
     private PropertyDetails propertyDetails;
 
+    @JsonManagedReference // Это поле будет ссылаться на Conditions
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "conditions_id",referencedColumnName = "id")
     private Conditions conditions;

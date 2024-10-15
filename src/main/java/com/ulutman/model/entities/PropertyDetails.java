@@ -1,5 +1,6 @@
 package com.ulutman.model.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -67,6 +68,7 @@ public class PropertyDetails {
 
     private Boolean hasKitchenFurniture;  // Мебель на кухне
 
+    @JsonBackReference // Обратная связь с publish
     @OneToOne(mappedBy = "propertyDetails")
     private Publish publish;
 }

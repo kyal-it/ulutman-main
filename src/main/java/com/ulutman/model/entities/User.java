@@ -1,5 +1,6 @@
 package com.ulutman.model.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.ulutman.model.enums.Role;
 import com.ulutman.model.enums.Status;
 import jakarta.persistence.*;
@@ -52,24 +53,30 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Payment> payments;
 
+    @JsonManagedReference // Это поле будет ссылаться на UserAccount
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private UserAccount userAccount;
 
+    @JsonManagedReference // Это поле будет ссылаться на Publish
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,fetch = FetchType.EAGER, orphanRemoval = true)
     private List<Publish> publishes = new ArrayList<>();
 
+    @JsonManagedReference // Это поле будет ссылаться на Complaint
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Complaint> complaints;
 
+    @JsonManagedReference // Это поле будет ссылаться на Comment
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Message> messages;
 
+    @JsonManagedReference // Это поле будет ссылаться на Favorite
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "user")
     private Favorite favorites;
 
+    @JsonManagedReference // Это поле будет ссылаться на Mailing
     @ManyToMany(mappedBy = "recipients")
     private List<Mailing> mailings = new ArrayList<>();
 
