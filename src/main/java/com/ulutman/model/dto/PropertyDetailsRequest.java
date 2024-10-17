@@ -53,7 +53,7 @@ public class PropertyDetailsRequest {
 
     Boolean hasFurnitureInRooms;
 
-    Boolean hasDishwasher;
+    Boolean hasDishWasher;
 
     Boolean hasAirConditioner;
 

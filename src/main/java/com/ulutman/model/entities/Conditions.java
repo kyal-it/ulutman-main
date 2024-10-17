@@ -36,6 +36,6 @@ public class Conditions {
     private Double realtorRating; // Рейтинг риэлтора
 
     @JsonBackReference // Обратная связь с publish
-    @OneToOne(mappedBy = "conditions")
+    @OneToOne(mappedBy = "conditions",fetch = FetchType.LAZY)
     private Publish publish;
 }

@@ -62,13 +62,13 @@ public class PropertyDetails {
 
     private Boolean hasDishWasher; // Посудомоечная
 
-    private Boolean hasAirConditional; // Кондиционер
+    private Boolean hasAirConditioner; // Кондиционер
 
     private Boolean hasInternet; // Интернет
 
     private Boolean hasKitchenFurniture;  // Мебель на кухне
 
     @JsonBackReference // Обратная связь с publish
-    @OneToOne(mappedBy = "propertyDetails")
+    @OneToOne(mappedBy = "propertyDetails",fetch = FetchType.LAZY)
     private Publish publish;
 }
