@@ -15,6 +15,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -35,8 +36,8 @@ public class PublishService {
     private final MyPublishRepository myPublishRepository;
     private final ConditionsMapper conditionsMapper;
 
-    public PublishResponse createPublish(PublishRequest publishRequest) {
 
+    public PublishResponse createPublish(PublishRequest publishRequest) {
         if (publishRequest.getCategory() == null || publishRequest.getSubcategory() == null) {
             throw new IllegalArgumentException("Необходимо выбрать категорию и подкатегорию");
         }
@@ -46,52 +47,85 @@ public class PublishService {
         }
 
         Publish publish = publishMapper.mapToEntity(publishRequest);
-//        publish.setDetailFavorite(!publish.isDetailFavorite());
 
         User user = userRepository.findById(publishRequest.getUserId())
                 .orElseThrow(() -> new RuntimeException("Пользователь не найден " + publishRequest.getUserId()));
         publish.setUser(user);
-
         publish.setPublishStatus(PublishStatus.ОДОБРЕН);
         publish.setCategoryStatus(CategoryStatus.АКТИВНО);
 
-        if (publishRequest.getCategory() == Category.REAL_ESTATE || publishRequest.getCategory() == Category.RENT) {
-
-            if (publishRequest.getPropertyDetails() == null) {
-                throw new IllegalArgumentException("Необходимо заполнить данные о недвижимости (PropertyDetails) для категории REAL_ESTATE или RENT.");
-            }
-
-            PropertyDetails propertyDetails = propertyDetailsMapper.mapToEntity(publishRequest.getPropertyDetails());
-            publish.setPropertyDetails(propertyDetails);
-            if (publishRequest.getConditions() == null) {
-                throw new IllegalArgumentException("Необходимо заполнить данные о условиях (Conditions) для категории REAL_ESTATE или RENT.");
-            }
-            Conditions conditions = conditionsMapper.mapToEntity(publishRequest.getConditions());
-            publish.setConditions(conditions);
-        } else {
-            // Если категория не совпадает с RENT или REAL_ESTATE, устанавливаем null
-            publish.setPropertyDetails(null);
-            publish.setConditions(null);
+        // Проверяем, если данные корректные и создаем публикацию
+        Publish savedPublish;
+        try {
+            savedPublish = publishRepository.save(publish);
+        } catch (DataIntegrityViolationException e) {
+            throw new IllegalArgumentException("Ошибка при сохранении публикации: " + e.getMessage());
         }
-   if(publishRequest.getPropertyDetails() != null) {
-       throw new IllegalArgumentException("Необходимо заполнить данные о недвижимости (Conditions) для категории REAL_ESTATE или RENT.");
-   }
 
-        Publish savedPublish = publishRepository.save(publish);
-
-        MyPublish myPublish = new MyPublish();
-        myPublish.setUserAccount(user.getUserAccount());
-        myPublish.setPublish(savedPublish);
-
-        myPublishRepository.save(myPublish);
-
-        Integer numberOfPublications = getNumberOfPublications(user.getId());
+        // Логируем успешное создание
+        log.info("Publication created successfully: {}", savedPublish);
 
         PublishResponse publishResponse = publishMapper.mapToResponse(savedPublish);
-        publishResponse.setNumberOfPublications(numberOfPublications);
-
         return publishResponse;
     }
+
+//    public PublishResponse createPublish(PublishRequest publishRequest) {
+//
+//        if (publishRequest.getCategory() == null || publishRequest.getSubcategory() == null) {
+//            throw new IllegalArgumentException("Необходимо выбрать категорию и подкатегорию");
+//        }
+//
+//        if (!Category.getAllCategories().contains(publishRequest.getCategory())) {
+//            throw new IllegalArgumentException("Неверная категория");
+//        }
+//
+//        Publish publish = publishMapper.mapToEntity(publishRequest);
+////        publish.setDetailFavorite(!publish.isDetailFavorite());
+//
+//        User user = userRepository.findById(publishRequest.getUserId())
+//                .orElseThrow(() -> new RuntimeException("Пользователь не найден " + publishRequest.getUserId()));
+//        publish.setUser(user);
+//
+//        publish.setPublishStatus(PublishStatus.ОДОБРЕН);
+//        publish.setCategoryStatus(CategoryStatus.АКТИВНО);
+//
+//        if (publishRequest.getCategory() == Category.REAL_ESTATE || publishRequest.getCategory() == Category.RENT) {
+//
+//            if (publishRequest.getPropertyDetails() == null) {
+//                throw new IllegalArgumentException("Необходимо заполнить данные о недвижимости (PropertyDetails) для категории REAL_ESTATE или RENT.");
+//            }
+//
+//            PropertyDetails propertyDetails = propertyDetailsMapper.mapToEntity(publishRequest.getPropertyDetails());
+//            publish.setPropertyDetails(propertyDetails);
+//            if (publishRequest.getConditions() == null) {
+//                throw new IllegalArgumentException("Необходимо заполнить данные о условиях (Conditions) для категории REAL_ESTATE или RENT.");
+//            }
+//            Conditions conditions = conditionsMapper.mapToEntity(publishRequest.getConditions());
+//            publish.setConditions(conditions);
+//        } else {
+//            // Если категория не совпадает с RENT или REAL_ESTATE, устанавливаем null
+//            publish.setPropertyDetails(null);
+//            publish.setConditions(null);
+//        }
+//        if (publishRequest.getPropertyDetails() != null) {
+//            throw new IllegalArgumentException("Необходимо заполнить данные о недвижимости (Conditions) для категории REAL_ESTATE или RENT.");
+//        }
+//
+//        Publish savedPublish = publishRepository.save(publish);
+//
+//        MyPublish myPublish = new MyPublish();
+//        myPublish.setUserAccount(user.getUserAccount());
+//        myPublish.setPublish(savedPublish);
+//
+//        myPublishRepository.save(myPublish);
+//
+//        Integer numberOfPublications = getNumberOfPublications(user.getId());
+//
+//        PublishResponse publishResponse = publishMapper.mapToResponse(savedPublish);
+//        publishResponse.setNumberOfPublications(numberOfPublications);
+//
+//        return publishResponse;
+//    }
 
     public PublishResponse createPublishDetails(PublishRequest publishRequest) {
 
@@ -138,6 +172,12 @@ public class PublishService {
 
         Publish savedPublish = publishRepository.save(publish);
 
+        MyPublish myPublish = new MyPublish();
+        myPublish.setUserAccount(user.getUserAccount());
+        myPublish.setPublish(savedPublish);
+
+        myPublishRepository.save(myPublish);
+
         Integer numberOfPublications = getNumberOfPublications(user.getId());
         System.out.println("Counting publications for userId: " + user.getId());
 
@@ -147,7 +187,7 @@ public class PublishService {
         return publishResponse;
     }
 
-        public Integer getNumberOfPublications(Long userId) {
+    public Integer getNumberOfPublications(Long userId) {
         return publishRepository.countPublicationsByUserId(userId);
     }
 
