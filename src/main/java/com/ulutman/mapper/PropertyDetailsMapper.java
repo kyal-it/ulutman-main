@@ -1,5 +1,6 @@
 package com.ulutman.mapper;
 
+import com.ulutman.model.dto.PropertyDetailsRequest;
 import com.ulutman.model.dto.PropertyDetailsResponse;
 import com.ulutman.model.entities.PropertyDetails;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +10,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class PropertyDetailsMapper {
 
-    public PropertyDetails mapToEntity(PropertyDetails request){
+    public PropertyDetails mapToEntity(PropertyDetailsRequest request){
         PropertyDetails propertyDetails = new PropertyDetails();
         propertyDetails.setTotalArea(request.getTotalArea());
         propertyDetails.setLivingArea(request.getLivingArea());
@@ -33,7 +34,7 @@ public class PropertyDetailsMapper {
         propertyDetails.setHasShower(request.getHasShower());
         propertyDetails.setHasFurnitureInRooms(request.getHasFurnitureInRooms());
         propertyDetails.setHasDishWasher(request.getHasDishWasher());
-        propertyDetails.setHasAirConditional(request.getHasAirConditional());
+        propertyDetails.setHasAirConditioner(request.getHasAirConditioner());
         propertyDetails.setHasInternet(request.getHasInternet());
         propertyDetails.setHasKitchenFurniture(request.getHasKitchenFurniture());
         return propertyDetails;
@@ -64,7 +65,7 @@ public class PropertyDetailsMapper {
                 .hasShower(propertyDetails.getHasShower())
                 .hasFurnitureInRooms(propertyDetails.getHasFurnitureInRooms())
                 .hasDishwasher(propertyDetails.getHasDishWasher())
-                .hasAirConditioner(propertyDetails.getHasAirConditional())
+                .hasAirConditioner(propertyDetails.getHasAirConditioner())
                 .hasInternet(propertyDetails.getHasInternet())
                 .hasKitchenFurniture(propertyDetails.getHasKitchenFurniture())
                 .build();

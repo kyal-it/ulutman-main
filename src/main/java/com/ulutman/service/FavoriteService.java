@@ -29,23 +29,53 @@ public class FavoriteService {
     private final FavoriteMapper favoriteMapper;
 
     public FavoriteResponse addToFavorites(Long productId, Principal principal) {
-        User user = userRepository.findByEmail(principal.getName()).
-                orElseThrow(() -> new NotFoundException("User not found"));
+        User user = userRepository.findByEmail(principal.getName())
+                .orElseThrow(() -> new NotFoundException("User not found"));
 
-        Publish publish = publishRepository.findById(productId).
-                orElseThrow(() -> new NotFoundException("Product not found"));
+        Publish publish = publishRepository.findById(productId)
+                .orElseThrow(() -> new NotFoundException("Product not found"));
 
         Favorite favorites = favoriteRepository.getFavoritesByUserId(user.getId());
         List<Publish> publishes = favorites.getPublishes();
-        publishes.add(publish);
-        if (favorites.getPublishes().contains(publishes)) {
-            throw new IncorrectCodeException("already in favorites ");
+
+        if (publishes.contains(publish)) {
+            throw new IncorrectCodeException("Already in favorites");
         }
+
+        publishes.add(publish);
+
         favorites.setPublishes(publishes);
-        favoriteRepository.save(favorites);
-        log.info("added favorites");
+        favoriteRepository.save(favorites);  // Сохраняем изменения в избранном
+
+        publish.setDetailFavorite(true);   // Устанавливаем detailFavorite на true
+        publishRepository.save(publish);   // Сохраняем изменения в публикации
+
+        log.info("Added to favorites");
+
         return favoriteMapper.mapToResponse(favorites, publish);
     }
+
+
+
+
+//    public FavoriteResponse addToFavorites(Long productId, Principal principal) {
+//        User user = userRepository.findByEmail(principal.getName()).
+//                orElseThrow(() -> new NotFoundException("User not found"));
+//
+//        Publish publish = publishRepository.findById(productId).
+//                orElseThrow(() -> new NotFoundException("Product not found"));
+//
+//        Favorite favorites = favoriteRepository.getFavoritesByUserId(user.getId());
+//        List<Publish> publishes = favorites.getPublishes();
+//        publishes.add(publish);
+//        if (favorites.getPublishes().contains(publishes)) {
+//            throw new IncorrectCodeException("already in favorites ");
+//        }
+//        favorites.setPublishes(publishes);
+//        favoriteRepository.save(favorites);
+//        log.info("added favorites");
+//        return favoriteMapper.mapToResponse(favorites, publish);
+//    }
 
     public FavoriteResponseList getAllFavorites(Principal principal) {
 

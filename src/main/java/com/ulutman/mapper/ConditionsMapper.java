@@ -1,5 +1,6 @@
 package com.ulutman.mapper;
 
+import com.ulutman.model.dto.ConditionsRequest;
 import com.ulutman.model.dto.ConditionsResponse;
 import com.ulutman.model.entities.Conditions;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +10,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class ConditionsMapper {
 
-    public Conditions mapToEntity(Conditions request) {
+    public Conditions mapToEntity(ConditionsRequest request) {
         Conditions conditions = new Conditions();
         conditions.setPricePerMonth(request.getPricePerMonth());
         conditions.setUtilitiesIncluded(request.getUtilitiesIncluded());

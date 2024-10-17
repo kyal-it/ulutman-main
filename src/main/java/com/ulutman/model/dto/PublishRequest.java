@@ -39,7 +39,7 @@ public class PublishRequest {
 
     CategoryStatus categoryStatus;
 
-    PropertyDetails propertyDetails;
+    PropertyDetailsRequest propertyDetails;
 
-    Conditions conditions;
+    ConditionsRequest conditions;
 }
