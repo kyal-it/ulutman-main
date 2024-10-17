@@ -1,5 +1,6 @@
 package com.ulutman.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.ulutman.model.enums.ModeratorStatus;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -14,13 +15,14 @@ import java.time.LocalDate;
 @Setter
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class ModeratorCommentResponse {
 
     Long commentId;
 
     String username;
 
-    AuthResponse authResponse;
+    String email;
 
     String commentContent;
 
@@ -28,10 +30,10 @@ public class ModeratorCommentResponse {
 
     ModeratorStatus moderatorStatus;
 
-    public ModeratorCommentResponse(Long commentId, String username,AuthResponse authResponse, String content, LocalDate createDate, ModeratorStatus moderatorStatus) {
+    public ModeratorCommentResponse(Long commentId, String username,String email,String content, LocalDate createDate,ModeratorStatus moderatorStatus) {
         this.commentId = commentId;
         this.username = username;
-        this.authResponse = authResponse;
+        this.email = email;
         this.commentContent = content;
         this.createDate = createDate;
         this.moderatorStatus = moderatorStatus;

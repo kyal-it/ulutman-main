@@ -31,8 +31,7 @@ public class AuthResponse {
     @JsonManagedReference
     List<PublishResponse> publishes;
 
-//    @JsonManagedReference
-    List<CommentResponse> comments;
-
+////    @JsonManagedReference
+//    List<CommentResponse> comments;
     private int numberOfPublications;
 }

@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -70,24 +71,27 @@ public class ManagePublishService {
                 .collect(Collectors.toList());
     }
 
-    public void deletePublicationsByUserId(Long userId) {
-        List<Publish> userPublications = publishRepository.findByUserId(userId);
-
-        if (userPublications.isEmpty()) {
-            throw new EntityNotFoundException("Публикации для пользователя с идентификатором " + userId + " не найдены.");
-        }
-
-        publishRepository.deleteAll(userPublications);
-        log.info("Все публикации для пользователя с идентификатором " + userId + " успешно удалены.");
-    }
+//    public void deletePublicationsByUserId(Long userId) {
+//        List<Publish> userPublications = publishRepository.findByUserId(userId);
+//
+//        if (userPublications.isEmpty()) {
+//            throw new EntityNotFoundException("Публикации для пользователя с идентификатором " + userId + " не найдены.");
+//        }
+//
+//        publishRepository.deleteAll(userPublications);
+//        log.info("Все публикации для пользователя с идентификатором " + userId + " успешно удалены.");
+//    }
 
     public void deletePublish(Long productId) {
-        this.publishRepository.findById(productId).orElseThrow(() -> {
-            return new EntityNotFoundException("Публикация  по идентификатору " + productId + " успешно удалена");
-        });
+        this.publishRepository.findById(productId)
+                .orElseThrow(() -> new EntityNotFoundException("Публикация с идентификатором " + productId + " не найдена"));
+
+
         this.publishRepository.deleteById(productId);
-        log.info("Публикация  по идентификатору" + productId + " успешна удалена");
+
+        log.info("Публикация с идентификатором " + productId + " успешно удалена");
     }
+
 
     public List<AuthResponse> filterUsersByName(String name) {
 
@@ -104,23 +108,41 @@ public class ManagePublishService {
 
     public List<PublishResponse> filterPublishes(List<Category> categories,
                                                  List<PublishStatus> publishStatuses,
-                                                 List<LocalDate> createDates) {
+                                                 List<LocalDate> createDates,
+                                                 String names) {
+        List<Publish> filteredPublishes = new ArrayList<>();
 
         if (categories != null && categories.stream().anyMatch(category -> category == null)) {
             throw new IllegalArgumentException("Категории не могут содержать нулевых значений.");
+        } else if (categories != null && !categories.isEmpty()) {
+            filteredPublishes.addAll(publishRepository.filterPublishesByCategory(categories));
         }
 
         if (publishStatuses != null && publishStatuses.stream().anyMatch(status -> status == null)) {
             throw new IllegalArgumentException("Статусы публикаций не могут содержать нулевых значений.");
+        } else if (publishStatuses != null && !publishStatuses.isEmpty()) {
+            filteredPublishes.addAll(publishRepository.filterPublishesByStatus(publishStatuses));
         }
 
         if (createDates != null && createDates.stream().anyMatch(date -> date == null)) {
             throw new IllegalArgumentException("Даты создания не могут содержать нулевых значений.");
+        } else if (createDates != null && !createDates.isEmpty()) {
+            filteredPublishes.addAll(publishRepository.filterPublishesByCreateDate(createDates));
         }
 
-        List<Publish> publishes = publishRepository.filterPublishes(categories, publishStatuses, createDates);
+        if (names != null && !names.trim().isEmpty()) {
+            List<User> filteredUsers = userRepository.userFilterByName(names);
+            for (User user : filteredUsers) {
+                List<Publish> userPublications = publishRepository.filterPublishesByUserName(user.getName());
+                if (!userPublications.isEmpty()) {
+                    filteredPublishes.addAll(userPublications);
+                }
+            }
+        }
 
-        return publishes.stream()
+        filteredPublishes = filteredPublishes.stream().distinct().collect(Collectors.toList());
+
+        return filteredPublishes.stream()
                 .map(publishMapper::mapToResponse)
                 .collect(Collectors.toList());
     }

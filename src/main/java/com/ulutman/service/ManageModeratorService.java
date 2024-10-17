@@ -9,6 +9,7 @@ import com.ulutman.model.entities.User;
 import com.ulutman.model.enums.ModeratorStatus;
 import com.ulutman.repository.CommentRepository;
 import com.ulutman.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -16,8 +17,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,23 +33,21 @@ public class ManageModeratorService {
     private final CommentMapper commentMapper;
     private final AuthMapper authMapper;
 
-    public List<ModeratorCommentResponse> getUserComments(Long userId) {
+    public UserCommentsResponse getUserWithComments(Long userId) {
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Пользователь по идентификатору " + userId + " не найден"));
+        Optional<User> userOptional = userRepository.findById(userId);
+        if (userOptional.isPresent()) {
+            User user = userOptional.get();
 
-        List<Comment> comments = commentRepository.findByUserId(userId);
+            List<ModeratorCommentResponse> comments = commentRepository.findByUserId(userId)
+                    .stream()
+                    .map(commentMapper::mapToModeratorCommentResponse) // Маппинг комментариев
+                    .collect(Collectors.toList());
 
-        return comments.stream()
-                .map(comment -> ModeratorCommentResponse.builder()
-                        .commentId(comment.getId()) // commentId
-                        .username(user.getUsername()) // username
-                        .authResponse(authMapper.mapToResponse(comment.getUser())) // authResponse
-                        .commentContent(comment.getContent()) // content
-                        .createDate(comment.getCreateDate()) // createDate
-                        .moderatorStatus(comment.getModeratorStatus()) // moderatorStatus
-                        .build())
-                .collect(Collectors.toList());
+            return new UserCommentsResponse(user.getId(), user.getUsername(), user.getEmail(), comments);
+        } else {
+            throw new EntityNotFoundException("Пользователь с идентификатором " + userId + " не найден");
+        }
     }
 
     public CommentResponse updateCommentStatus(Long id, ModeratorStatus newStatus) {
@@ -75,37 +75,38 @@ public class ManageModeratorService {
                 .collect(Collectors.toList());
     }
 
-    public List<CommentResponse> filterPublishesByContent(String content) {
-        if (content == null || content.trim().isEmpty()) {
-            throw new IllegalArgumentException("Название комментария не может быть пустым или содержать только пробелы.");
+    public List<CommentResponse> filterComments(
+            List<ModeratorStatus> moderatorStatuses,
+            List<LocalDate> createDates,
+            String content) {
+        List<Comment> filteredComments = new ArrayList<>();
+
+        if (content != null && !content.trim().isEmpty()) {
+            filteredComments.addAll(commentRepository.commentsFilterByContents(content));
         }
 
-        return commentRepository.commentsFilterByContents(content).stream()
+        if (moderatorStatuses != null && !moderatorStatuses.isEmpty()) {
+            filteredComments.addAll(commentRepository.filterCommentByModeratorStatus(moderatorStatuses));
+        }
+
+        if (createDates != null && !createDates.isEmpty()) {
+            filteredComments.addAll(commentRepository.findByModeratorByCreateDate(createDates));
+        }
+
+        filteredComments = filteredComments.stream().distinct().collect(Collectors.toList());
+
+        return filteredComments.stream()
                 .map(commentMapper::mapToResponse)
                 .collect(Collectors.toList());
-
     }
 
-    public List<CommentResponse> getCommentsByFilters(List<LocalDate> createDates, List<ModeratorStatus> moderatorStatuses) {
+    public void deleteComment(Long commentId) {
 
-        if (createDates != null && createDates.stream().anyMatch(Objects::isNull)) {
-            throw new IllegalArgumentException("Даты создания комментариев не могут содержать нулевых значений.");
+        if (!commentRepository.existsById(commentId)) {
+            throw new EntityNotFoundException("Комментарий с идентификатором " + commentId + " не найден");
         }
 
-        if (moderatorStatuses != null && moderatorStatuses.stream().anyMatch(Objects::isNull)) {
-            throw new IllegalArgumentException("Статусы модерации не могут содержать нулевых значений.");
-        }
-
-//        if ((createDates == null || createDates.isEmpty()) &&
-//            (moderatorStatuses == null || moderatorStatuses.isEmpty())) {
-//            throw new IllegalArgumentException("Должен быть указан хотя бы один фильтр: дата создания или статус модерации.");
-//        }
-
-        List<Comment> comments = commentRepository.findCommentsByFilters(createDates, moderatorStatuses);
-
-        return comments.stream()
-                .map(commentMapper::mapToResponse)
-                .collect(Collectors.toList());
+        commentRepository.deleteById(commentId);
     }
 }
 

@@ -20,10 +20,8 @@ public class UserPublishesMapper {
 
         List<PublishResponse> publishResponses = publishes; // Публикации уже преобразованы
 
-        // Создание и заполнение объекта UserPublishesResponse
         UserPublishesResponse userPublishesResponse = new UserPublishesResponse();
         userPublishesResponse.setNumberOfPublications(numberOfPublications);
-        userPublishesResponse.setAuthResponse(authResponse);
         userPublishesResponse.setPublishResponses(publishResponses);
 
         return userPublishesResponse;

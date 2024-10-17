@@ -74,7 +74,7 @@ public class Publish {
 
     @JsonBackReference // Обратная связь с User
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id",nullable = false)
     private User user;
 
     @JsonManagedReference // Это поле будет ссылаться на PropertyDetails
