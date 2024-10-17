@@ -10,12 +10,13 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -37,11 +38,19 @@ public class ManageCategoryController {
         return ResponseEntity.ok(publishes);
     }
 
+
     @Operation(summary = "Get all users with publications")
     @ApiResponse(responseCode = "201", description = "Return the list of the user's publications")
     @GetMapping("/with-publishes")
     public ResponseEntity<List<AuthResponse>> getAllUsersWithPublishes() {
         List<AuthResponse> users = manageCategoryService.getAllUsersWithPublishes();
+
+
+        if (users.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+
         return ResponseEntity.ok(users);
     }
 
@@ -56,11 +65,18 @@ public class ManageCategoryController {
         return ResponseEntity.ok(updatedPublish);
     }
 
-    @Operation(summary = "Count user publications ")
-    @ApiResponse(responseCode = "201", description = "Return count of the user's publications")
-    @GetMapping("/count/{userId}")
-    public int getNumberOfPublications(@PathVariable Long userId) {
-        return publishService.getNumberOfPublications(userId);
+    @Operation(summary = "Delete publication by id")
+    @ApiResponse(responseCode = "201", description = "Deleted the publication by id successfully")
+    @DeleteMapping("/delete/{productId}")
+    public ResponseEntity<String> deletePublish(@PathVariable Long productId) {
+        try {
+            manageCategoryService.deletePublish(productId); // Вызов сервиса для удаления публикации
+            return ResponseEntity.ok("Публикация с идентификатором " + productId + " успешно удалена");
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(404).body(e.getMessage()); // Обработка ошибки, если публикация не найдена
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Ошибка при удалении публикации: " + e.getMessage()); // Общая ошибка
+        }
     }
 
     @Operation(summary = "Filter  users by name")
@@ -70,50 +86,16 @@ public class ManageCategoryController {
         return manageCategoryService.filterUsersByName(name);
     }
 
-    @Operation(summary = "Filter by title ")
-    @ApiResponse(responseCode = "201", description = "title  successfully filtered")
-    @GetMapping("/title/filter")
-    public ResponseEntity<?> getPublishesByTitle(@RequestParam("title") String title) {
-        try {
-            List<PublishResponse> publishResponses = manageCategoryService.filterPublishesByTitle(title);
-            return ResponseEntity.ok(publishResponses);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-//Фильтрации по title по нижнему регистру
-//    @Operation(summary = "Filter by title ")
-//    @ApiResponse(responseCode = "201", description = "title  successfully filtered")
-//    @GetMapping("/title/filter")
-//    public List<PublishResponse> getProductsByTitle(@RequestParam(required = false) String title) {
-//        return manageCategoryService.getProductsByTitle(title);
-//    }
-
-    @ExceptionHandler(IllegalArgumentException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String handleInvalidTitleException(IllegalArgumentException ex) {
-        return ex.getMessage();
-    }
-
-    @Operation(summary = "Filter categories ")
-    @ApiResponse(responseCode = "201", description = "category  successfully filtered")
     @GetMapping("/filter")
-    public List<PublishResponse> filterPublicationsByCategoryAndStatus(@RequestParam(required = false) List<Category> categories,
-                                                                       @RequestParam(required = false) List<CategoryStatus> categoryStatuses) {
-        return manageCategoryService.filterPublicationsByCategoryAndStatus(categories, categoryStatuses);
-    }
+    public List<PublishResponse> filterPublishes(
+            @RequestParam(required = false) List<Category> categories,
+            @RequestParam(required = false) List<CategoryStatus> categoryStatuses,
+            @RequestParam(required = false) List<LocalDate> createDates,
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String names) {
 
-    @Operation(summary = "Filter by count ")
-    @ApiResponse(responseCode = "201", description = "count  successfully filtered")
-    @GetMapping("/count/filter")
-    public ResponseEntity<List<PublishResponse>> filterByPublicationCount(@RequestParam(required = false) Integer minCount,
-                                                                          @RequestParam(required = false) Integer maxCount) {
-        try {
-            List<PublishResponse> responses = manageCategoryService.getProductsByPublicationCount(minCount, maxCount);
-            return new ResponseEntity<>(responses, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-        }
+
+        return manageCategoryService.filterPublishes(categories, categoryStatuses, createDates, title, names);
     }
 
     @Operation(summary = "Reset filters categories")
@@ -121,5 +103,12 @@ public class ManageCategoryController {
     @GetMapping("/resetFilter")
     public List<PublishResponse> resetFilter() {
         return publishService.getAll();
+    }
+
+    @Operation(summary = "Count user publications ")
+    @ApiResponse(responseCode = "201", description = "Return count of the user's publications")
+    @GetMapping("/count/{userId}")
+    public int getNumberOfPublications(@PathVariable Long userId) {
+        return publishService.getNumberOfPublications(userId);
     }
 }

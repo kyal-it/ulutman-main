@@ -58,7 +58,7 @@ public class User implements UserDetails {
     private UserAccount userAccount;
 
     @JsonManagedReference // Это поле будет ссылаться на Publish
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL,fetch = FetchType.EAGER, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST,fetch = FetchType.EAGER, orphanRemoval = true)
     private List<Publish> publishes = new ArrayList<>();
 
     @JsonManagedReference // Это поле будет ссылаться на Complaint

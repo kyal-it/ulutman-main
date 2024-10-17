@@ -8,6 +8,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +18,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 @RequestMapping("/api/manage/moderator")
 @Tag(name = "Manage Moderator")
 @SecurityRequirement(name = "Authorization")
@@ -25,10 +28,10 @@ public class ManageModeratorController {
 
     @Operation(summary = "Get comments of user")
     @ApiResponse(responseCode = "201", description = "Return list comments of user")
-    @GetMapping("/users/{userId}/comments")
-    public ResponseEntity<List<ModeratorCommentResponse>> getUserComments(@PathVariable Long userId) {
-        List<ModeratorCommentResponse> responses = manageModeratorService.getUserComments(userId);
-        return ResponseEntity.ok(responses);
+    @GetMapping("/comments/{userId}")
+    public ResponseEntity<UserCommentsResponse> getUserWithComments(@PathVariable Long userId) {
+        UserCommentsResponse userWithComments = manageModeratorService.getUserWithComments(userId);
+        return ResponseEntity.ok(userWithComments);
     }
 
     @Operation(summary = "Update comment status")
@@ -47,29 +50,31 @@ public class ManageModeratorController {
         return manageModeratorService.filterUsersByName(name);
     }
 
-//    @GetMapping("/filter/{userName}")
-//    public List<Comment> getCommentsByUserName(@RequestParam("name") String userName) {
-//        return manageModeratorService.getCommentsByUserName(userName);
-//    }
-
-    @Operation(summary = "Filter comments by content")
-    @ApiResponse(responseCode = "201", description = "Comment by content successfully filtered")
-    @GetMapping("/content/filter")
-    public ResponseEntity<?> getPublishesByContent(@RequestParam("content") String content) {
-        try {
-            List<CommentResponse> commentResponses = manageModeratorService.filterPublishesByContent(content);
-            return ResponseEntity.ok(commentResponses);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-
     @Operation(summary = "Filter comments")
     @ApiResponse(responseCode = "201", description = "Comments successfully filtered")
     @GetMapping("/filter")
-    public List<CommentResponse> filterComments(
-            @RequestParam(value = "createDate", required = false) List<LocalDate> createDates,
-            @RequestParam(value = "moderatorStatuses", required = false) List<ModeratorStatus> moderatorStatuses) {
-        return manageModeratorService.getCommentsByFilters(createDates, moderatorStatuses);
+    public ResponseEntity<List<CommentResponse>> filterComments(
+            @RequestParam(required = false) List<ModeratorStatus> moderatorStatuses,
+            @RequestParam(required = false) List<LocalDate> createDates,
+            @RequestParam(required = false) String content) {
+
+        List<CommentResponse> filteredComments = manageModeratorService.filterComments(moderatorStatuses, createDates, content);
+
+        if (filteredComments.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        return ResponseEntity.ok(filteredComments);
+    }
+
+    @Operation(summary = "Delete comment by Id")
+    @ApiResponse(responseCode = "201", description = "Comments successfully deleted")
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> deleteComment(@PathVariable Long id) {
+        manageModeratorService.deleteComment(id);
+        log.info("Комментарий с идентификатором " + id + " успешно удален");
+
+        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+                .body("Комментарий с идентификатором " + id + " успешно удален");
     }
 }

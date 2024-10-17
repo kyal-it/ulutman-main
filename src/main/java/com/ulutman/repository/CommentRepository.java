@@ -13,9 +13,10 @@ import java.util.List;
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
-    List<Comment> findByUserId(Long postId);
+    @Query("SELECT c FROM Comment c WHERE c.user.id = :userId")
+    List<Comment> findByUserId(@Param("userId") Long userId);
 
-    List<Comment> findByUserName(String userName);
+    void deleteById(Long id);
 
     @Query("""
         SELECT comment FROM Comment comment WHERE 
@@ -23,10 +24,16 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     """)
     List<Comment> commentsFilterByContents(@Param("content") String content);
 
-    @Query("SELECT c FROM Comment c WHERE " +
-           "(:createDates IS NULL OR c.createDate IN :createDates) AND " +
-           "(:moderatorStatuses IS NULL OR c.moderatorStatus IN :moderatorStatuses)")
-    List<Comment> findCommentsByFilters(
-            @Param("createDates") List<LocalDate> createDates,
-            @Param("moderatorStatuses") List<ModeratorStatus> moderatorStatuses);
+    @Query("""
+            SELECT comment FROM Comment comment WHERE
+            (:moderatorStatuses IS NULL OR comment.moderatorStatus IN :moderatorStatuses)
+            """)
+    List<Comment> filterCommentByModeratorStatus(@Param("moderatorStatuses") List<ModeratorStatus> moderatorStatuses);
+
+    @Query("""
+            SELECT comment FROM Comment comment WHERE
+            (:createDates IS NULL OR comment.createDate IN :createDates)
+            """)
+    List<Comment> findByModeratorByCreateDate(@Param("createDates") List<LocalDate> createDates);
+
 }

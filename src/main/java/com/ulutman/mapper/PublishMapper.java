@@ -47,7 +47,7 @@ public class PublishMapper {
                 .bank(publish.getBank())
                 .publishStatus(publish.getPublishStatus())
                 .createDate(publish.getCreateDate())
-//                .detailFavorite(publish.isDetailFavorite())
+                .detailFavorite(publish.isDetailFavorite())
                 .categoryStatus(publish.getCategoryStatus())
                 .publishStatus(publish.getPublishStatus())
                 .user(mapUserToAuthResponse(publish.getUser()))

@@ -10,7 +10,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,6 +21,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 @RequestMapping("/api/manage/publishes")
 @Tag(name = "Manage Publishes")
 @SecurityRequirement(name = "Authorization")
@@ -59,19 +62,26 @@ public class ManagePublishController {
 
     @Operation(summary = "Delete publication by id")
     @ApiResponse(responseCode = "201", description = "Deleted the publication by id successfully")
-    @DeleteMapping("/deleteById/{id}")
-    public String deleteById(@PathVariable Long id) {
-        managePublicationsService.deletePublish(id);
-        return "Публикация успешно удалена";
+    @DeleteMapping("/delete/{productId}")
+    public ResponseEntity<String> deletePublish(@PathVariable Long productId) {
+        try {
+            managePublicationsService.deletePublish(productId); // Вызов сервиса для удаления публикации
+            return ResponseEntity.ok("Публикация с идентификатором " + productId + " успешно удалена");
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(404).body(e.getMessage()); // Обработка ошибки, если публикация не найдена
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Ошибка при удалении публикации: " + e.getMessage()); // Общая ошибка
+        }
     }
 
-    @Operation(summary = "Delete publication by userId")
-    @ApiResponse(responseCode = "201", description = "Deleted the publication by userId successfully")
-    @DeleteMapping("/delete/user/{userId}")
-    public String deletePublicationsByUserId(@PathVariable Long userId) {
-        managePublicationsService.deletePublicationsByUserId(userId);
-        return ("Все публикации пользователя с идентификатором " + userId + " успешно удалены");
-    }
+//    @Operation(summary = "Delete publication by userId")
+//    @ApiResponse(responseCode = "201", description = "Deleted the publication by userId successfully")
+//    @DeleteMapping("/delete/{id}")
+//    public ResponseEntity<Void> deletePublish(@PathVariable Long id) {
+//       managePublicationsService.deletePublish(id);
+//        log.info("Публикация с идентификатором " + id + " успешно удалена");
+//        return ResponseEntity.noContent().build();
+//    }
 
     @Operation(summary = "Filter  users by name")
     @ApiResponse(responseCode = "201", description = "Users  by name successfully filtered")
@@ -80,16 +90,16 @@ public class ManagePublishController {
         return managePublicationsService.filterUsersByName(name);
     }
 
-    @Operation(summary = "Filter publications")
-    @ApiResponse(responseCode = "201", description = "Publications  successfully filtered")
     @GetMapping("/filter")
     public ResponseEntity<List<PublishResponse>> filterPublishes(
-            @RequestParam(value = "categories", required = false) List<Category> categories,
-            @RequestParam(value = "publishStatuses", required = false) List<PublishStatus> publishStatuses,
-            @RequestParam(value = "createDates", required = false) List<LocalDate> createDates
-    ) {
-        List<PublishResponse> publishResponses = managePublicationsService.filterPublishes(categories, publishStatuses, createDates);
-        return ResponseEntity.ok(publishResponses);
+            @RequestParam(required = false) List<Category> categories,
+            @RequestParam(required = false) List<PublishStatus> publishStatuses,
+            @RequestParam(required = false) List<LocalDate> createDates,
+            @RequestParam(required = false) String names) {
+
+        List<PublishResponse> filteredPublishes = managePublicationsService.filterPublishes(categories, publishStatuses, createDates, names);
+
+        return ResponseEntity.ok(filteredPublishes);
     }
 
     @Operation(summary = "Reset filters publications")

@@ -56,6 +56,6 @@ public class PublishResponse {
 
     Conditions conditions;
 
-    @JsonManagedReference
-    List<CommentResponse> comments;
+//    @JsonManagedReference
+//    List<CommentResponse> comments;
 }

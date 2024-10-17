@@ -9,6 +9,7 @@ import com.ulutman.model.entities.Publish;
 import com.ulutman.model.entities.User;
 import com.ulutman.model.enums.Category;
 import com.ulutman.model.enums.CategoryStatus;
+import com.ulutman.repository.MyPublishRepository;
 import com.ulutman.repository.PublishRepository;
 import com.ulutman.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -17,7 +18,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,6 +35,7 @@ public class ManageCategoryService {
     private final PublishMapper publishMapper;
     private final UserRepository userRepository;
     private final AuthMapper authMapper;
+    private final MyPublishRepository myPublishRepository;
 
     public List<PublishResponse> getAllPublishesByUser(Long userId) {
 
@@ -48,17 +53,22 @@ public class ManageCategoryService {
     public List<AuthResponse> getAllUsersWithPublishes() {
         List<User> users = userRepository.findAll();
 
+
         return users.stream()
+                .filter(user -> !publishRepository.findAllByUserId(user.getId()).isEmpty()) // Фильтруем пользователей с публикациями
                 .map(user -> {
                     List<PublishResponse> publishes = publishRepository.findAllByUserId(user.getId())
                             .stream()
                             .map(publishMapper::mapToResponse)
                             .collect(Collectors.toList());
 
+
                     AuthResponse authResponse = authMapper.mapToResponse(user);
+
 
                     authResponse.setPublishes(publishes);
                     authResponse.setNumberOfPublications(publishes.size()); // Устанавливаем количество публикаций
+
 
                     return authResponse;
                 })
@@ -76,6 +86,13 @@ public class ManageCategoryService {
         return publishMapper.mapToResponse(publish);
     }
 
+    public void deletePublish(Long productId) {
+        this.publishRepository.findById(productId).orElseThrow(() -> {
+            return new EntityNotFoundException("Публикация  по идентификатору " + productId + " успешно удалено");
+        });
+        this.publishRepository.deleteById(productId);
+    }
+
     public List<AuthResponse> filterUsersByName(String name) {
 
         if (name == null || name.trim().isEmpty()) {
@@ -89,49 +106,51 @@ public class ManageCategoryService {
                 .collect(Collectors.toList());
     }
 
-    public List<PublishResponse> filterPublishesByTitle(String title) {
-        if (title == null || title.trim().isEmpty()) {
-            throw new IllegalArgumentException("Название не может быть пустым или содержать только пробелы.");
+    public List<PublishResponse> filterPublishes(List<Category> categories,
+                                                 List<CategoryStatus> categoryStatuses,
+                                                 List<LocalDate> createDates,
+                                                 String title,
+                                                 String names) {
+        List<Publish> filteredPublishes = new ArrayList<>();
+
+
+        if (title != null && !title.trim().isEmpty()) {
+            filteredPublishes.addAll(publishRepository.filterPublishesByTitle(title));
         }
 
-        return publishRepository.filterPublishesByTitle(title).stream()
-                .map(publishMapper::mapToResponse)
-                .collect(Collectors.toList());
-
-    }
-    // Фильтрация по title по нижнему регистру
-//    public  List<PublishResponse> filterPublishesByTitle(String title) {
-//        if (title == null || title.trim().isEmpty()) {
-//            throw new IllegalArgumentException("Название не может быть пустым или содержать только пробелы.");
-//        }
-//        return publishRepository.findAll().stream()
-//                .filter(p -> p.getTitle().toLowerCase().startsWith(title.toLowerCase()))
-//                .map(publishMapper::mapToResponse)
-//                .collect(Collectors.toList());
-//    }
-
-    public List<PublishResponse> filterPublicationsByCategoryAndStatus(List<Category> categories,
-                                                                       List<CategoryStatus> categoryStatuses) {
         if (categories != null && categories.stream().anyMatch(category -> category == null)) {
             throw new IllegalArgumentException("Категории не могут содержать нулевых значений.");
+        } else if (categories != null && !categories.isEmpty()) {
+            filteredPublishes.addAll(publishRepository.filterPublishesByCategory(categories));
         }
 
-        if (categoryStatuses != null && categoryStatuses.stream().anyMatch(category -> category == null)) {
-            throw new IllegalArgumentException("Список статусов категорий не может содержать пробелы или пустые строки.");
-
+        if (categoryStatuses != null && categoryStatuses.stream().anyMatch(status -> status == null)) {
+            throw new IllegalArgumentException("Статусы публикаций не могут содержать нулевых значений.");
+        } else if (categoryStatuses != null && !categoryStatuses.isEmpty()) {
+            filteredPublishes.addAll(publishRepository.filterPublishesByCategoryStatus(categoryStatuses));
         }
 
-        List<Publish> filteredPublishes = publishRepository.categoryFilter(categories, categoryStatuses);
+        if (createDates != null && createDates.stream().anyMatch(date -> date == null)) {
+            throw new IllegalArgumentException("Даты создания не могут содержать нулевых значений.");
+        } else if (createDates != null && !createDates.isEmpty()) {
+            filteredPublishes.addAll(publishRepository.filterPublishesByCreateDate(createDates));
+        }
+
+        if (names != null && !names.trim().isEmpty()) {
+            List<User> filteredUsers = userRepository.userFilterByName(names);
+            for (User user : filteredUsers) {
+                List<Publish> userPublications = publishRepository.filterPublishesByUserName(user.getName());
+                if (!userPublications.isEmpty()) {
+                    filteredPublishes.addAll(userPublications);
+                }
+            }
+        }
+
+
+        filteredPublishes = filteredPublishes.stream().distinct().collect(Collectors.toList());
+
 
         return filteredPublishes.stream()
-                .map(publishMapper::mapToResponse)
-                .collect(Collectors.toList());
-    }
-
-    public List<PublishResponse> getProductsByPublicationCount(Integer minCount, Integer maxCount) {
-        List<Publish> results = publishRepository.findProductsByPublicationCount(minCount, maxCount);
-
-        return results.stream()
                 .map(publishMapper::mapToResponse)
                 .collect(Collectors.toList());
     }
