@@ -1,6 +1,7 @@
 package com.ulutman.controller;
 
 import com.ulutman.model.dto.AuthResponse;
+import com.ulutman.model.dto.PublishDetailsResponse;
 import com.ulutman.model.dto.PublishRequest;
 import com.ulutman.model.dto.PublishResponse;
 import com.ulutman.model.enums.Category;
@@ -90,14 +91,16 @@ public class ManagePublishController {
         return managePublicationsService.filterUsersByName(name);
     }
 
+    @Operation(summary = "Filter publishes by criteria")
+    @ApiResponse(responseCode = "201", description = "Publishes successfully filtered")
     @GetMapping("/filter")
-    public ResponseEntity<List<PublishResponse>> filterPublishes(
+    public ResponseEntity<List<PublishDetailsResponse>> filterPublishes(
             @RequestParam(required = false) List<Category> categories,
             @RequestParam(required = false) List<PublishStatus> publishStatuses,
             @RequestParam(required = false) List<LocalDate> createDates,
             @RequestParam(required = false) String names) {
 
-        List<PublishResponse> filteredPublishes = managePublicationsService.filterPublishes(categories, publishStatuses, createDates, names);
+        List<PublishDetailsResponse> filteredPublishes = managePublicationsService.filterPublishes(categories, publishStatuses, createDates, names);
 
         return ResponseEntity.ok(filteredPublishes);
     }

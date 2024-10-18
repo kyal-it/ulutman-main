@@ -11,9 +11,12 @@ import lombok.Setter;
 @AllArgsConstructor
 public class UserAccountCreateRequest {
     private Long userId;
-    private String username;
-    private String lastName;
-    private String phoneNumber;
-    private String emailAddress;
 
+    private String username;
+
+    private String lastName;
+
+    private String phoneNumber;
+
+    private String emailAddress;
 }

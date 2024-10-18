@@ -10,8 +10,12 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserAccountUpdateRequest {
+
     private String username;
+
     private String lastName;
+
     private String phoneNumber;
+
     private String emailAddress;
 }

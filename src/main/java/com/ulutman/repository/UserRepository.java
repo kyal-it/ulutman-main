@@ -19,21 +19,27 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT user FROM User user WHERE user.email=:email")
     Optional<User> findByEmail(@Param("email") String email);
 
-        @Query("""
-            SELECT user FROM User user WHERE
-            (:names IS NULL OR LOWER(user.name) LIKE LOWER(CONCAT(:names, '%')))
-            """)
-    List<User> userFilterByName(@Param("names") String names);
-
+//    @Query("""
+//            SELECT user FROM User user WHERE
+//            (:names IS NULL OR LOWER(user.name) LIKE LOWER(CONCAT(:names, '%')))
+//            """)
+//    List<User> findByUserName(@Param("names") String names);
     @Query("""
-            SELECT user FROM User user WHERE
-            (:roles IS NULL OR user.role IN :roles) AND
-            (:statuses IS NULL OR user.status IN :statuses) AND
-            (:createDates IS NULL OR user.createDate IN :createDates)
-            """)
-    List<User> userFilter(@Param("roles") List<Role> roles,
-                          @Param("createDates") List<LocalDate> createDates,
-                          @Param("statuses") List<Status> statuses);
+        SELECT user FROM User user WHERE
+        (:names IS NULL OR LOWER(user.name) LIKE LOWER(CONCAT(:names, '%')))
+        OR (LOWER(user.name) LIKE LOWER(CONCAT(CONCAT(:names, '%'), '%')))
+        """)
+    List<User> findByUserName(@Param("names") String names);
+
+
+    @Query("SELECT u FROM User u WHERE (:roles IS NULL OR u.role IN :roles)")
+    List<User> findByRole(@Param("roles") List<Role> role);
+
+    @Query("SELECT u FROM User u WHERE (:createDates IS NULL OR u.createDate IN :createDates)")
+    List<User> findByCreateDate(@Param("createDates") List<LocalDate>createDates);
+
+    @Query("SELECT u FROM User u WHERE (:statuses IS NULL OR u.status IN :statuses)")
+    List<User> findByStatus(@Param("statuses")List< Status> statuses);
 
     @Query("SELECT DISTINCT u FROM User u JOIN u.mailings m")
     List<User> findAllUsersWithMailings();

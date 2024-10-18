@@ -2,6 +2,7 @@ package com.ulutman.controller;
 
 import com.ulutman.model.dto.AuthRequest;
 import com.ulutman.model.dto.AuthResponse;
+import com.ulutman.model.dto.UserResponse;
 import com.ulutman.model.enums.Role;
 import com.ulutman.model.enums.Status;
 import com.ulutman.service.ManageUserService;
@@ -69,20 +70,18 @@ public class ManageUserController {
         return ResponseEntity.ok(authResponse);
     }
 
-    @Operation(summary = "Filter by name")
-    @ApiResponse(responseCode = "201", description = "Users  by name successfully filtered")
-    @GetMapping("/name/filter")
-    public List<AuthResponse> filterUsers(@RequestParam(required = false) String name) {
-        return manageUserService.filterUsersByName(name);
-    }
-
     @Operation(summary = "Filter users by criteria")
     @ApiResponse(responseCode = "201", description = "Users successfully filtered")
     @GetMapping("/filter")
-    public List<AuthResponse> filterUsers(@RequestParam(required = false) List<Role> roles,
-                                          @RequestParam(required = false) List<LocalDate> createDates,
-                                          @RequestParam(required = false) List<Status> statuses) {
-        return manageUserService.filterUsers(roles, createDates, statuses);
+    public ResponseEntity<List<UserResponse>> filterUsers(
+            @RequestParam(required = false) List<Role> roles,
+            @RequestParam(required = false) List<Status> statuses,
+            @RequestParam(required = false) List<LocalDate> createDates,
+            @RequestParam(required = false) String names) {
+
+        List<UserResponse> filteredUsers = manageUserService.filterUsers(roles, createDates, statuses, names);
+
+        return ResponseEntity.ok(filteredUsers);
     }
 
     @Operation(summary = "Reset filters users")

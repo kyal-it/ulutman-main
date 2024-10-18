@@ -18,6 +18,8 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
 
     void deleteById(Long id);
 
+    List<Comment> findByUserIdIn(List<Long> userIds);
+
     @Query("""
         SELECT comment FROM Comment comment WHERE 
         (:content IS NULL OR :content = '' OR LOWER(comment.content) LIKE LOWER(CONCAT('%', :content, '%')))
@@ -35,5 +37,4 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
             (:createDates IS NULL OR comment.createDate IN :createDates)
             """)
     List<Comment> findByModeratorByCreateDate(@Param("createDates") List<LocalDate> createDates);
-
 }
