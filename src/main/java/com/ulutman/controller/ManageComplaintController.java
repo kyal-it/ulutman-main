@@ -1,6 +1,5 @@
 package com.ulutman.controller;
 
-import com.ulutman.model.dto.AuthResponse;
 import com.ulutman.model.dto.ComplaintRequest;
 import com.ulutman.model.dto.ComplaintResponse;
 import com.ulutman.model.enums.ComplaintStatus;
@@ -16,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 
 @RestController
@@ -66,23 +66,17 @@ public class ManageComplaintController {
         return "Жалоба успешно удалена";
     }
 
-    @Operation(summary = "Filter  users by name")
-    @ApiResponse(responseCode = "201", description = "Users  by name successfully filtered")
-    @GetMapping("/name/filter")
-    public List<AuthResponse> filterUsers(@RequestParam(required = false) String name) {
-        return manageComplaintService.filterUsersByName(name);
-    }
-
-    @Operation(summary = "Filter complaints")
+    @Operation(summary = "Filter complaints by criteria")
     @ApiResponse(responseCode = "201", description = "Complaints successfully filtered")
     @GetMapping("/filter")
-    public ResponseEntity<List<ComplaintResponse>> filterComplaints(
+    public ResponseEntity<List<ComplaintResponse> >filterComplaints(
+            @RequestParam(required = false) List<ComplaintStatus> complaintStatuses,
             @RequestParam(required = false) List<ComplaintType> complaintTypes,
             @RequestParam(required = false) List<LocalDate> createDates,
-            @RequestParam(required = false) List<ComplaintStatus> complaintStatuses) {
-        List<ComplaintResponse> filteredComplaints = manageComplaintService.filterComplaints(complaintTypes, createDates, complaintStatuses);
+            @RequestParam(required = false) String names) {
 
-        return ResponseEntity.ok(filteredComplaints);
+        List<ComplaintResponse> filteredComplaint = manageComplaintService.filterComplaints(complaintStatuses, complaintTypes, createDates, names);
+        return ResponseEntity.ok(filteredComplaint);
     }
 
     @Operation(summary = "Reset filters complaints")

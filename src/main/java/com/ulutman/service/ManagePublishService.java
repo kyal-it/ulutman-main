@@ -4,6 +4,7 @@ import com.ulutman.exception.NotFoundException;
 import com.ulutman.mapper.AuthMapper;
 import com.ulutman.mapper.PublishMapper;
 import com.ulutman.model.dto.AuthResponse;
+import com.ulutman.model.dto.PublishDetailsResponse;
 import com.ulutman.model.dto.PublishRequest;
 import com.ulutman.model.dto.PublishResponse;
 import com.ulutman.model.entities.Publish;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -101,37 +103,45 @@ public class ManagePublishService {
 
         name = name.toLowerCase() + "%";
 
-        return userRepository.userFilterByName(name).stream()
+        return userRepository.findByUserName(name).stream()
                 .map(authMapper::mapToResponse)
                 .collect(Collectors.toList());
     }
 
-    public List<PublishResponse> filterPublishes(List<Category> categories,
-                                                 List<PublishStatus> publishStatuses,
-                                                 List<LocalDate> createDates,
-                                                 String names) {
+    public List<PublishDetailsResponse> filterPublishes(List<Category> categories,
+                                                        List<PublishStatus> publishStatuses,
+                                                        List<LocalDate> createDates,
+                                                        String names) {
         List<Publish> filteredPublishes = new ArrayList<>();
 
+        // Проверка на нулевые значения категорий
         if (categories != null && categories.stream().anyMatch(category -> category == null)) {
             throw new IllegalArgumentException("Категории не могут содержать нулевых значений.");
         } else if (categories != null && !categories.isEmpty()) {
             filteredPublishes.addAll(publishRepository.filterPublishesByCategory(categories));
         }
 
+        // Проверка на нулевые значения статусов
         if (publishStatuses != null && publishStatuses.stream().anyMatch(status -> status == null)) {
             throw new IllegalArgumentException("Статусы публикаций не могут содержать нулевых значений.");
         } else if (publishStatuses != null && !publishStatuses.isEmpty()) {
             filteredPublishes.addAll(publishRepository.filterPublishesByStatus(publishStatuses));
         }
 
+        // Проверка на нулевые значения дат создания
         if (createDates != null && createDates.stream().anyMatch(date -> date == null)) {
             throw new IllegalArgumentException("Даты создания не могут содержать нулевых значений.");
         } else if (createDates != null && !createDates.isEmpty()) {
             filteredPublishes.addAll(publishRepository.filterPublishesByCreateDate(createDates));
         }
 
+        // Фильтрация по именам пользователей
         if (names != null && !names.trim().isEmpty()) {
-            List<User> filteredUsers = userRepository.userFilterByName(names);
+            List<User> filteredUsers = userRepository.findByUserName(names);
+            if (filteredUsers.isEmpty()) {
+                return Collections.emptyList();  // Если нет пользователей, возвращаем пустой массив
+            }
+
             for (User user : filteredUsers) {
                 List<Publish> userPublications = publishRepository.filterPublishesByUserName(user.getName());
                 if (!userPublications.isEmpty()) {
@@ -140,10 +150,17 @@ public class ManagePublishService {
             }
         }
 
+        // Убираем дубликаты публикаций
         filteredPublishes = filteredPublishes.stream().distinct().collect(Collectors.toList());
 
+        // Если нет отфильтрованных публикаций, возвращаем пустой массив
+        if (filteredPublishes.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        // Маппинг
         return filteredPublishes.stream()
-                .map(publishMapper::mapToResponse)
+                .map(publishMapper::mapToDetailsResponse) // Используем маппер
                 .collect(Collectors.toList());
     }
 }

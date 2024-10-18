@@ -27,5 +27,4 @@ public class FavoriteMapper {
                 .map(publishMapper::mapToResponse)
                 .collect(Collectors.toList());
     }
-
 }

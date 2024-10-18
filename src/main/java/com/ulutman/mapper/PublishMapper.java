@@ -1,6 +1,7 @@
 package com.ulutman.mapper;
 
 import com.ulutman.model.dto.AuthResponse;
+import com.ulutman.model.dto.PublishDetailsResponse;
 import com.ulutman.model.dto.PublishRequest;
 import com.ulutman.model.dto.PublishResponse;
 import com.ulutman.model.entities.Publish;
@@ -53,6 +54,17 @@ public class PublishMapper {
                 .user(mapUserToAuthResponse(publish.getUser()))
                 .propertyDetails(publish.getPropertyDetails())
                 .conditions(publish.getConditions())
+                .build();
+    }
+
+    public PublishDetailsResponse mapToDetailsResponse(Publish publish) {
+        User user = publish.getUser();
+        return PublishDetailsResponse.builder()
+                .userName(user != null ? user.getName() : "Неизвестно")
+                .email(user != null ? user.getEmail() : "Неизвестно")
+                .category(publish.getCategory())
+                .createDate(publish.getCreateDate())
+                .publishStatus(publish.getPublishStatus())
                 .build();
     }
 

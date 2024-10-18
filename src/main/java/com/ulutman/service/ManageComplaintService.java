@@ -3,13 +3,13 @@ package com.ulutman.service;
 import com.ulutman.exception.NotFoundException;
 import com.ulutman.mapper.AuthMapper;
 import com.ulutman.mapper.ComplaintMapper;
-import com.ulutman.model.dto.AuthResponse;
 import com.ulutman.model.dto.ComplaintRequest;
 import com.ulutman.model.dto.ComplaintResponse;
 import com.ulutman.model.entities.Complaint;
 import com.ulutman.model.entities.User;
 import com.ulutman.model.enums.ComplaintStatus;
 import com.ulutman.model.enums.ComplaintType;
+import com.ulutman.repository.CommentRepository;
 import com.ulutman.repository.ComplaintRepository;
 import com.ulutman.repository.UserRepository;
 import lombok.AccessLevel;
@@ -19,6 +19,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -32,6 +34,7 @@ public class ManageComplaintService {
     private final ComplaintRepository complaintRepository;
     private final UserRepository userRepository;
     private final ComplaintMapper complaintMapper;
+    private final CommentRepository commentRepository;
     private final AuthMapper authMapper;
 
     public ComplaintResponse createComplaint(ComplaintRequest complaintRequest) {
@@ -73,41 +76,76 @@ public class ManageComplaintService {
 
     public void deleteComplaint(Long complaintId) {
         complaintRepository.deleteById(complaintId);
-    }
 
-    public List<AuthResponse> filterUsersByName(String name) {
-
-        if (name == null || name.trim().isEmpty()) {
-            throw new IllegalArgumentException("Имя не может быть пустым или содержать только пробелы.");
-        }
-
-        name = name.toLowerCase() + "%";
-
-        return userRepository.userFilterByName(name).stream()
-                .map(authMapper::mapToResponse)
-                .collect(Collectors.toList());
     }
 
     public List<ComplaintResponse> filterComplaints(
+            List<ComplaintStatus> complaintStatuses,
             List<ComplaintType> complaintTypes,
-            List<LocalDate> createDates, List<ComplaintStatus> complaintStatuses) {
+            List<LocalDate> createDates,
+            String names) {
 
-        if ( complaintTypes!=null && complaintTypes.stream().anyMatch(category -> category == null)){
-            throw new IllegalArgumentException("Тип жалоб не могут содержать нулевых значений.");
+        // Получаем все жалобы
+        List<Complaint> filteredComplaints = complaintRepository.findAll();
+
+        // Фильтрация по типам жалоб
+        if (complaintTypes != null && complaintTypes.stream().anyMatch(type -> type == null)) {
+            throw new IllegalArgumentException("Типы жалоб не могут содержать нулевых значений.");
+        } else if (complaintTypes != null && !complaintTypes.isEmpty()) {
+            filteredComplaints = filteredComplaints.stream()
+                    .filter(complaint -> complaintTypes.contains(complaint.getComplaintType()))
+                    .collect(Collectors.toList());
         }
 
+        // Проверка на нулевые значения статусов
+        if (complaintStatuses != null && complaintStatuses.stream().anyMatch(status -> status == null)) {
+            throw new IllegalArgumentException("Статусы публикаций не могут содержать нулевых значений.");
+        } else if (complaintStatuses != null && !complaintStatuses.isEmpty()) {
+            filteredComplaints = filteredComplaints.stream()
+                    .filter(complaint -> complaintStatuses.contains(complaint.getComplaintStatus()))
+                    .collect(Collectors.toList());
+        }
+
+        // Проверка на нулевые значения дат создания
         if (createDates != null && createDates.stream().anyMatch(date -> date == null)) {
             throw new IllegalArgumentException("Даты создания не могут содержать нулевых значений.");
+        } else if (createDates != null && !createDates.isEmpty()) {
+            filteredComplaints = filteredComplaints.stream()
+                    .filter(complaint -> createDates.contains(complaint.getCreateDate()))
+                    .collect(Collectors.toList());
         }
 
-        if (complaintStatuses != null && complaintStatuses.stream().anyMatch(status -> status == null)) {
-            throw new IllegalArgumentException("Статус жалоб не могут содержать нулевых значений.");
+        // Фильтрация по имени пользователя
+        if (names != null && !names.trim().isEmpty()) {
+            List<User> users = userRepository.findByUserName(names);
+            if (users.isEmpty()) {
+                return Collections.emptyList(); // Если ничего не найдено по именам
+            }
+            List<Long> userIds = users.stream().map(User::getId).collect(Collectors.toList());
+            filteredComplaints = filteredComplaints.stream()
+                    .filter(complaint -> userIds.contains(complaint.getUser().getId()))
+                    .collect(Collectors.toList());
         }
 
-        List<Complaint> complaints = complaintRepository.complaintFilter(complaintTypes, createDates,complaintStatuses);
+        // Если после фильтрации нет подходящих жалоб, возвращаем пустой массив
+        if (filteredComplaints.isEmpty()) {
+            return Collections.emptyList();
+        }
 
-        return complaints.stream()
-                .map(complaintMapper::mapToResponse)
+        // Маппинг жалоб в новый ComplaintResponse
+        return filteredComplaints.stream()
+                .map(complaint -> {
+                    User user = complaint.getUser();
+                    String userNameResult = user != null ? user.getName() : "Неизвестно"; // Проверяем наличие пользователя
+
+                    return ComplaintResponse.builder()
+                            .userName(userNameResult)
+                            .complaintType(complaint.getComplaintType())
+                            .complaintContent(complaint.getComplaintContent())
+                            .createDate(complaint.getCreateDate())
+                            .complaintStatus(complaint.getComplaintStatus())
+                            .build();
+                })
                 .collect(Collectors.toList());
     }
-}
+ }

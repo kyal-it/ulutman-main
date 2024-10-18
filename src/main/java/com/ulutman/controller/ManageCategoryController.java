@@ -1,6 +1,7 @@
 package com.ulutman.controller;
 
 import com.ulutman.model.dto.AuthResponse;
+import com.ulutman.model.dto.FilteredPublishResponse;
 import com.ulutman.model.dto.PublishResponse;
 import com.ulutman.model.enums.Category;
 import com.ulutman.model.enums.CategoryStatus;
@@ -79,27 +80,25 @@ public class ManageCategoryController {
         }
     }
 
-    @Operation(summary = "Filter  users by name")
-    @ApiResponse(responseCode = "201", description = "Users  by name successfully filtered")
-    @GetMapping("/name/filter")
-    public List<AuthResponse> filterUsers(@RequestParam(required = false) String name) {
-        return manageCategoryService.filterUsersByName(name);
-    }
-
+    @Operation(summary = "Filter categories by criteria")
+    @ApiResponse(responseCode = "201", description = "Categories successfully filtered")
     @GetMapping("/filter")
-    public List<PublishResponse> filterPublishes(
+    public ResponseEntity<List<FilteredPublishResponse>> filterPublishesCriteria(
+            @RequestParam(required = false) String title,
             @RequestParam(required = false) List<Category> categories,
             @RequestParam(required = false) List<CategoryStatus> categoryStatuses,
             @RequestParam(required = false) List<LocalDate> createDates,
-            @RequestParam(required = false) String title,
             @RequestParam(required = false) String names) {
 
+        List<FilteredPublishResponse> filteredPublishes = manageCategoryService.filterPublishes(
+                categories, categoryStatuses, createDates, title, names);
 
-        return manageCategoryService.filterPublishes(categories, categoryStatuses, createDates, title, names);
+        return ResponseEntity.ok(filteredPublishes);
     }
 
+
     @Operation(summary = "Reset filters categories")
-    @ApiResponse(responseCode = "201", description = "Users filters successfully reset")
+    @ApiResponse(responseCode = "201", description = "Category filters successfully reset")
     @GetMapping("/resetFilter")
     public List<PublishResponse> resetFilter() {
         return publishService.getAll();

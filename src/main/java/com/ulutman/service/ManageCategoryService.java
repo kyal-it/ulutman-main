@@ -4,6 +4,7 @@ import com.ulutman.exception.NotFoundException;
 import com.ulutman.mapper.AuthMapper;
 import com.ulutman.mapper.PublishMapper;
 import com.ulutman.model.dto.AuthResponse;
+import com.ulutman.model.dto.FilteredPublishResponse;
 import com.ulutman.model.dto.PublishResponse;
 import com.ulutman.model.entities.Publish;
 import com.ulutman.model.entities.User;
@@ -18,10 +19,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,7 +36,6 @@ public class ManageCategoryService {
     private final PublishMapper publishMapper;
     private final UserRepository userRepository;
     private final AuthMapper authMapper;
-    private final MyPublishRepository myPublishRepository;
 
     public List<PublishResponse> getAllPublishesByUser(Long userId) {
 
@@ -86,72 +86,96 @@ public class ManageCategoryService {
         return publishMapper.mapToResponse(publish);
     }
 
-    public void deletePublish(Long productId) {
-        this.publishRepository.findById(productId).orElseThrow(() -> {
-            return new EntityNotFoundException("Публикация  по идентификатору " + productId + " успешно удалено");
-        });
-        this.publishRepository.deleteById(productId);
-    }
-
-    public List<AuthResponse> filterUsersByName(String name) {
-
-        if (name == null || name.trim().isEmpty()) {
-            throw new IllegalArgumentException("Имя не может быть пустым или содержать только пробелы.");
-        }
-
-        name = name.toLowerCase() + "%";
-
-        return userRepository.userFilterByName(name).stream()
-                .map(authMapper::mapToResponse)
-                .collect(Collectors.toList());
-    }
-
-    public List<PublishResponse> filterPublishes(List<Category> categories,
-                                                 List<CategoryStatus> categoryStatuses,
-                                                 List<LocalDate> createDates,
-                                                 String title,
-                                                 String names) {
+    public List<FilteredPublishResponse> filterPublishes(
+            List<Category> categories,
+            List<CategoryStatus> categoryStatuses,
+            List<LocalDate> createDates,
+            String title,
+            String names) {
         List<Publish> filteredPublishes = new ArrayList<>();
 
-
-        if (title != null && !title.trim().isEmpty()) {
-            filteredPublishes.addAll(publishRepository.filterPublishesByTitle(title));
-        }
-
+        // Проверка на нулевые значения категорий
         if (categories != null && categories.stream().anyMatch(category -> category == null)) {
             throw new IllegalArgumentException("Категории не могут содержать нулевых значений.");
         } else if (categories != null && !categories.isEmpty()) {
             filteredPublishes.addAll(publishRepository.filterPublishesByCategory(categories));
         }
 
-        if (categoryStatuses != null && categoryStatuses.stream().anyMatch(status -> status == null)) {
+        // Проверка на нулевые значения статусов
+        if (categoryStatuses != null &&categoryStatuses.stream().anyMatch(status -> status == null)) {
             throw new IllegalArgumentException("Статусы публикаций не могут содержать нулевых значений.");
         } else if (categoryStatuses != null && !categoryStatuses.isEmpty()) {
             filteredPublishes.addAll(publishRepository.filterPublishesByCategoryStatus(categoryStatuses));
         }
 
+        // Проверка на нулевые значения дат создания
         if (createDates != null && createDates.stream().anyMatch(date -> date == null)) {
             throw new IllegalArgumentException("Даты создания не могут содержать нулевых значений.");
         } else if (createDates != null && !createDates.isEmpty()) {
             filteredPublishes.addAll(publishRepository.filterPublishesByCreateDate(createDates));
         }
 
+
+        // Фильтрация по названию публикации
+        if (title != null && !title.trim().isEmpty()) {
+            List<Publish> publishesByTitle = publishRepository.filterPublishesByTitle(title.trim());
+            if (!publishesByTitle.isEmpty()) {
+                filteredPublishes.addAll(publishesByTitle);
+            }
+        }
+
+        // Фильтрация по имени пользователя
         if (names != null && !names.trim().isEmpty()) {
-            List<User> filteredUsers = userRepository.userFilterByName(names);
+            List<User> filteredUsers = userRepository.findByUserName(names);
+            if (!filteredUsers.isEmpty()) {
+                for (User user : filteredUsers) {
+                    filteredPublishes.addAll(publishRepository.filterPublishesByUser(user.getId()));
+                }
+            }
+
             for (User user : filteredUsers) {
-                List<Publish> userPublications = publishRepository.filterPublishesByUserName(user.getName());
+                List<Publish> userPublications = publishRepository.filterPublishesByUser(user.getId());
                 if (!userPublications.isEmpty()) {
                     filteredPublishes.addAll(userPublications);
                 }
             }
+
+            if (filteredPublishes.isEmpty()) {
+                return Collections.emptyList();  // Если ничего не найдено по пользователям
+            }
         }
 
-
+        // Убираем дубликаты публикаций
         filteredPublishes = filteredPublishes.stream().distinct().collect(Collectors.toList());
 
 
+        // Если нет отфильтрованных публикаций, возвращаем пустой массив
+        if (filteredPublishes.isEmpty()) {
+            return Collections.emptyList();
+        }
+        // Маппинг публикаций в новый FilteredPublishResponse
         return filteredPublishes.stream()
-                .map(publishMapper::mapToResponse)
+                .map(publish -> {
+                    User user = publish.getUser();
+                    String userName = user != null ? user.getName() : "Неизвестно";
+                    long publicationCount = publishRepository.countByUser(user.getId());
+
+                    return FilteredPublishResponse.builder()
+                            .userName(userName)
+                            .title(publish.getTitle())
+                            .description(publish.getDescription())
+                            .publicationCount((int) publicationCount)
+                            .category(publish.getCategory())
+                            .categoryStatus(publish.getCategoryStatus())
+                            .build();
+                })
                 .collect(Collectors.toList());
+    }
+
+    public void deletePublish(Long productId) {
+        this.publishRepository.findById(productId).orElseThrow(() -> {
+            return new EntityNotFoundException("Публикация  по идентификатору " + productId + " успешно удалено");
+        });
+        this.publishRepository.deleteById(productId);
     }
 }

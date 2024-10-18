@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -50,31 +49,28 @@ public class ManageModeratorController {
         return manageModeratorService.filterUsersByName(name);
     }
 
-    @Operation(summary = "Filter comments")
+    @Operation(summary = "Filter comments by criteria")
     @ApiResponse(responseCode = "201", description = "Comments successfully filtered")
     @GetMapping("/filter")
-    public ResponseEntity<List<CommentResponse>> filterComments(
-            @RequestParam(required = false) List<ModeratorStatus> moderatorStatuses,
+    public ResponseEntity<List<FilteredCommentResponse>> filterComments(
             @RequestParam(required = false) List<LocalDate> createDates,
-            @RequestParam(required = false) String content) {
+            @RequestParam(required = false) List<ModeratorStatus> moderatorStatuses,
+            @RequestParam(required = false) String content,
+            @RequestParam(required = false) String names) {
 
-        List<CommentResponse> filteredComments = manageModeratorService.filterComments(moderatorStatuses, createDates, content);
+        List<FilteredCommentResponse> comments = manageModeratorService.filterComments(createDates, moderatorStatuses, content, names);
 
-        if (filteredComments.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
-
-        return ResponseEntity.ok(filteredComments);
+        return ResponseEntity.ok(comments);
     }
 
-    @Operation(summary = "Delete comment by Id")
-    @ApiResponse(responseCode = "201", description = "Comments successfully deleted")
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteComment(@PathVariable Long id) {
-        manageModeratorService.deleteComment(id);
-        log.info("Комментарий с идентификатором " + id + " успешно удален");
-
-        return ResponseEntity.status(HttpStatus.NO_CONTENT)
-                .body("Комментарий с идентификатором " + id + " успешно удален");
-    }
+//    @Operation(summary = "Delete comment by Id")
+//    @ApiResponse(responseCode = "201", description = "Comments successfully deleted")
+//    @DeleteMapping("/delete/{id}")
+//    public ResponseEntity<String> deleteComment(@PathVariable Long id) {
+//        manageModeratorService.deleteComment(id);
+//        log.info("Комментарий с идентификатором " + id + " успешно удален");
+//
+//        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+//                .body("Комментарий с идентификатором " + id + " успешно удален");
+//    }
 }

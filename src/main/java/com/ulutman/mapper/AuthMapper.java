@@ -3,6 +3,7 @@ package com.ulutman.mapper;
 import com.ulutman.model.dto.AuthRequest;
 import com.ulutman.model.dto.AuthResponse;
 import com.ulutman.model.dto.PublishResponse;
+import com.ulutman.model.dto.UserResponse;
 import com.ulutman.model.entities.User;
 import com.ulutman.model.enums.Role;
 import lombok.RequiredArgsConstructor;
@@ -49,6 +50,19 @@ public class AuthMapper {
                 .role(user.getRole())
                 .createDate(user.getCreateDate())
                 .publishes(publishResponses)
+                .build();
+    }
+
+    public UserResponse mapToUserResponse(User user) {
+        if (user == null) {
+            return null;
+        }
+        return UserResponse.builder()
+                .userName(user.getName())
+                .email(user.getEmail())
+                .role(user.getRole())
+                .createDate(user.getCreateDate())
+                .status(user.getStatus())
                 .build();
     }
 

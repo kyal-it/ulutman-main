@@ -1,7 +1,6 @@
 package com.ulutman.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.ulutman.model.entities.Conditions;
 import com.ulutman.model.entities.PropertyDetails;
 import com.ulutman.model.enums.*;
@@ -9,7 +8,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
-import java.util.List;
+
 
 @Getter
 @Setter
@@ -55,7 +54,4 @@ public class PublishResponse {
     PropertyDetails propertyDetails;
 
     Conditions conditions;
-
-//    @JsonManagedReference
-//    List<CommentResponse> comments;
 }
