@@ -28,8 +28,8 @@ public class UserAccount {
     private List<Message> messages;
 
     @JsonManagedReference // Это поле будет ссылаться на myPublishes
-    @OneToOne(mappedBy = "userAccount", cascade = CascadeType.ALL)
-    private MyPublish myPublish;
+    @OneToMany(mappedBy = "userAccount", cascade = CascadeType.ALL)
+    private List<MyPublish> myPublishes; // Убедитесь, что это List<MyPublish>
 
     @JsonBackReference // Обратная связь с User
     @OneToOne(cascade = CascadeType.ALL)

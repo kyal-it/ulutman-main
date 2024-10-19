@@ -22,7 +22,8 @@ public class PublishMapper {
         publish.setMetro(publishRequest.getMetro());
         publish.setAddress(publishRequest.getAddress());
         publish.setPhone(publishRequest.getPhoneNumber());
-        publish.setImage(publishRequest.getImage());
+        publish.setImages(publishRequest.getImages());
+//        publish.setImage(publishRequest.getImage());
         publish.setPrice(publishRequest.getPrice());
         publish.setCategory(publishRequest.getCategory());
         publish.setSubCategory(publishRequest.getSubcategory());
@@ -43,7 +44,8 @@ public class PublishMapper {
                 .subcategory(publish.getSubCategory())
                 .address(publish.getAddress())
                 .phoneNumber(publish.getPhone())
-                .image(publish.getImage())
+                .images(publish.getImages()) //  список изображений
+//                .image(publish.getImage())
                 .price(publish.getPrice())
                 .bank(publish.getBank())
                 .publishStatus(publish.getPublishStatus())

@@ -48,7 +48,8 @@ public class ManagePublishService {
         publish.setMetro(publishRequest.getMetro());
         publish.setAddress(publishRequest.getAddress());
         publish.setPhone(publish.getPhone());
-        publish.setImage(publishRequest.getImage());
+        publish.setImages(publishRequest.getImages());
+//        publish.setImage(publishRequest.getImage());
         publish.setCategory(publishRequest.getCategory());
         publish.setSubCategory(publishRequest.getSubcategory());
         publishRepository.save(publish);

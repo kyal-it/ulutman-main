@@ -8,6 +8,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.util.List;
 
 
 @Getter
@@ -28,7 +29,9 @@ public class PublishResponse {
 
     String phoneNumber;
 
-    String image;
+    List<String> images;
+
+//    String image;
 
     double price;
 

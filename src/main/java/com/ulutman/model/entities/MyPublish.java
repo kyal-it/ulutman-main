@@ -18,13 +18,14 @@ public class MyPublish {
             strategy = GenerationType.IDENTITY
     )
     Long id;
+
     @JsonBackReference // Обратная связь с userAccount
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_account_id")
+    @ManyToOne // Изменено на ManyToOne
+    @JoinColumn(name = "user_account_id", nullable = false)
     private UserAccount userAccount;
 
-    @JsonManagedReference // Это поле будет ссылаться на Publish
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "publish_id")
+    @JsonManagedReference //  ссылаться на Publish
+    @ManyToOne
+    @JoinColumn(name = "publish_id", nullable = false)
     private Publish publish;
 }
