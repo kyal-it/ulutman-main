@@ -4,6 +4,8 @@ import com.ulutman.model.enums.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.List;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -21,7 +23,9 @@ public class PublishRequest {
 
     String phoneNumber;
 
-    String image;
+     List<String> images;
+
+//    String image;
 
     double price;
 

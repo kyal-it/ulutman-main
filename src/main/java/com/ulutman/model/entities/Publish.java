@@ -45,8 +45,12 @@ public class Publish {
     private String address;
 
     private String phone;
+    @ElementCollection
+    @CollectionTable(name = "publish_images")  // Отдельная таблица для хранения изображений
+    @Column(name = "image")
+    private List<String> images;
 
-    private String image;
+//    private String image;
 
     @Column(name = "create_date")
     private LocalDate createDate;
