@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -77,19 +78,42 @@ public class FavoriteService {
     public FavoriteResponseList getAllFavorites(Principal principal) {
 
         User user = userRepository.findByEmail(principal.getName())
-                .orElseThrow(() -> new NotFoundException("User not found with " + principal));
+                .orElseThrow(() -> new NotFoundException("User not found with email: " + principal.getName()));
+
         Favorite favorites = favoriteRepository.getFavoritesByUserId(user.getId());
-        if (favorites != null) {
-            List<Publish> products = favoriteRepository.findProductsInFavorites(favorites.getId());
-            FavoriteResponseList productResponse = new FavoriteResponseList();
-            productResponse.setId(user.getId()); // Устанавливаем значение id на основе userId
-            productResponse.setPublishResponseList(favoriteMapper.mapListToResponseList(products));
-            return productResponse;
+
+        FavoriteResponseList favoriteResponseList = new FavoriteResponseList();
+        favoriteResponseList.setId(user.getId()); // Устанавливаем id пользователя
+
+        if (favorites != null && favorites.getPublishes() != null) {
+
+            List<Publish> products = favorites.getPublishes();
+            favoriteResponseList.setPublishResponseList(favoriteMapper.mapListToResponseList(products));
         } else {
-            // Обработка ситуации, когда избранные элементы не найдены
-            return new FavoriteResponseList(); // Возвращаем пустой список
+
+            favoriteResponseList.setPublishResponseList(new ArrayList<>());
         }
+
+        return favoriteResponseList;
     }
+
+
+//    public FavoriteResponseList getAllFavorites(Principal principal) {
+//
+//        User user = userRepository.findByEmail(principal.getName())
+//                .orElseThrow(() -> new NotFoundException("User not found with " + principal));
+//        Favorite favorites = favoriteRepository.getFavoritesByUserId(user.getId());
+//        if (favorites != null) {
+//            List<Publish> products = favoriteRepository.findProductsInFavorites(favorites.getId());
+//            FavoriteResponseList productResponse = new FavoriteResponseList();
+//            productResponse.setId(user.getId()); // Устанавливаем значение id на основе userId
+//            productResponse.setPublishResponseList(favoriteMapper.mapListToResponseList(products));
+//            return productResponse;
+//        } else {
+//            // Обработка ситуации, когда избранные элементы не найдены
+//            return new FavoriteResponseList(); // Возвращаем пустой список
+//        }
+//    }
 
     public void deleteFromFavorites(Long productId, Principal principal) {
         User user = userRepository.findByEmail(principal.getName())
