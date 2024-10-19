@@ -35,4 +35,13 @@ public class GlobalExceptionHandler {
                 .body("Произошла ошибка: " + ex.getMessage());
     }
 
+    // Обработчик кастомного исключения
+    @ExceptionHandler(IncorrectCodeException.class)
+    public ResponseEntity<String> handleIncorrectCodeException(IncorrectCodeException ex) {
+        log.warn("Caught IncorrectCodeException: {}", ex.getMessage());
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)  // Статус 409 - Conflict
+                .body(ex.getMessage());
+    }
+
 }
