@@ -30,16 +30,16 @@ public class FavoriteService {
 
     public FavoriteResponse addToFavorites(Long productId, Principal principal) {
         User user = userRepository.findByEmail(principal.getName())
-                .orElseThrow(() -> new NotFoundException("User not found"));
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
 
         Publish publish = publishRepository.findById(productId)
-                .orElseThrow(() -> new NotFoundException("Product not found"));
+                .orElseThrow(() -> new NotFoundException("Публикация не найдена"));
 
         Favorite favorites = favoriteRepository.getFavoritesByUserId(user.getId());
         List<Publish> publishes = favorites.getPublishes();
 
         if (publishes.contains(publish)) {
-            throw new IncorrectCodeException("Already in favorites");
+            throw new IncorrectCodeException("Уже в избранном");
         }
 
         publishes.add(publish);
