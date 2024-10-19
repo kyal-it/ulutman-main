@@ -20,9 +20,15 @@ public class Favorite {
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    @OneToOne(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    User user;
+    @JsonBackReference // Обратная связь с User
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "user_id") // Убедитесь, что у вас есть это поле
+    private User user;
+
+
+//    @OneToOne(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
+//    @JoinColumn(name = "user_id")
+//    User user;
 
     @JsonBackReference // Обратная связь с userAccount
     @OneToOne(cascade = CascadeType.ALL)
