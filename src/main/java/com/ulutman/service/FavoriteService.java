@@ -43,20 +43,17 @@ public class FavoriteService {
         }
 
         publishes.add(publish);
-
         favorites.setPublishes(publishes);
-        favoriteRepository.save(favorites);  // Сохраняем изменения в избранном
 
-        publish.setDetailFavorite(true);   // Устанавливаем detailFavorite на true
-        publishRepository.save(publish);   // Сохраняем изменения в публикации
+        // Устанавливаем detailFavorite в true
+        publish.setDetailFavorite(true);
+        publishRepository.save(publish); // Сохраняем изменения в базе данных
+
+        favoriteRepository.save(favorites);
 
         log.info("Added to favorites");
-
         return favoriteMapper.mapToResponse(favorites, publish);
     }
-
-
-
 
 //    public FavoriteResponse addToFavorites(Long productId, Principal principal) {
 //        User user = userRepository.findByEmail(principal.getName()).
