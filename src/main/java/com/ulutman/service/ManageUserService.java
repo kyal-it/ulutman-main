@@ -123,12 +123,22 @@ public class ManageUserService {
                 .collect(Collectors.toList());
     }
 
-    public void deleteUserById(Long id) {
-        User user = userRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Пользователь с таким id не найден: " + id));
+    public void deleteUsersByIds(List<Long> ids) {
+        List<User> users = userRepository.findAllById(ids);
 
-        userRepository.delete(user);
+        if (users.isEmpty()) {
+            throw new NotFoundException("Пользователи с указанными id не найдены");
+        }
+
+        userRepository.deleteAll(users); // Удаляем всех пользователей из списка
     }
+
+//    public void deleteUserById(Long id) {
+//        User user = userRepository.findById(id)
+//                .orElseThrow(() -> new NotFoundException("Пользователь с таким id не найден: " + id));
+//
+//        userRepository.delete(user);
+//    }
 }
 
 
