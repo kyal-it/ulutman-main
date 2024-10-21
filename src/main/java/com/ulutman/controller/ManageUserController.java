@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -72,15 +73,27 @@ public class ManageUserController {
         return manageUserService.getAllUsers();
     }
 
-    @Operation(summary = "Delete user by id")
-    @ApiResponse(responseCode = "201", description = "Deleted user by id successfully")
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<String> deleteUserById(@PathVariable Long id) {
+    @Operation(summary = "Delete users by array by id")
+    @ApiResponse(responseCode = "201", description = "Deleted users by  array by id successfully")
+    @DeleteMapping("/delete/batch")
+    public ResponseEntity<String> deleteUsersByIds(@RequestBody List<Long> ids) {
         try {
-            manageUserService.deleteUserById(id);
-            return ResponseEntity.ok("Пользователь успешно удален "+" " + id); // Возвращаем 200 OK с сообщением
+            manageUserService.deleteUsersByIds(ids);
+            return ResponseEntity.ok("Пользователи успешно удалены");
         } catch (NotFoundException e) {
-            return ResponseEntity.notFound().build(); // Возвращаем 404 Not Found, если пользователь не найден
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Некоторые пользователи не найдены");
         }
     }
+
+//    @Operation(summary = "Delete user by id")
+//    @ApiResponse(responseCode = "201", description = "Deleted user by id successfully")
+//    @DeleteMapping("/delete/{id}")
+//    public ResponseEntity<String> deleteUserById(@PathVariable Long id) {
+//        try {
+//            manageUserService.deleteUserById(id);
+//            return ResponseEntity.ok("Пользователь успешно удален " + " " + id); // Возвращаем 200 OK с сообщением
+//        } catch (NotFoundException e) {
+//            return ResponseEntity.notFound().build(); // Возвращаем 404 Not Found, если пользователь не найден
+//        }
+//    }
 }
