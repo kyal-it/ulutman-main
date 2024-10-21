@@ -51,20 +51,20 @@ public class ManageUserService {
         return authMapper.mapToResponse(user);
     }
 
-    public List<AuthResponse> getAllUsers() {
-        List<AuthResponse> authResponses = new ArrayList<>();
+    public List<UserResponse> getAllUsers() {
+        List<UserResponse> userResponses = new ArrayList<>();
         for (User user : userRepository.findAll()) {
-            authResponses.add(authMapper.mapToResponse(user));
+            userResponses.add(authMapper.mapToUserResponse(user)); // Предполагаем, что у вас есть userMapper
         }
-        return authResponses;
+        return userResponses;
     }
 
-    public AuthResponse getUserById(Long id) {
+    public UserResponse getUserById(Long id) {
         User user = userRepository.findById(id).orElseThrow(() -> new NotFoundException("Пользователь с таким id не найден " + id));
-        return authMapper.mapToResponse(user);
+        return authMapper.mapToUserResponse(user);
     }
 
-    public AuthResponse updateUserStatus(Long id, Status newStatus) {
+    public UserResponse updateUserStatus(Long id, Status newStatus) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Пользователь с таким id не найден " + id));
 
@@ -72,7 +72,7 @@ public class ManageUserService {
             user.setStatus(newStatus);
             userRepository.save(user);
         }
-        return authMapper.mapToResponse(user);
+        return authMapper.mapToUserResponse(user);
     }
 
     public List<UserResponse> filterUsers(List<Role> roles,
@@ -124,7 +124,10 @@ public class ManageUserService {
     }
 
     public void deleteUserById(Long id) {
-        userRepository.deleteById(id);
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Пользователь с таким id не найден: " + id));
+
+        userRepository.delete(user);
     }
 }
 
