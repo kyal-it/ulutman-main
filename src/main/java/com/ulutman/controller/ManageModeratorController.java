@@ -1,5 +1,6 @@
 package com.ulutman.controller;
 
+import com.ulutman.exception.NotFoundException;
 import com.ulutman.model.dto.*;
 import com.ulutman.model.enums.ModeratorStatus;
 import com.ulutman.service.ManageModeratorService;
@@ -9,6 +10,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +27,13 @@ public class ManageModeratorController {
 
     private final ManageModeratorService manageModeratorService;
 
+    @Operation(summary = "Get all comments")
+    @ApiResponse(responseCode = "201", description = "Return list of comments")
+    @GetMapping("/getAll")
+    public List<FilteredCommentResponse> getAll() {
+        return manageModeratorService.getAllComments();
+    }
+
     @Operation(summary = "Get comments of user")
     @ApiResponse(responseCode = "201", description = "Return list comments of user")
     @GetMapping("/comments/{userId}")
@@ -35,18 +44,11 @@ public class ManageModeratorController {
 
     @Operation(summary = "Update comment status")
     @ApiResponse(responseCode = "201", description = "Updated comment status successfully")
-    @PutMapping("/{commentId}/status")
-    public ResponseEntity<CommentResponse> updateCommentStatus(@PathVariable("commentId") Long commentId,
-                                                               @RequestParam("newStatus") ModeratorStatus newStatus) {
-        CommentResponse commentResponse = manageModeratorService.updateCommentStatus(commentId, newStatus);
+    @PutMapping("/update/status/{id}")
+    public ResponseEntity<FilteredCommentResponse> updateCommentStatus(@PathVariable Long id,
+                                                                       @RequestParam("newStatus") ModeratorStatus newStatus) {
+        FilteredCommentResponse commentResponse = manageModeratorService.updateCommentStatus(id, newStatus);
         return ResponseEntity.ok(commentResponse);
-    }
-
-    @Operation(summary = "Filter by name")
-    @ApiResponse(responseCode = "201", description = "Users  by name successfully filtered")
-    @GetMapping("/name/filter")
-    public List<AuthResponse> filterUsers(@RequestParam(required = false) String name) {
-        return manageModeratorService.filterUsersByName(name);
     }
 
     @Operation(summary = "Filter comments by criteria")
@@ -63,14 +65,16 @@ public class ManageModeratorController {
         return ResponseEntity.ok(comments);
     }
 
-//    @Operation(summary = "Delete comment by Id")
-//    @ApiResponse(responseCode = "201", description = "Comments successfully deleted")
-//    @DeleteMapping("/delete/{id}")
-//    public ResponseEntity<String> deleteComment(@PathVariable Long id) {
-//        manageModeratorService.deleteComment(id);
-//        log.info("Комментарий с идентификатором " + id + " успешно удален");
-//
-//        return ResponseEntity.status(HttpStatus.NO_CONTENT)
-//                .body("Комментарий с идентификатором " + id + " успешно удален");
-//    }
+    @Operation(summary = "Delete comment by Id")
+    @ApiResponse(responseCode = "201", description = "Comments successfully deleted")
+    @DeleteMapping("/delete/batch")
+    public ResponseEntity<String> deleteCommentsByIds(@RequestBody List<Long> ids) {
+        try {
+            manageModeratorService.deleteCommentsByIds(ids);
+            return ResponseEntity.ok("Комментарии успешно удалены");
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Некоторые комментарии  не найдены");
+
+        }
+    }
 }

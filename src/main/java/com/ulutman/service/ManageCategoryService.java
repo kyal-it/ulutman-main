@@ -10,10 +10,8 @@ import com.ulutman.model.entities.Publish;
 import com.ulutman.model.entities.User;
 import com.ulutman.model.enums.Category;
 import com.ulutman.model.enums.CategoryStatus;
-import com.ulutman.repository.MyPublishRepository;
 import com.ulutman.repository.PublishRepository;
 import com.ulutman.repository.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -37,17 +35,8 @@ public class ManageCategoryService {
     private final UserRepository userRepository;
     private final AuthMapper authMapper;
 
-    public List<PublishResponse> getAllPublishesByUser(Long userId) {
-
-        if (!userRepository.existsById(userId)) {
-            throw new EntityNotFoundException("Пользователь по идентификатору " + userId + " не найден");
-        }
-
-        List<Publish> publishes = publishRepository.findAllByUserId(userId);
-
-        return publishes.stream()
-                .map(publishMapper::mapToResponse)
-                .collect(Collectors.toList());
+    public List<FilteredPublishResponse> getAllCategory() {
+        return publishRepository.findAll().stream().map(publishMapper::mapToFilteredResponse).collect(Collectors.toList());
     }
 
     public List<AuthResponse> getAllUsersWithPublishes() {
@@ -75,7 +64,7 @@ public class ManageCategoryService {
                 .collect(Collectors.toList());
     }
 
-    public PublishResponse updateCategoryStatus(Long id, CategoryStatus newStatus) {
+    public FilteredPublishResponse updateCategoryStatus(Long id, CategoryStatus newStatus) {
         Publish publish = publishRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Публикация по идентификатору " + id + " не найдена"));
 
@@ -83,7 +72,7 @@ public class ManageCategoryService {
             publish.setCategoryStatus(newStatus);
             publishRepository.save(publish);
         }
-        return publishMapper.mapToResponse(publish);
+        return publishMapper.mapToFilteredResponse(publish);
     }
 
     public List<FilteredPublishResponse> filterPublishes(
@@ -102,7 +91,7 @@ public class ManageCategoryService {
         }
 
         // Проверка на нулевые значения статусов
-        if (categoryStatuses != null &&categoryStatuses.stream().anyMatch(status -> status == null)) {
+        if (categoryStatuses != null && categoryStatuses.stream().anyMatch(status -> status == null)) {
             throw new IllegalArgumentException("Статусы публикаций не могут содержать нулевых значений.");
         } else if (categoryStatuses != null && !categoryStatuses.isEmpty()) {
             filteredPublishes.addAll(publishRepository.filterPublishesByCategoryStatus(categoryStatuses));
@@ -145,15 +134,12 @@ public class ManageCategoryService {
             }
         }
 
-        // Убираем дубликаты публикаций
         filteredPublishes = filteredPublishes.stream().distinct().collect(Collectors.toList());
 
-
-        // Если нет отфильтрованных публикаций, возвращаем пустой массив
         if (filteredPublishes.isEmpty()) {
             return Collections.emptyList();
         }
-        // Маппинг публикаций в новый FilteredPublishResponse
+
         return filteredPublishes.stream()
                 .map(publish -> {
                     User user = publish.getUser();
@@ -170,12 +156,5 @@ public class ManageCategoryService {
                             .build();
                 })
                 .collect(Collectors.toList());
-    }
-
-    public void deletePublish(Long productId) {
-        this.publishRepository.findById(productId).orElseThrow(() -> {
-            return new EntityNotFoundException("Публикация  по идентификатору " + productId + " успешно удалено");
-        });
-        this.publishRepository.deleteById(productId);
     }
 }

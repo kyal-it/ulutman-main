@@ -1,9 +1,6 @@
 package com.ulutman.mapper;
 
-import com.ulutman.model.dto.AuthResponse;
-import com.ulutman.model.dto.PublishDetailsResponse;
-import com.ulutman.model.dto.PublishRequest;
-import com.ulutman.model.dto.PublishResponse;
+import com.ulutman.model.dto.*;
 import com.ulutman.model.entities.Publish;
 import com.ulutman.model.entities.User;
 import lombok.RequiredArgsConstructor;
@@ -67,6 +64,20 @@ public class PublishMapper {
                 .category(publish.getCategory())
                 .createDate(publish.getCreateDate())
                 .publishStatus(publish.getPublishStatus())
+                .build();
+    }
+
+    public FilteredPublishResponse mapToFilteredResponse(Publish publish) {
+        User user = publish.getUser();
+        String userNameResult = user != null ? user.getName() : "Неизвестно";
+        return FilteredPublishResponse.builder()
+                .userName(userNameResult)
+                .title(publish.getTitle())
+                .description(publish.getDescription())
+                .publicationCount(user.getNumberOfPublications())
+                .category(publish.getCategory())
+                .createDate(publish.getCreateDate())
+                .categoryStatus(publish.getCategoryStatus())
                 .build();
     }
 

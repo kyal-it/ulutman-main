@@ -1,9 +1,6 @@
 package com.ulutman.mapper;
 
-import com.ulutman.model.dto.AuthRequest;
-import com.ulutman.model.dto.AuthResponse;
-import com.ulutman.model.dto.PublishResponse;
-import com.ulutman.model.dto.UserResponse;
+import com.ulutman.model.dto.*;
 import com.ulutman.model.entities.User;
 import com.ulutman.model.enums.Role;
 import lombok.RequiredArgsConstructor;
@@ -65,6 +62,7 @@ public class AuthMapper {
                 .status(user.getStatus())
                 .build();
     }
+
 
     public AuthResponse mapToComplaintResponse(User user) {
         return AuthResponse.builder()

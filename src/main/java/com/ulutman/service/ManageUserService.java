@@ -132,13 +132,6 @@ public class ManageUserService {
 
         userRepository.deleteAll(users); // Удаляем всех пользователей из списка
     }
-
-//    public void deleteUserById(Long id) {
-//        User user = userRepository.findById(id)
-//                .orElseThrow(() -> new NotFoundException("Пользователь с таким id не найден: " + id));
-//
-//        userRepository.delete(user);
-//    }
 }
 
 

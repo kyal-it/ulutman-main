@@ -2,7 +2,6 @@ package com.ulutman.controller;
 
 import com.ulutman.model.dto.AuthResponse;
 import com.ulutman.model.dto.FilteredPublishResponse;
-import com.ulutman.model.dto.PublishResponse;
 import com.ulutman.model.enums.Category;
 import com.ulutman.model.enums.CategoryStatus;
 import com.ulutman.service.ManageCategoryService;
@@ -11,7 +10,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -31,14 +29,12 @@ public class ManageCategoryController {
     private final ManageCategoryService manageCategoryService;
     private final PublishService publishService;
 
-    @Operation(summary = "Get user publications")
-    @ApiResponse(responseCode = "201", description = "Return the list of the user's publications")
-    @GetMapping("/user/{userId}")
-    public ResponseEntity<List<PublishResponse>> getAllPublishesByUser(@PathVariable Long userId) {
-        List<PublishResponse> publishes = manageCategoryService.getAllPublishesByUser(userId);
-        return ResponseEntity.ok(publishes);
+    @Operation(summary = "Get all publications")
+    @ApiResponse(responseCode = "201", description = "Return list of publishes")
+    @GetMapping("/getAll")
+    public List<FilteredPublishResponse> getAll() {
+        return manageCategoryService.getAllCategory();
     }
-
 
     @Operation(summary = "Get all users with publications")
     @ApiResponse(responseCode = "201", description = "Return the list of the user's publications")
@@ -57,27 +53,13 @@ public class ManageCategoryController {
 
     @Operation(summary = "Update user status")
     @ApiResponse(responseCode = "201", description = "Updated category status successfully")
-    @PutMapping("/{id}/categoryStatus")
-    public ResponseEntity<PublishResponse> updateCategoryStatus(
+    @PutMapping("/update/status/{id}")
+    public ResponseEntity<FilteredPublishResponse> updateCategoryStatus(
             @PathVariable Long id,
             @RequestParam CategoryStatus newStatus) {
 
-        PublishResponse updatedPublish = manageCategoryService.updateCategoryStatus(id, newStatus);
-        return ResponseEntity.ok(updatedPublish);
-    }
-
-    @Operation(summary = "Delete publication by id")
-    @ApiResponse(responseCode = "201", description = "Deleted the publication by id successfully")
-    @DeleteMapping("/delete/{productId}")
-    public ResponseEntity<String> deletePublish(@PathVariable Long productId) {
-        try {
-            manageCategoryService.deletePublish(productId); // Вызов сервиса для удаления публикации
-            return ResponseEntity.ok("Публикация с идентификатором " + productId + " успешно удалена");
-        } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(404).body(e.getMessage()); // Обработка ошибки, если публикация не найдена
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body("Ошибка при удалении публикации: " + e.getMessage()); // Общая ошибка
-        }
+        FilteredPublishResponse filteredPublishResponse = manageCategoryService.updateCategoryStatus(id, newStatus);
+        return ResponseEntity.ok(filteredPublishResponse);
     }
 
     @Operation(summary = "Filter categories by criteria")
@@ -100,8 +82,8 @@ public class ManageCategoryController {
     @Operation(summary = "Reset filters categories")
     @ApiResponse(responseCode = "201", description = "Category filters successfully reset")
     @GetMapping("/resetFilter")
-    public List<PublishResponse> resetFilter() {
-        return publishService.getAll();
+    public List<FilteredPublishResponse> resetFilter() {
+        return manageCategoryService.getAllCategory();
     }
 
     @Operation(summary = "Count user publications ")
