@@ -1,15 +1,12 @@
 package com.ulutman.service;
 
 import com.ulutman.exception.NotFoundException;
-import com.ulutman.mapper.AuthMapper;
 import com.ulutman.mapper.ComplaintMapper;
-import com.ulutman.model.dto.ComplaintRequest;
 import com.ulutman.model.dto.ComplaintResponse;
 import com.ulutman.model.entities.Complaint;
 import com.ulutman.model.entities.User;
 import com.ulutman.model.enums.ComplaintStatus;
 import com.ulutman.model.enums.ComplaintType;
-import com.ulutman.repository.CommentRepository;
 import com.ulutman.repository.ComplaintRepository;
 import com.ulutman.repository.UserRepository;
 import lombok.AccessLevel;
@@ -17,12 +14,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,49 +30,22 @@ public class ManageComplaintService {
     private final ComplaintRepository complaintRepository;
     private final UserRepository userRepository;
     private final ComplaintMapper complaintMapper;
-    private final CommentRepository commentRepository;
-    private final AuthMapper authMapper;
-
-    public ComplaintResponse createComplaint(ComplaintRequest complaintRequest) {
-        Complaint complaint = new Complaint();
-        complaint.setComplaintContent(complaintRequest.getComplaintContent());
-        complaint.setComplaintType(complaintRequest.getComplaintType());
-        complaint.setComplaintStatus(ComplaintStatus.ОЖИДАЕТ);
-        complaint.setCreateDate(LocalDate.now());
-
-        Optional<User> user = userRepository.findById(complaintRequest.getUserId());
-        user.ifPresent(complaint::setUser);
-        Complaint savedComplaint = complaintRepository.save(complaint);
-        return complaintMapper.mapToResponse(savedComplaint);
-    }
 
     public List<ComplaintResponse> getAllComplaints() {
-        return complaintRepository.findAll().stream()
-                .map(complaintMapper::mapToResponse)
-                .collect(Collectors.toList());
+        return complaintRepository.findAll().stream().map(complaintMapper::mapToResponse).collect(Collectors.toList());
     }
 
-    public ComplaintResponse updateComplaintStatus(Long complaintId, ComplaintRequest complaintRequest) {
-        if (complaintId == null || complaintRequest == null) {
-            throw new IllegalArgumentException("Идентификатор жалобы и запрос на подачу жалобы не могут быть пустыми");
-        }
+    public ComplaintResponse updateComplaintStatus(Long id, @RequestBody ComplaintStatus newStatus) {
 
-        Complaint complaint = complaintRepository.findById(complaintId)
-                .orElseThrow(() -> new NotFoundException("Жалоба по идентификатору " + complaintId + " не найдена"));
+        Complaint complaint = complaintRepository.findById(id).orElseThrow(()
+                -> new NotFoundException("Жалоба  по идентификатору " + id + " не найдена"));
 
-        ComplaintStatus newStatus = complaintRequest.getComplaintStatus();
-
-        if (newStatus != null && !newStatus.equals(complaint.getComplaintStatus())) {
+        if (newStatus != null && complaint.getComplaintStatus() != newStatus) {
             complaint.setComplaintStatus(newStatus);
             complaintRepository.save(complaint);
+
         }
-
         return complaintMapper.mapToResponse(complaint);
-    }
-
-    public void deleteComplaint(Long complaintId) {
-        complaintRepository.deleteById(complaintId);
-
     }
 
     public List<ComplaintResponse> filterComplaints(
@@ -148,4 +117,14 @@ public class ManageComplaintService {
                 })
                 .collect(Collectors.toList());
     }
- }
+
+    public void deleteComplaintsByIds(List<Long> ids) {
+        List<Complaint> complaints = complaintRepository.findAllById(ids);
+
+        if (complaints.isEmpty()) {
+            throw new NotFoundException("Жалобы с такими ID не найдены");
+        }
+
+        complaintRepository.deleteAll(complaints);
+    }
+}

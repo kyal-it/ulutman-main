@@ -3,6 +3,7 @@ package com.ulutman.mapper;
 import com.ulutman.model.dto.AuthResponse;
 import com.ulutman.model.dto.MailingRequest;
 import com.ulutman.model.dto.MailingResponse;
+import com.ulutman.model.dto.UserMailingResponse;
 import com.ulutman.model.entities.Mailing;
 import com.ulutman.model.entities.User;
 import org.springframework.stereotype.Component;
@@ -42,9 +43,20 @@ public class MailingMapper {
                 .recipients(Optional.ofNullable(mailing.getRecipients())
                         .orElse(Collections.emptyList()) // Возвращаем пустой список, если null
                         .stream()
-                        .map(this::mapUserToAuthResponse)
+                        .map(this::mapToUserMailingResponse)
                         .collect(Collectors.toList()))
 
+                .build();
+    }
+
+    // Метод маппера
+    public UserMailingResponse mapToUserMailingResponse(User user) {
+        if (user == null) {
+            return null;
+        }
+        return UserMailingResponse.builder()
+                .userName(user.getName())
+                .email(user.getEmail())
                 .build();
     }
 

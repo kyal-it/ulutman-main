@@ -84,16 +84,4 @@ public class ManageUserController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Некоторые пользователи не найдены");
         }
     }
-
-//    @Operation(summary = "Delete user by id")
-//    @ApiResponse(responseCode = "201", description = "Deleted user by id successfully")
-//    @DeleteMapping("/delete/{id}")
-//    public ResponseEntity<String> deleteUserById(@PathVariable Long id) {
-//        try {
-//            manageUserService.deleteUserById(id);
-//            return ResponseEntity.ok("Пользователь успешно удален " + " " + id); // Возвращаем 200 OK с сообщением
-//        } catch (NotFoundException e) {
-//            return ResponseEntity.notFound().build(); // Возвращаем 404 Not Found, если пользователь не найден
-//        }
-//    }
 }

@@ -1,19 +1,14 @@
 package com.ulutman.service;
 
 import com.ulutman.exception.NotFoundException;
-import com.ulutman.mapper.AuthMapper;
 import com.ulutman.mapper.PublishMapper;
-import com.ulutman.model.dto.AuthResponse;
 import com.ulutman.model.dto.PublishDetailsResponse;
-import com.ulutman.model.dto.PublishRequest;
-import com.ulutman.model.dto.PublishResponse;
 import com.ulutman.model.entities.Publish;
 import com.ulutman.model.entities.User;
 import com.ulutman.model.enums.Category;
 import com.ulutman.model.enums.PublishStatus;
 import com.ulutman.repository.PublishRepository;
 import com.ulutman.repository.UserRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -35,28 +30,13 @@ public class ManagePublishService {
 
     private final PublishMapper publishMapper;
     private final PublishRepository publishRepository;
-    private final AuthMapper authMapper;
     private final UserRepository userRepository;
 
-    public List<PublishResponse> getAllPublish() {
-        return publishRepository.findAll().stream().map(publishMapper::mapToResponse).collect(Collectors.toList());
+    public List<PublishDetailsResponse> getAllPublish() {
+        return publishRepository.findAll().stream().map(publishMapper::mapToDetailsResponse).collect(Collectors.toList());
     }
 
-    public PublishResponse updatePublish(Long id, @RequestBody PublishRequest publishRequest) {
-        Publish publish = publishRepository.findById(id).orElseThrow(() -> new NotFoundException("Публикация по идентификатору " + id + " не найдена"));
-        publish.setDescription(publishRequest.getDescription());
-        publish.setMetro(publishRequest.getMetro());
-        publish.setAddress(publishRequest.getAddress());
-        publish.setPhone(publish.getPhone());
-        publish.setImages(publishRequest.getImages());
-//        publish.setImage(publishRequest.getImage());
-        publish.setCategory(publishRequest.getCategory());
-        publish.setSubCategory(publishRequest.getSubcategory());
-        publishRepository.save(publish);
-        return publishMapper.mapToResponse(publish);
-    }
-
-    public PublishResponse updatePublishStatus(Long id, @RequestBody PublishStatus newStatus) {
+    public PublishDetailsResponse updatePublishStatus(Long id, @RequestBody PublishStatus newStatus) {
         Publish publish = publishRepository.findById(id).orElseThrow(()
                 -> new NotFoundException("Публикация по идентификатору " + id + " не найдена"));
 
@@ -64,49 +44,7 @@ public class ManagePublishService {
             publish.setPublishStatus(newStatus);
             publishRepository.save(publish);
         }
-        return publishMapper.mapToResponse(publish);
-    }
-
-    public List<PublishResponse> getAllPublishesByUser(Long userId) {
-        List<Publish> publishes = publishRepository.findAllByUserId(userId);
-        return publishes.stream()
-                .map(publishMapper::mapToResponse)
-                .collect(Collectors.toList());
-    }
-
-//    public void deletePublicationsByUserId(Long userId) {
-//        List<Publish> userPublications = publishRepository.findByUserId(userId);
-//
-//        if (userPublications.isEmpty()) {
-//            throw new EntityNotFoundException("Публикации для пользователя с идентификатором " + userId + " не найдены.");
-//        }
-//
-//        publishRepository.deleteAll(userPublications);
-//        log.info("Все публикации для пользователя с идентификатором " + userId + " успешно удалены.");
-//    }
-
-    public void deletePublish(Long productId) {
-        this.publishRepository.findById(productId)
-                .orElseThrow(() -> new EntityNotFoundException("Публикация с идентификатором " + productId + " не найдена"));
-
-
-        this.publishRepository.deleteById(productId);
-
-        log.info("Публикация с идентификатором " + productId + " успешно удалена");
-    }
-
-
-    public List<AuthResponse> filterUsersByName(String name) {
-
-        if (name == null || name.trim().isEmpty()) {
-            throw new IllegalArgumentException("Имя не может быть пустым или содержать только пробелы.");
-        }
-
-        name = name.toLowerCase() + "%";
-
-        return userRepository.findByUserName(name).stream()
-                .map(authMapper::mapToResponse)
-                .collect(Collectors.toList());
+        return publishMapper.mapToDetailsResponse(publish);
     }
 
     public List<PublishDetailsResponse> filterPublishes(List<Category> categories,
@@ -163,5 +101,15 @@ public class ManagePublishService {
         return filteredPublishes.stream()
                 .map(publishMapper::mapToDetailsResponse) // Используем маппер
                 .collect(Collectors.toList());
+    }
+
+    public void deletePublicationsByIds(List<Long> ids) {
+        List<Publish> publishes = publishRepository.findAllById(ids);
+
+        if (publishes.isEmpty()) {
+            throw new NotFoundException("Публикации с такими ID не найдены");
+        }
+
+        publishRepository.deleteAll(publishes);
     }
 }

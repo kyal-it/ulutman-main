@@ -1,7 +1,6 @@
 package com.ulutman.service;
 
 import com.ulutman.exception.NotFoundException;
-import com.ulutman.mapper.AuthMapper;
 import com.ulutman.mapper.CommentMapper;
 import com.ulutman.model.dto.*;
 import com.ulutman.model.entities.Comment;
@@ -32,7 +31,6 @@ public class ManageModeratorService {
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
     private final CommentMapper commentMapper;
-    private final AuthMapper authMapper;
 
     public UserCommentsResponse getUserWithComments(Long userId) {
 
@@ -51,7 +49,11 @@ public class ManageModeratorService {
         }
     }
 
-    public CommentResponse updateCommentStatus(Long id, ModeratorStatus newStatus) {
+    public List<FilteredCommentResponse> getAllComments() {
+        return commentRepository.findAll().stream().map(commentMapper::mapToFilterResponse).collect(Collectors.toList());
+    }
+
+    public FilteredCommentResponse updateCommentStatus(Long id, ModeratorStatus newStatus) {
 
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Комментарий по идентификатору " + id + " не найден"));
@@ -60,19 +62,7 @@ public class ManageModeratorService {
             commentRepository.save(comment);
         }
 
-        return commentMapper.mapToResponse(comment);
-    }
-
-    public List<AuthResponse> filterUsersByName(String name) {
-        if (name == null || name.trim().isEmpty()) {
-            throw new IllegalArgumentException("Имя не может быть пустым или содержать только пробелы.");
-        }
-
-        name = name.toLowerCase() + "%";
-        // Если не найдены пользователи, возвращаем пустой список
-        return userRepository.findByUserName(name).stream()
-                .map(authMapper::mapToResponse)
-                .collect(Collectors.toList());
+        return commentMapper.mapToFilterResponse(comment);
     }
 
     public List<FilteredCommentResponse> filterComments(
@@ -138,15 +128,14 @@ public class ManageModeratorService {
                 .collect(Collectors.toList());
     }
 
+    public void deleteCommentsByIds(List<Long> ids) {
+        List<Comment> comments = commentRepository.findAllById(ids);
 
-//
-//    public void deleteComment(Long commentId) {
-//
-//        if (!commentRepository.existsById(commentId)) {
-//            throw new EntityNotFoundException("Комментарий с идентификатором " + commentId + " не найден");
-//        }
-//
-//        commentRepository.deleteById(commentId);
-//    }
+        if (comments.isEmpty()) {
+            throw new NotFoundException("Комментарии с такими ID не найдены");
+        }
+
+        commentRepository.deleteAll(comments);
+    }
 }
 

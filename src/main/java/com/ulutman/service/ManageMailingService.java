@@ -1,9 +1,9 @@
 package com.ulutman.service;
 
-import com.ulutman.mapper.AuthMapper;
+import com.ulutman.exception.NotFoundException;
 import com.ulutman.mapper.MailingMapper;
-import com.ulutman.model.dto.AuthResponse;
 import com.ulutman.model.dto.MailingResponse;
+import com.ulutman.model.dto.UserMailingResponse;
 import com.ulutman.model.entities.Mailing;
 import com.ulutman.model.entities.User;
 import com.ulutman.model.enums.MailingStatus;
@@ -18,8 +18,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,11 +34,10 @@ public class ManageMailingService {
     private final MailingMapper mailingMapper;
     private final MailingService mailingService;
     private final UserRepository userRepository;
-    private final AuthMapper authMapper;
 
     public void sendMailingToAllUsers(Long mailingId) {
         List<User> users = userRepository.findAll();
-        System.out.println("ВСЕ полльзователи " +users);
+        System.out.println("ВСЕ полльзователи " + users);
 
         users.forEach(user -> {
             try {
@@ -55,21 +56,24 @@ public class ManageMailingService {
         List<Mailing> mailings = mailingRepository.findAll();
 
         return mailings.stream()
-                .map(this::mapMailingToResponse)
+                .map(this::mapMailingToResponse) // Убедитесь, что метод доступен и возвращает MailingResponse
                 .collect(Collectors.toList());
     }
 
     private MailingResponse mapMailingToResponse(Mailing mailing) {
         MailingResponse response = mailingMapper.mapToResponse(mailing);
 
-        List<AuthResponse> recipients = mailing.getRecipients().stream()
-                .map(authMapper::mapToResponse) // Преобразуем User в UserResponse
+        List<UserMailingResponse> recipients = Optional.ofNullable(mailing.getRecipients())
+                .orElse(Collections.emptyList())
+                .stream()
+                .map(mailingMapper::mapToUserMailingResponse) // Предполагается, что вы используете userMailingMapper
                 .collect(Collectors.toList());
 
-        response.setRecipients(recipients);
+        response.setRecipients(recipients); // Устанавливаем получателей
 
         return response;
     }
+
 
     public MailingResponse updateMailingStatus(Long id, MailingStatus newStatus) {
         Mailing mailing = mailingRepository.findById(id)
@@ -116,5 +120,15 @@ public class ManageMailingService {
         return mailings.stream()
                 .map(mailingMapper::mapToResponse)
                 .collect(Collectors.toList());
+    }
+
+    public void deleteMailingsByIds(List<Long> ids) {
+        List<Mailing> mailings = mailingRepository.findAllById(ids);
+
+        if (mailings.isEmpty()) {
+            throw new NotFoundException("Рассылки с такими ID не найдены");
+        }
+
+        mailingRepository.deleteAll(mailings);
     }
 }

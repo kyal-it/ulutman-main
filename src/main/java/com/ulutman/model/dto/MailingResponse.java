@@ -35,5 +35,5 @@ public class MailingResponse {
 
     LocalDate createDate;
 
-    List<AuthResponse> recipients;
+    List<UserMailingResponse> recipients;
 }

@@ -1,5 +1,6 @@
 package com.ulutman.controller;
 
+import com.ulutman.exception.NotFoundException;
 import com.ulutman.model.dto.MailingResponse;
 import com.ulutman.model.entities.User;
 import com.ulutman.model.enums.MailingStatus;
@@ -33,6 +34,7 @@ public class ManageMailingController {
         manageMailingService.sendMailingToAllUsers(mailingId);
         return ResponseEntity.ok("Рассылка успешно отправлена всем пользователям.");
     }
+
     @Operation(summary = "Get all users mailing")
     @ApiResponse(responseCode = "201", description = "Return the list of  users mailings")
     @GetMapping("/users-with-mailings")
@@ -47,14 +49,16 @@ public class ManageMailingController {
         List<MailingResponse> mailings = manageMailingService.getAllMailings();
         return ResponseEntity.ok(mailings); // Возвращаем ответ с кодом 200 и списком рассылок
     }
+
     @Operation(summary = "Update a mailing status")
     @ApiResponse(responseCode = "201", description = "Updated the mailing status by id successfully")
-    @PutMapping("/{id}/status")
+    @PutMapping("/update/status/{id}")
     public ResponseEntity<MailingResponse> updateMailingStatus(@PathVariable Long id,
                                                                @RequestParam MailingStatus newStatus) {
         MailingResponse response = manageMailingService.updateMailingStatus(id, newStatus);
         return ResponseEntity.ok(response);
     }
+
     @Operation(summary = "Filter mailings by title")
     @ApiResponse(responseCode = "201", description = "Mailings by title successfully filtered")
     @GetMapping("title/filter") // Эндпоинт для фильтрации
@@ -77,5 +81,25 @@ public class ManageMailingController {
     ) {
         List<MailingResponse> mailingResponses = manageMailingService.filterMailing(mailingTypes, mailingStatuses, createDates);
         return ResponseEntity.ok(mailingResponses);
+    }
+
+    @Operation(summary = "Reset filters publications")
+    @ApiResponse(responseCode = "201", description = "Publishes filters successfully reset")
+    @GetMapping("/resetFilter")
+    public List<MailingResponse> resetFilter() {
+        List<MailingResponse> mailings = manageMailingService.getAllMailings();
+        return mailings;
+    }
+
+    @Operation(summary = "Delete mailings by array by id")
+    @ApiResponse(responseCode = "201", description = "Deleted, the array of mailings is successful")
+    @DeleteMapping("/delete/batch")
+    public ResponseEntity<String> deleteMailingsByIds(@RequestBody List<Long> ids) {
+        try {
+            manageMailingService.deleteMailingsByIds(ids);
+            return ResponseEntity.noContent().build();
+        } catch (NotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Некоторые расылки не найдены");
+        }
     }
 }
