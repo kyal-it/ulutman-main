@@ -46,7 +46,6 @@ public class FavoriteService {
         publishes.add(publish);
         favorites.setPublishes(publishes);
 
-        // Устанавливаем detailFavorite в true
         publish.setDetailFavorite(true);
         publishRepository.save(publish); // Сохраняем изменения в базе данных
 
@@ -55,25 +54,6 @@ public class FavoriteService {
         log.info("Added to favorites");
         return favoriteMapper.mapToResponse(favorites, publish);
     }
-
-//    public FavoriteResponse addToFavorites(Long productId, Principal principal) {
-//        User user = userRepository.findByEmail(principal.getName()).
-//                orElseThrow(() -> new NotFoundException("User not found"));
-//
-//        Publish publish = publishRepository.findById(productId).
-//                orElseThrow(() -> new NotFoundException("Product not found"));
-//
-//        Favorite favorites = favoriteRepository.getFavoritesByUserId(user.getId());
-//        List<Publish> publishes = favorites.getPublishes();
-//        publishes.add(publish);
-//        if (favorites.getPublishes().contains(publishes)) {
-//            throw new IncorrectCodeException("already in favorites ");
-//        }
-//        favorites.setPublishes(publishes);
-//        favoriteRepository.save(favorites);
-//        log.info("added favorites");
-//        return favoriteMapper.mapToResponse(favorites, publish);
-//    }
 
     public FavoriteResponseList getAllFavorites(Principal principal) {
 
@@ -97,24 +77,6 @@ public class FavoriteService {
         return favoriteResponseList;
     }
 
-
-//    public FavoriteResponseList getAllFavorites(Principal principal) {
-//
-//        User user = userRepository.findByEmail(principal.getName())
-//                .orElseThrow(() -> new NotFoundException("User not found with " + principal));
-//        Favorite favorites = favoriteRepository.getFavoritesByUserId(user.getId());
-//        if (favorites != null) {
-//            List<Publish> products = favoriteRepository.findProductsInFavorites(favorites.getId());
-//            FavoriteResponseList productResponse = new FavoriteResponseList();
-//            productResponse.setId(user.getId()); // Устанавливаем значение id на основе userId
-//            productResponse.setPublishResponseList(favoriteMapper.mapListToResponseList(products));
-//            return productResponse;
-//        } else {
-//            // Обработка ситуации, когда избранные элементы не найдены
-//            return new FavoriteResponseList(); // Возвращаем пустой список
-//        }
-//    }
-
     public void deleteFromFavorites(Long productId, Principal principal) {
         User user = userRepository.findByEmail(principal.getName())
                 .orElseThrow(() -> new NotFoundException("User not found"));
@@ -125,34 +87,17 @@ public class FavoriteService {
         Favorite favorite = user.getFavorites();
         List<Publish> publishes = favorite.getPublishes();
 
-        // Удаляем публикацию из избранного
         if (!publishes.remove(publish)) {
             throw new NotFoundException("Product is not in favorites");
         }
 
-        // Устанавливаем favoriteDetails в false
         publish.setDetailFavorite(false);
-        publishRepository.save(publish); // Сохраняем изменения публикации
+        publishRepository.save(publish);
 
         // Сохраняем обновленное избранное
         favorite.setPublishes(publishes);
         favoriteRepository.save(favorite);
     }
-
-
-//    public void deleteFromFavorites(Long productId, Principal principal) {
-//        User user = userRepository.findByEmail(principal.getName()).
-//                orElseThrow(() -> new NotFoundException("User not found"));
-//
-//        Publish publish = publishRepository.findById(productId).
-//                orElseThrow(() -> new NotFoundException("Product not found"));
-//        Favorite favorite = user.getFavorites();
-//        List<Publish> publishes = favorite.getPublishes();
-//        publishes.remove(publish);
-//        favorite.setPublishes(publishes);
-//        publishRepository.save(publish);
-//        favoriteRepository.save(favorite);
-//    }
 
     public void deleteAllFavorites(Principal principal) {
         User user = userRepository.findByEmail(principal.getName())
@@ -160,34 +105,19 @@ public class FavoriteService {
 
         Favorite favorites = user.getFavorites();
         if (favorites != null && !favorites.getPublishes().isEmpty()) {
-            // Проходим по всем публикациям и устанавливаем favoriteDetails в false
+
             List<Publish> publishes = favorites.getPublishes();
             for (Publish publish : publishes) {
                 publish.setDetailFavorite(false);
-                publishRepository.save(publish); // Сохраняем каждую публикацию
+                publishRepository.save(publish);
             }
 
-            // Очищаем список публикаций в избранном
             publishes.clear();
             favoriteRepository.save(favorites);
         } else {
             throw new RuntimeException("Your favorites list is empty");
         }
     }
-
-
-//    public void deleteAllFavorites(Principal principal) {
-//        User user = userRepository.findByEmail(principal.getName())
-//                .orElseThrow(() -> new NotFoundException("User not found with this username " + principal));
-//
-//        Favorite favorites = user.getFavorites();
-//        if (favorites != null) {
-//            favorites.getPublishes().clear();
-//            favoriteRepository.save(favorites);
-//        } else {
-//            throw new RuntimeException("Your favorites list is empty");
-//        }
-//    }
 
     public boolean isPublishInFavorites(Long productId, Principal principal) {
         User user = userRepository.findByEmail(principal.getName())

@@ -8,7 +8,6 @@ import lombok.Setter;
 
 import java.util.List;
 
-
 @Entity
 @Table(name = "favorites")
 @Getter
@@ -22,13 +21,8 @@ public class Favorite {
 
     @JsonBackReference // Обратная связь с User
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_id") // Убедитесь, что у вас есть это поле
+    @JoinColumn(name = "user_id")
     private User user;
-
-
-//    @OneToOne(cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-//    @JoinColumn(name = "user_id")
-//    User user;
 
     @JsonBackReference // Обратная связь с userAccount
     @OneToOne(cascade = CascadeType.ALL)
@@ -40,5 +34,6 @@ public class Favorite {
     @JoinTable(name = "favorites_publishes",
             joinColumns = @JoinColumn(name = "favorite_id"),
             inverseJoinColumns = @JoinColumn(name = "publish_id"))
+    @OrderColumn(name = "order_index")
     List<Publish> publishes;
 }
