@@ -3,6 +3,7 @@ package com.ulutman.service;
 import com.ulutman.mapper.PublishMapper;
 import com.ulutman.model.dto.PublishResponse;
 import com.ulutman.model.entities.Publish;
+import com.ulutman.model.enums.Category;
 import com.ulutman.repository.PublishRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -48,5 +50,12 @@ public class MainPageService {
     public List<PublishResponse> findPublishByCategoryRealEstate() {
         List<Publish> realEstate = publishRepository.findByCategoryRealEstate();
         return realEstate.stream().map(publishMapper::mapToResponse).toList();
+    }
+
+    public List<PublishResponse> filterPublishesByCategory(List<Category> categories, String sortBy) {
+        List<Publish> publishes = publishRepository.filterPublishesByCategory(categories, sortBy);
+        return publishes.stream()
+                .map(publishMapper::mapToResponse) // Преобразование Publish в PublishResponse
+                .collect(Collectors.toList());
     }
 }
