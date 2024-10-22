@@ -65,6 +65,7 @@ public class SecurityConfig {
                                         "/api/S3/upload",
                                         "/api/favorites/check",
                                         "/api/user-accounts/{userId}",
+                                        "/api/main-page/**",
                                         "/advertising/**")
                                 .permitAll()
                                 .anyRequest()

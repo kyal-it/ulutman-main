@@ -1,6 +1,7 @@
 package com.ulutman.controller;
 
 import com.ulutman.model.dto.PublishResponse;
+import com.ulutman.model.enums.Category;
 import com.ulutman.service.MainPageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -9,6 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -60,5 +62,14 @@ public class MainPageController {
     @GetMapping("/realEstate")
     List<PublishResponse> getPublishByCategoryRealEstate() {
         return mainPageService.findPublishByCategoryRealEstate();
+    }
+
+    @Operation(summary = "Filter categories by criteria ")
+    @ApiResponse(responseCode = "201", description = "Categories successfully filtered")
+    @GetMapping("/filter")
+    public List<PublishResponse> filterPublishes(
+            @RequestParam(required = false) List<Category> categories,
+            @RequestParam String sortBy) {
+        return mainPageService.filterPublishesByCategory(categories, sortBy);
     }
 }
