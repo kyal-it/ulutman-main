@@ -34,6 +34,5 @@ public class Favorite {
     @JoinTable(name = "favorites_publishes",
             joinColumns = @JoinColumn(name = "favorite_id"),
             inverseJoinColumns = @JoinColumn(name = "publish_id"))
-    @OrderColumn(name = "order_index")
     List<Publish> publishes;
 }
