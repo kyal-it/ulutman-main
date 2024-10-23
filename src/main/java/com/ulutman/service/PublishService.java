@@ -149,19 +149,19 @@ public class PublishService {
 //                .collect(Collectors.toList());
 //    }
 
-    public List<PublishResponse> getAll() {
-        return publishRepository.findAll().stream()
-                .peek(publish -> publish.setDetailFavorite(false)) // Устанавливаем detailFavorite в false
-                .map(publishMapper::mapToResponse)
-                .collect(Collectors.toList());
-    }
-
-//
 //    public List<PublishResponse> getAll() {
 //        return publishRepository.findAll().stream()
+//                .peek(publish -> publish.setDetailFavorite(false)) // Устанавливаем detailFavorite в false
 //                .map(publishMapper::mapToResponse)
 //                .collect(Collectors.toList());
 //    }
+
+//
+    public List<PublishResponse> getAll() {
+        return publishRepository.findAll().stream()
+                .map(publishMapper::mapToResponse)
+                .collect(Collectors.toList());
+    }
 
     public PublishResponse findById(Long id) {
         Publish publish = publishRepository.findById(id)
