@@ -28,7 +28,7 @@ public class AdvertisingController {
 
     @Operation(summary = "Create a AdVersting")
     @ApiResponse(responseCode = "201", description = "AdVersting created successfully")
-    @PostMapping("/create")
+    @PostMapping(value = "/create", consumes = "multipart/form-data")
     public ResponseEntity<String> createAdvertising(@RequestPart("imageFile") MultipartFile imageFile) {
         try {
            adVersitingService.createAdvertising(imageFile);
