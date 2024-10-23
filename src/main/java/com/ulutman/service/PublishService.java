@@ -1,5 +1,6 @@
 package com.ulutman.service;
 
+import com.ulutman.exception.NotFoundException;
 import com.ulutman.mapper.ConditionsMapper;
 import com.ulutman.mapper.PropertyDetailsMapper;
 import com.ulutman.mapper.PublishMapper;
@@ -18,9 +19,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
+import java.security.Principal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -33,7 +37,6 @@ public class PublishService {
     private final PublishRepository publishRepository;
     private final UserRepository userRepository;
     private final PropertyDetailsMapper propertyDetailsMapper;
-    private final MyPublishRepository myPublishRepository;
     private final ConditionsMapper conditionsMapper;
 
 
@@ -123,11 +126,42 @@ public class PublishService {
         return publishRepository.countPublicationsByUserId(userId);
     }
 
+//    public List<PublishResponse> getAll(Principal principal) {
+//        // Получаем текущего пользователя
+//        User user = userRepository.findByEmail(principal.getName())
+//                .orElseThrow(() -> new NotFoundException("User not found"));
+//
+//        // Получаем избранное для этого пользователя
+//        Favorite favorite = user.getFavorites();
+//        Set<Publish> favoritePublishes = (favorite != null) ? favorite.getPublishes() : new HashSet<>();
+//
+//        // Возвращаем все публикации, устанавливая detailFavorite в зависимости от того, добавлено ли в избранное
+//        return publishRepository.findAll().stream()
+//                .peek(publish -> {
+//                    // Если публикация в избранном, устанавливаем detailFavorite в true, иначе false
+//                    if (favoritePublishes.contains(publish)) {
+//                        publish.setDetailFavorite(true);
+//                    } else {
+//                        publish.setDetailFavorite(false);
+//                    }
+//                })
+//                .map(publishMapper::mapToResponse)
+//                .collect(Collectors.toList());
+//    }
+
     public List<PublishResponse> getAll() {
         return publishRepository.findAll().stream()
+                .peek(publish -> publish.setDetailFavorite(false)) // Устанавливаем detailFavorite в false
                 .map(publishMapper::mapToResponse)
                 .collect(Collectors.toList());
     }
+
+//
+//    public List<PublishResponse> getAll() {
+//        return publishRepository.findAll().stream()
+//                .map(publishMapper::mapToResponse)
+//                .collect(Collectors.toList());
+//    }
 
     public PublishResponse findById(Long id) {
         Publish publish = publishRepository.findById(id)
