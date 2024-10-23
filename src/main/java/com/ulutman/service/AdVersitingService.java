@@ -1,6 +1,5 @@
 package com.ulutman.service;
 
-import com.ulutman.mapper.AdVersitingMapper;
 import com.ulutman.model.entities.AdVersiting;
 import com.ulutman.repository.AdVersitingRepository;
 import io.jsonwebtoken.io.IOException;
@@ -14,14 +13,14 @@ import java.io.File;
 import java.util.List;
 import java.util.Optional;
 
-
 @Service
 @RequiredArgsConstructor
 public class AdVersitingService {
 
     private final AdVersitingRepository adVersitingRepository;
 
-    private final AdVersitingMapper adVersitingMapper;
+    String baseDirectoryPath = System.getProperty("user.dir") + File.separator + "ads";
+
 
     public void createAdvertising(MultipartFile imageFile) throws IOException, java.io.IOException {
         if (imageFile.isEmpty()) {
@@ -40,17 +39,18 @@ public class AdVersitingService {
         }
     }
 
-    private void saveAdvertising(MultipartFile imageFile) throws IOException, java.io.IOException {
-        // Используем относительный путь
-        String directoryPath = "/path/to/save"; // Укажите относительный путь
-        File directory = new File(directoryPath);
+    public void saveAdvertising(MultipartFile imageFile) throws IOException, java.io.IOException {
+        String userDirectoryPath = baseDirectoryPath + File.separator ;
+        File userDirectory = new File(userDirectoryPath);
 
-        if (!directory.exists()) {
-            directory.mkdirs();
+        if (!userDirectory.exists()) {
+            boolean created = userDirectory.mkdirs();
+            if (!created) {
+                throw new IOException("Failed to create directory: " + userDirectoryPath);
+            }
         }
 
-        // Сохраняем файл
-        File savedFile = new File(directory, imageFile.getOriginalFilename());
+        File savedFile = new File(userDirectory, imageFile.getOriginalFilename());
         imageFile.transferTo(savedFile);
 
         AdVersiting ad = new AdVersiting();

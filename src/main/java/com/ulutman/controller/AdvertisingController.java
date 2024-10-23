@@ -20,7 +20,6 @@ public class AdvertisingController {
         this.adVersitingService = adVersitingService;
     }
 
-
     @PostMapping("/create")
     public ResponseEntity<String> createAdvertising(@RequestParam("imageFile") MultipartFile imageFile) {
         try {
