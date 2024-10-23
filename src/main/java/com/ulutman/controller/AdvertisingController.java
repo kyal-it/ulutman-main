@@ -5,6 +5,8 @@ import com.ulutman.service.AdVersitingService;
 import io.jsonwebtoken.io.IOException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +16,8 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/advertising")
+@Tag(name = "AdVersting")
+@SecurityRequirement(name = "Authorization")
 public class AdvertisingController {
 
     private final AdVersitingService adVersitingService;
@@ -25,7 +29,7 @@ public class AdvertisingController {
     @Operation(summary = "Create a AdVersting")
     @ApiResponse(responseCode = "201", description = "AdVersting created successfully")
     @PostMapping("/create")
-    public ResponseEntity<String> createAdvertising(@RequestParam("imageFile") MultipartFile imageFile) {
+    public ResponseEntity<String> createAdvertising(@RequestPart("imageFile") MultipartFile imageFile) {
         try {
            adVersitingService.createAdvertising(imageFile);
             return ResponseEntity.ok("Реклама успешно создана.");
