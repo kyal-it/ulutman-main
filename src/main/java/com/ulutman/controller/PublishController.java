@@ -10,9 +10,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import java.security.Principal;
 
 import java.util.List;
 
@@ -55,20 +55,27 @@ public class PublishController {
         }
     }
 
-    @Operation(summary = "Get all publications")
-    @ApiResponse(responseCode = "201", description = "Return list of publishes")
+//    @Operation(summary = "Get all publications")
+//    @ApiResponse(responseCode = "201", description = "Return list of publishes")
+//    @GetMapping("/getAll")
+//    public ResponseEntity<List<PublishResponse>> getAllPublishes(Principal principal) {
+//        // Вызов сервиса для получения всех публикаций с учётом избранных для текущего пользователя
+//        List<PublishResponse> publishes = publishService.getAll(principal);
+//
+//        // Возвращаем результат в виде HTTP-ответа
+//        return new ResponseEntity<>(publishes, HttpStatus.OK);
+//    }
+//    public ResponseEntity<List<PublishResponse>> getAllPublishes() {
+//        List<PublishResponse> publishes = publishService.getAll();
+//        return ResponseEntity.ok()
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .body(publishes);
+//    }
     @GetMapping("/getAll")
     public ResponseEntity<List<PublishResponse>> getAllPublishes() {
         List<PublishResponse> publishes = publishService.getAll();
-        return ResponseEntity.ok()
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(publishes);
+        return ResponseEntity.ok(publishes);
     }
-//    @GetMapping("/getAll")
-//    public ResponseEntity<List<PublishResponse>> getAllPublishes() {
-//        List<PublishResponse> publishes = publishService.getAll();
-//        return ResponseEntity.ok(publishes);
-//    }
 
     @Operation(summary = "Get a publication by id")
     @ApiResponse(responseCode = "201", description = "Publication found")

@@ -17,7 +17,9 @@ import org.springframework.stereotype.Service;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -37,7 +39,7 @@ public class FavoriteService {
                 .orElseThrow(() -> new NotFoundException("Публикация не найдена"));
 
         Favorite favorites = favoriteRepository.getFavoritesByUserId(user.getId());
-        List<Publish> publishes = favorites.getPublishes();
+        Set<Publish> publishes = favorites.getPublishes();
 
         if (publishes.contains(publish)) {
             throw new IncorrectCodeException("Уже в избранном");
@@ -56,7 +58,6 @@ public class FavoriteService {
     }
 
     public FavoriteResponseList getAllFavorites(Principal principal) {
-
         User user = userRepository.findByEmail(principal.getName())
                 .orElseThrow(() -> new NotFoundException("User not found with email: " + principal.getName()));
 
@@ -66,16 +67,17 @@ public class FavoriteService {
         favoriteResponseList.setId(user.getId()); // Устанавливаем id пользователя
 
         if (favorites != null && favorites.getPublishes() != null) {
-
-            List<Publish> products = favorites.getPublishes();
-            favoriteResponseList.setPublishResponseList(favoriteMapper.mapListToResponseList(products));
+            // Используем Set<Publish> вместо List<Publish>
+            Set<Publish> products = favorites.getPublishes();
+            // Преобразуем Set в список, если нужно
+            favoriteResponseList.setPublishResponseList(favoriteMapper.mapListToResponseList(new ArrayList<>(products)));
         } else {
-
             favoriteResponseList.setPublishResponseList(new ArrayList<>());
         }
 
         return favoriteResponseList;
     }
+
 
     public void deleteFromFavorites(Long productId, Principal principal) {
         User user = userRepository.findByEmail(principal.getName())
@@ -85,19 +87,49 @@ public class FavoriteService {
                 .orElseThrow(() -> new NotFoundException("Product not found"));
 
         Favorite favorite = user.getFavorites();
-        List<Publish> publishes = favorite.getPublishes();
 
-        if (!publishes.remove(publish)) {
-            throw new NotFoundException("Product is not in favorites");
+        // Используем LinkedHashSet для сохранения порядка
+        Set<Publish> publishes = new LinkedHashSet<>(favorite.getPublishes());
+
+        // Проверяем, находится ли публикация в избранном
+        if (publishes.contains(publish)) {
+            // Если публикация уже в избранном, удаляем её из избранного и меняем статус на false (серый)
+            publishes.remove(publish); // Удаляем публикацию из избранного
+            publish.setDetailFavorite(false); // Публикация больше не в избранном
+        } else {
+            // Если публикации нет в избранном, добавляем её и ставим статус true (красный)
+            publishes.add(publish); // Добавляем публикацию в избранное
+            publish.setDetailFavorite(true); // Публикация в избранном
         }
-
         publish.setDetailFavorite(false);
         publishRepository.save(publish);
 
-        // Сохраняем обновленное избранное
+        // Сохраняем обновленное избранное, сохраняя порядок
         favorite.setPublishes(publishes);
         favoriteRepository.save(favorite);
     }
+
+//    public void deleteFromFavorites(Long productId, Principal principal) {
+//        User user = userRepository.findByEmail(principal.getName())
+//                .orElseThrow(() -> new NotFoundException("User not found"));
+//
+//        Publish publish = publishRepository.findById(productId)
+//                .orElseThrow(() -> new NotFoundException("Product not found"));
+//
+//        Favorite favorite = user.getFavorites();
+//        Set<Publish> publishes = favorite.getPublishes();
+//
+//        if (!publishes.remove(publish)) {
+//            throw new NotFoundException("Product is not in favorites");
+//        }
+//
+//        publish.setDetailFavorite(false);
+//        publishRepository.save(publish);
+//
+//        // Сохраняем обновленное избранное
+//        favorite.setPublishes(publishes);
+//        favoriteRepository.save(favorite);
+//    }
 
     public void deleteAllFavorites(Principal principal) {
         User user = userRepository.findByEmail(principal.getName())
@@ -106,7 +138,7 @@ public class FavoriteService {
         Favorite favorites = user.getFavorites();
         if (favorites != null && !favorites.getPublishes().isEmpty()) {
 
-            List<Publish> publishes = favorites.getPublishes();
+            Set<Publish> publishes = favorites.getPublishes();
             for (Publish publish : publishes) {
                 publish.setDetailFavorite(false);
                 publishRepository.save(publish);
