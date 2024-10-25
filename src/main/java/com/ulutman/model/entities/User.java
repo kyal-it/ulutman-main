@@ -28,10 +28,18 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
+    String googleId;
+
     String name;
+
+    String lastName;
 
     @Column(unique = true)
     String email;
+
+    String picture;
+
+    String locale;
 
     String password;
 

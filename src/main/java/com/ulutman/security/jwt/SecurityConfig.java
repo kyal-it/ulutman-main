@@ -1,6 +1,7 @@
 package com.ulutman.security.jwt;
 
 import com.ulutman.repository.UserRepository;
+import com.ulutman.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,8 +30,9 @@ import org.springframework.web.cors.CorsConfiguration;
 public class SecurityConfig {
     private final UserRepository userRepository;
     private final JwtFilter jwtFilter;
+
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    SecurityFilterChain securityFilterChain(HttpSecurity http, AuthService authService) throws Exception {
         http.cors(cors -> {
                     cors.configurationSource(request -> {
                         var corsConfiguration = new CorsConfiguration();
@@ -52,6 +54,8 @@ public class SecurityConfig {
                                         "/api/manage/category").hasAuthority("ADMIN")
                                 .requestMatchers(
                                         "/",
+                                        "/login", "/oauth2/**",
+                                        "/auth/google-login",
                                         "/api/auth/**",
                                         "/swagger-ui/**",
                                         "/v3/api-docs/**",
@@ -73,8 +77,10 @@ public class SecurityConfig {
                 .sessionManagement((sessionManagement) ->
                         sessionManagement
                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 
@@ -82,6 +88,7 @@ public class SecurityConfig {
     public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
         return http.getSharedObject(AuthenticationManagerBuilder.class).build();
     }
+
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
@@ -89,11 +96,13 @@ public class SecurityConfig {
         daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
         return daoAuthenticationProvider;
     }
+
     @Bean
     public UserDetailsService userDetailsService() {
         return email -> userRepository.findByEmail(email).orElseThrow(() ->
-                new UsernameNotFoundException("Пользователь с email: " +email+ " не существует"));
+                new UsernameNotFoundException("Пользователь с email: " + email + " не существует"));
     }
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
