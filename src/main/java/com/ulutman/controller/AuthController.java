@@ -1,9 +1,6 @@
 package com.ulutman.controller;
 
-import com.ulutman.model.dto.AuthRequest;
-import com.ulutman.model.dto.AuthResponse;
-import com.ulutman.model.dto.LoginRequest;
-import com.ulutman.model.dto.LoginResponse;
+import com.ulutman.model.dto.*;
 import com.ulutman.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -13,7 +10,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -38,5 +38,12 @@ public class AuthController {
     @PostMapping("/sign-in")
     public LoginResponse login(@RequestBody LoginRequest request) {
         return authService.login(request);
+    }
+
+    // Метод для аутентификации и регистрации через Google
+    @PostMapping("/google-login")
+    public ResponseEntity<AuthWithGoogleResponse> googleLogin(@RequestBody String token) {
+        AuthWithGoogleResponse authResponse = authService.registerUserWithGoogle(token);
+        return ResponseEntity.ok(authResponse);
     }
 }

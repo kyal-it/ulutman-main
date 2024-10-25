@@ -1,13 +1,18 @@
 package com.ulutman.service;
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.jackson2.JacksonFactory;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
+import com.google.firebase.auth.FirebaseToken;
+import com.google.firebase.auth.UserRecord;
 import com.ulutman.exception.IncorrectCodeException;
 import com.ulutman.exception.NotFoundException;
 import com.ulutman.mapper.AuthMapper;
 import com.ulutman.mapper.LoginMapper;
-import com.ulutman.model.dto.AuthRequest;
-import com.ulutman.model.dto.AuthResponse;
-import com.ulutman.model.dto.LoginRequest;
-import com.ulutman.model.dto.LoginResponse;
+import com.ulutman.model.dto.*;
 import com.ulutman.model.entities.Favorite;
 import com.ulutman.model.entities.User;
 import com.ulutman.model.entities.UserAccount;
@@ -15,16 +20,25 @@ import com.ulutman.model.enums.Role;
 import com.ulutman.model.enums.Status;
 import com.ulutman.repository.UserRepository;
 import com.ulutman.security.jwt.JwtUtil;
+import io.jsonwebtoken.io.IOException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.security.GeneralSecurityException;
 import java.time.LocalDate;
+import java.util.*;
+
+import static org.springframework.security.oauth2.core.OAuth2TokenIntrospectionClaimNames.CLIENT_ID;
 
 @Service
 @RequiredArgsConstructor
@@ -75,4 +89,52 @@ public class AuthService {
         String jwt = jwtUtil.generateToken(user);
         return loginMapper.mapToResponse(jwt, user);
     }
+
+    // Метод для аутентификации через Google и регистрации пользователя
+    public AuthWithGoogleResponse registerUserWithGoogle(String token) {
+        FirebaseToken firebaseToken;
+        try {
+            firebaseToken = FirebaseAuth.getInstance().verifyIdToken(token);
+            log.info("FirebaseToken успешно проверен");
+        } catch (FirebaseAuthException firebaseAuthException) {
+            log.error("Во время аутентификации произошла ошибка", firebaseAuthException);
+            throw new BadCredentialsException("Во время аутентификации произошла ошибка");
+        }
+
+        String email = firebaseToken.getEmail();
+        User user = userRepository.findByEmail(email).orElseGet(() -> {
+            // Если пользователь не найден, создаем нового
+            User newUser = new User();
+            String fullName = firebaseToken.getName();
+            int spaceIndex = fullName.indexOf(" ");
+            if (spaceIndex != -1) {
+                newUser.setName(fullName.substring(0, spaceIndex));
+                newUser.setLastName(fullName.substring(spaceIndex + 1));
+            } else {
+                newUser.setName(fullName);
+            }
+            newUser.setEmail(email);
+//            newUser.setPhoneNumber("+996700000000"); // Укажите номер телефона
+            newUser.setPassword(passwordEncoder.encode(firebaseToken.getEmail())); // Используйте email как пароль для создания
+            newUser.setRole(Role.USER); // Установите роль пользователя
+            return userRepository.save(newUser); // Сохраняем нового пользователя в базе данных
+        });
+
+        // Генерируем токен для пользователя
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("role", user.getRole().name());
+        String userAccountToken = jwtUtil.createToken(claims, user.getEmail());
+
+        log.info("Аутентификация через Google завершена успешно, токен: {}", userAccountToken);
+
+
+        return AuthWithGoogleResponse.builder()
+                .googleId(user.getId().toString()) // Используйте id пользователя как googleId
+                .email(user.getEmail())
+                .name(user.getName() + " " + user.getLastName()) // Собираем полное имя
+                .picture(user.getPicture()) // Убедитесь, что в объекте User есть метод getPictureUrl()
+                .locale(user.getLocale()) // Убедитесь, что в объекте User есть метод getLocale()
+                .build();
+    }
+
 }
