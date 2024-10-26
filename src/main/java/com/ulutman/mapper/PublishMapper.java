@@ -59,6 +59,7 @@ public class PublishMapper {
     public PublishDetailsResponse mapToDetailsResponse(Publish publish) {
         User user = publish.getUser();
         return PublishDetailsResponse.builder()
+                .id(publish.getId())
                 .userName(user != null ? user.getName() : "Неизвестно")
                 .email(user != null ? user.getEmail() : "Неизвестно")
                 .category(publish.getCategory())
@@ -71,6 +72,7 @@ public class PublishMapper {
         User user = publish.getUser();
         String userNameResult = user != null ? user.getName() : "Неизвестно";
         return FilteredPublishResponse.builder()
+                .id(publish.getId())
                 .userName(userNameResult)
                 .title(publish.getTitle())
                 .description(publish.getDescription())

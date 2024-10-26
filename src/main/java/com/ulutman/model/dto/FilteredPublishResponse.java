@@ -16,6 +16,8 @@ import java.time.LocalDate;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class FilteredPublishResponse {
 
+    Long id;
+
     String userName;
 
     String title;

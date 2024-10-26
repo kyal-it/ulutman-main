@@ -38,10 +38,11 @@ public class ManagePublishController {
     @Operation(summary = "Update a publication status")
     @ApiResponse(responseCode = "201", description = "Updated the publication status by id successfully")
     @PutMapping("/update/status/{id}")
-    public ResponseEntity<PublishDetailsResponse> updateUserStatus(@PathVariable Long id,
-                                                                   @RequestParam PublishStatus newStatus) {
-        PublishDetailsResponse detailsResponse = managePublicationsService.updatePublishStatus(id, newStatus);
-        return ResponseEntity.ok(detailsResponse);
+    public ResponseEntity<PublishDetailsResponse> updatePublishStatus(
+            @PathVariable Long id,
+            @RequestParam PublishStatus newStatus) {
+        PublishDetailsResponse response = managePublicationsService.updatePublishStatus(id, newStatus);
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "Filter publishes by criteria")

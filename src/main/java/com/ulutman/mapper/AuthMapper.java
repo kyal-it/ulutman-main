@@ -55,6 +55,7 @@ public class AuthMapper {
             return null;
         }
         return UserResponse.builder()
+                .id(user.getId())
                 .userName(user.getName())
                 .email(user.getEmail())
                 .role(user.getRole())

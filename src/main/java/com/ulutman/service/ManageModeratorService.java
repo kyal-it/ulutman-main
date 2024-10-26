@@ -8,6 +8,7 @@ import com.ulutman.model.entities.User;
 import com.ulutman.model.enums.ModeratorStatus;
 import com.ulutman.repository.CommentRepository;
 import com.ulutman.repository.UserRepository;
+import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,7 @@ public class ManageModeratorService {
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
     private final CommentMapper commentMapper;
+    private final MailingService mailingService;
 
     public UserCommentsResponse getUserWithComments(Long userId) {
 
@@ -54,16 +56,34 @@ public class ManageModeratorService {
     }
 
     public FilteredCommentResponse updateCommentStatus(Long id, ModeratorStatus newStatus) {
-
         Comment comment = commentRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Комментарий по идентификатору " + id + " не найден"));
+
         if (comment.getModeratorStatus() != newStatus) {
             comment.setModeratorStatus(newStatus);
-            commentRepository.save(comment);
+
+            // Если статус отклонен, удаляем комментарий и отправляем уведомление
+            if (newStatus == ModeratorStatus.ОТКЛОНЕН) {
+                String userEmail = comment.getUser().getEmail(); // Получаем email пользователя
+                String commentContent = comment.getContent();
+
+                commentRepository.delete(comment);
+
+                // Отправляем уведомление о отклонении
+                try {
+                    mailingService.sendCommentRejectionNotification(userEmail, commentContent);
+                } catch (MessagingException e) {
+                    log.error("Ошибка при отправке уведомления об отклонении комментария с id {} на email: {}", id, e.getMessage());
+                }
+            } else {
+                // Если статус не ОТКЛОНЕН, сохраняем изменения
+                commentRepository.save(comment);
+            }
         }
 
         return commentMapper.mapToFilterResponse(comment);
     }
+
 
     public List<FilteredCommentResponse> filterComments(
             List<LocalDate> createDates,
@@ -73,7 +93,6 @@ public class ManageModeratorService {
 
         List<Comment> filteredComments = new ArrayList<>();
 
-        // Фильтрация по содержимому (content)
         if (content != null && !content.trim().isEmpty()) {
             List<Comment> commentsByContent = commentRepository.commentsFilterByContents(content);
             if (!commentsByContent.isEmpty()) {
@@ -81,14 +100,12 @@ public class ManageModeratorService {
             }
         }
 
-        // Проверка на нулевые значения дат создания
         if (createDates != null && createDates.stream().anyMatch(date -> date == null)) {
             throw new IllegalArgumentException("Даты создания не могут содержать нулевых значений.");
         } else if (createDates != null && !createDates.isEmpty()) {
             filteredComments.addAll(commentRepository.findByModeratorByCreateDate(createDates));
         }
 
-        // Фильтрация по имени пользователя
         if (names != null && !names.trim().isEmpty()) {
             List<User> users = userRepository.findByUserName(names);
             if (!users.isEmpty()) {
@@ -97,33 +114,27 @@ public class ManageModeratorService {
             }
         }
 
-        // Проверка на нулевые значения статусов
         if (moderatorStatuses != null && moderatorStatuses.stream().anyMatch(status -> status == null)) {
             throw new IllegalArgumentException("Статусы публикаций не могут содержать нулевых значений.");
         } else if (moderatorStatuses != null && !moderatorStatuses.isEmpty()) {
             filteredComments.addAll(commentRepository.filterCommentByModeratorStatus(moderatorStatuses));
         }
 
-        // Убираем дубликаты
         filteredComments = filteredComments.stream().distinct().collect(Collectors.toList());
 
-        // Если нет ни одного комментария, возвращаем пустой массив
         if (filteredComments.isEmpty()) {
             return Collections.emptyList();
         }
 
-        // Маппинг
+        List<Comment> finalFilteredComments = filteredComments;
         return filteredComments.stream()
                 .map(comment -> {
                     User user = comment.getUser();
                     String userNameResult = user != null ? user.getName() : "Неизвестно";
 
-                    return FilteredCommentResponse.builder()
-                            .userName(userNameResult)
-                            .content(comment.getContent())
-                            .createDate(comment.getCreateDate())
-                            .moderatorStatus(comment.getModeratorStatus())
-                            .build();
+                    FilteredCommentResponse response = commentMapper.mapToFilterResponse(comment);
+                    response.setUserName(userNameResult);
+                    return response;
                 })
                 .collect(Collectors.toList());
     }

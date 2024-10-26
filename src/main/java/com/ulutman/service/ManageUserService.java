@@ -81,32 +81,28 @@ public class ManageUserService {
                                           String names) {
         List<User> filteredUsers = new ArrayList<>();
 
-        // Проверка на нулевые значения ролей
         if (roles != null && roles.stream().anyMatch(role -> role == null)) {
             throw new IllegalArgumentException("Роли не могут содержать нулевых значений.");
         } else if (roles != null && !roles.isEmpty()) {
             filteredUsers.addAll(userRepository.findByRole(roles));
         }
 
-        // Проверка на нулевые значения статусов
         if (statuses != null && statuses.stream().anyMatch(status -> status == null)) {
             throw new IllegalArgumentException("Статусы не могут содержать нулевых значений.");
         } else if (statuses != null && !statuses.isEmpty()) {
             filteredUsers.addAll(userRepository.findByStatus(statuses));
         }
 
-        // Проверка на нулевые значения дат создания
         if (createDates != null && createDates.stream().anyMatch(date -> date == null)) {
             throw new IllegalArgumentException("Даты создания не могут содержать нулевых значений.");
         } else if (createDates != null && !createDates.isEmpty()) {
             filteredUsers.addAll(userRepository.findByCreateDate(createDates));
         }
 
-        // Фильтрация по именам пользователей
         if (names != null && !names.trim().isEmpty()) {
             List<User> usersByName = userRepository.findByUserName(names);
             if (usersByName.isEmpty()) {
-                return Collections.emptyList();  // Если нет пользователей, возвращаем пустой массив
+                return Collections.emptyList();
             }
             filteredUsers.addAll(usersByName);
         }
@@ -117,7 +113,7 @@ public class ManageUserService {
         if (filteredUsers.isEmpty()) {
             return Collections.emptyList();
         }
-        // Маппинг
+
         return filteredUsers.stream()
                 .map(authMapper::mapToUserResponse)
                 .collect(Collectors.toList());
@@ -130,7 +126,7 @@ public class ManageUserService {
             throw new NotFoundException("Пользователи с указанными id не найдены");
         }
 
-        userRepository.deleteAll(users); // Удаляем всех пользователей из списка
+        userRepository.deleteAll(users);
     }
 }
 

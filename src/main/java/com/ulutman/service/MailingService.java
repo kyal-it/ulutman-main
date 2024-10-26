@@ -95,6 +95,77 @@ public class MailingService {
         mailingRepository.save(mailing);
     }
 
+    public void sendPublicationRejectionNotification(String recipientEmail, String publicationTitle) throws MessagingException {
+        log.info("Отправка уведомления на email: {}", recipientEmail);
+
+        MimeMessage message = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
+
+        helper.setTo(recipientEmail);
+        helper.setSubject("Ваша публикация отклонена");
+
+        String body = "<html><body>"
+                      + "<h2>Уважаемый пользователь,</h2>"
+                      + "<p>Ваша публикация с заголовком <strong>" + publicationTitle + "</strong> была отклонена и удалена, "
+                      + "так как она не соответствует нашим требованиям.</p>"
+                      + "<p>Создайте публикацию, которая соответствует установленным требованиям. Если у вас есть вопросы, пожалуйста, свяжитесь с поддержкой.</p>"
+                      + "</body></html>";
+
+        helper.setText(body, true);
+
+        try {
+            javaMailSender.send(message);
+            log.info("Уведомление успешно отправлено на email: {}", recipientEmail);
+        } catch (MailException e) {
+            log.error("Ошибка при отправке уведомления на email: {}", recipientEmail, e);
+            throw e;
+        }
+    }
+
+    public void sendCommentRejectionNotification(String recipientEmail, String commentContent) throws MessagingException {
+        // Создание сообщения и отправка его, аналогично методу для публикаций
+        MimeMessage message = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
+
+        helper.setTo(recipientEmail);
+        helper.setSubject("Ваш комментарий отклонен");
+
+        // Форматирование тела сообщения
+        String body = "<html><body>"
+                      + "<p>Ваш комментарий был отклонен:</p>"
+                      + "<p><strong>Содержимое:</strong> " + commentContent + "</p>"
+                      + "<p>Если у вас есть вопросы, пожалуйста, свяжитесь с поддержкой.</p>"
+                      + "</body></html>";
+
+        helper.setText(body, true);
+
+        try {
+            javaMailSender.send(message);
+        } catch (MailException e) {
+            throw new MessagingException("Ошибка отправки уведомления", e);
+        }
+    }
+
+    public void sendComplaintRejectionNotification(String recipientEmail, String complaintDetails) throws MessagingException {
+        // Логика для отправки уведомления пользователю о том, что его жалоба отклонена
+        MimeMessage message = javaMailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
+
+        helper.setTo(recipientEmail);
+        helper.setSubject("Ваша жалоба отклонена");
+
+        // Форматирование тела сообщения
+        String body = "<html><body>"
+                      + "<p>К сожалению, ваша жалоба была отклонена.</p>"
+                      + "<p><strong>Детали жалобы:</strong> " + complaintDetails + "</p>"
+                      + "<p>Если у вас есть вопросы, пожалуйста, свяжитесь с поддержкой.</p>"
+                      + "</body></html>";
+
+        helper.setText(body, true);
+        javaMailSender.send(message);
+    }
+
+
     public void sendPasswordResetCode(String email) throws EntityNotFoundException {
         int pinCode = generatePinCode();
         SimpleMailMessage message = new SimpleMailMessage();
