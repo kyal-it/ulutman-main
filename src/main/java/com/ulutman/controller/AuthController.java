@@ -42,7 +42,7 @@ public class AuthController {
 
     // Метод для аутентификации и регистрации через Google
     @PostMapping("/google-login")
-    public ResponseEntity<AuthWithGoogleResponse> googleLogin(@RequestBody String token) {
+    public ResponseEntity<AuthWithGoogleResponse> googleLogin(@RequestParam String token) {
         AuthWithGoogleResponse authResponse = authService.registerUserWithGoogle(token);
         return ResponseEntity.ok(authResponse);
     }
