@@ -1,5 +1,8 @@
 package com.ulutman.model.dto;
 
+import com.ulutman.model.enums.TransportType;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -60,4 +63,13 @@ public class PropertyDetailsRequest {
     Boolean hasInternet;
 
     Boolean hasKitchenFurniture;
+
+    @Enumerated(EnumType.STRING)
+    TransportType transportType;
+
+    Double kitchenArea;
+
+    Integer walkingDistance;
+
+    Integer transportDistance;
 }

@@ -1,7 +1,9 @@
 package com.ulutman.controller;
 
+import com.ulutman.model.dto.PublishDetailsResponse;
 import com.ulutman.model.dto.PublishRequest;
 import com.ulutman.model.dto.PublishResponse;
+import com.ulutman.model.enums.TransportType;
 import com.ulutman.service.PublishService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -106,5 +108,35 @@ public class PublishController {
     public ResponseEntity<List<PublishResponse>> getMyPublishes(@RequestParam Long userId) {
         List<PublishResponse> publishes = publishService.myPublishes(userId);
         return ResponseEntity.ok(publishes);
+    }
+
+    @Operation(summary = "Filter publishes by criteria")
+    @ApiResponse(responseCode = "201", description = "Publishes successfully filtered")
+    @GetMapping("/filter")
+    public List<PublishResponse> filterPublishes(
+            @RequestParam(required = false) Double minTotalArea,
+            @RequestParam(required = false) Double maxTotalArea,
+            @RequestParam(required = false) Double minKitchenArea,
+            @RequestParam(required = false) Double maxKitchenArea,
+            @RequestParam(required = false) Double minLivingArea,
+            @RequestParam(required = false) Double maxLivingArea,
+            @RequestParam(required = false) Integer minYear,
+            @RequestParam(required = false) Integer maxYear,
+            @RequestParam(required = false) TransportType transportType,
+            @RequestParam(required = false) Double walkingDistance,
+            @RequestParam(required = false) Double transportDistance
+    ) {
+        return publishService.filterPublishes(
+                minTotalArea, maxTotalArea, minKitchenArea, maxKitchenArea,
+                minLivingArea, maxLivingArea, minYear, maxYear,
+                transportType, walkingDistance, transportDistance
+        );
+    }
+
+    @Operation(summary = "Reset filters publications")
+    @ApiResponse(responseCode = "201", description = "Publishes filters successfully reset")
+    @GetMapping("/resetFilter")
+    public List<PublishResponse> resetFilter() {
+        return publishService.getAll();
     }
 }

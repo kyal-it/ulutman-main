@@ -37,10 +37,14 @@ public class PropertyDetailsMapper {
         propertyDetails.setHasAirConditioner(request.getHasAirConditioner());
         propertyDetails.setHasInternet(request.getHasInternet());
         propertyDetails.setHasKitchenFurniture(request.getHasKitchenFurniture());
+        propertyDetails.setTransportType(request.getTransportType());
+        propertyDetails.setKitchenArea(request.getKitchenArea());
+        propertyDetails.setWalkingDistance(request.getWalkingDistance());
+        propertyDetails.setTransportDistance(request.getTransportDistance());
         return propertyDetails;
     }
 
-    public PropertyDetailsResponse mapToResponse(PropertyDetails propertyDetails){
+    public PropertyDetailsResponse mapToResponse(PropertyDetails propertyDetails) {
         return PropertyDetailsResponse.builder()
                 .id(propertyDetails.getId())
                 .totalArea(propertyDetails.getTotalArea())
@@ -64,10 +68,14 @@ public class PropertyDetailsMapper {
                 .hasTelevision(propertyDetails.getHasTelevision())
                 .hasShower(propertyDetails.getHasShower())
                 .hasFurnitureInRooms(propertyDetails.getHasFurnitureInRooms())
-                .hasDishwasher(propertyDetails.getHasDishWasher())
+                .hasDishwasher(propertyDetails.getHasDishWasher()) // Обратите внимание на правильное название
                 .hasAirConditioner(propertyDetails.getHasAirConditioner())
                 .hasInternet(propertyDetails.getHasInternet())
                 .hasKitchenFurniture(propertyDetails.getHasKitchenFurniture())
+                .transportType(propertyDetails.getTransportType())
+                .kitchenArea(propertyDetails.getKitchenArea())
+                .walkingDistance(propertyDetails.getWalkingDistance())
+                .transportDistance(propertyDetails.getTransportDistance())
                 .build();
     }
 }

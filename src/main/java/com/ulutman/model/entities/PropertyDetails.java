@@ -1,6 +1,7 @@
 package com.ulutman.model.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.ulutman.model.enums.TransportType;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -68,7 +69,16 @@ public class PropertyDetails {
 
     private Boolean hasKitchenFurniture;  // Мебель на кухне
 
+    @Enumerated(EnumType.STRING)
+    private TransportType transportType;
+
+    private Double kitchenArea;
+
+    private Integer walkingDistance;
+
+    private Integer transportDistance;
+
     @JsonBackReference // Обратная связь с publish
-    @OneToOne(mappedBy = "propertyDetails",fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "propertyDetails", fetch = FetchType.LAZY)
     private Publish publish;
 }

@@ -4,6 +4,7 @@ import com.ulutman.model.entities.Publish;
 import com.ulutman.model.enums.Category;
 import com.ulutman.model.enums.CategoryStatus;
 import com.ulutman.model.enums.PublishStatus;
+import com.ulutman.model.enums.TransportType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -80,5 +81,33 @@ public interface PublishRepository extends JpaRepository<Publish, Long> {
     List<Publish> filterPublishesByCategory(
             @Param("categories") List<Category> categories,
             @Param("sortBy") String sortBy
+    );
+
+
+    @Query("SELECT p FROM Publish p " +
+           "JOIN p.propertyDetails pd " +
+           "WHERE (:minTotalArea IS NULL OR pd.totalArea >= :minTotalArea) " +
+           "AND (:maxTotalArea IS NULL OR pd.totalArea <= :maxTotalArea) " +
+           "AND (:minKitchenArea IS NULL OR pd.kitchenArea >= :minKitchenArea) " +
+           "AND (:maxKitchenArea IS NULL OR pd.kitchenArea <= :maxKitchenArea) " +
+           "AND (:minLivingArea IS NULL OR pd.livingArea >= :minLivingArea) " +
+           "AND (:maxLivingArea IS NULL OR pd.livingArea <= :maxLivingArea) " +
+           "AND (:minYear IS NULL OR pd.yearOfConstruction >= :minYear) " +
+           "AND (:maxYear IS NULL OR pd.yearOfConstruction <= :maxYear) " +
+           "AND (:transportType IS NULL OR pd.transportType = :transportType) " +
+           "AND (:walkingDistance IS NULL OR pd.walkingDistance <= :walkingDistance) " +
+           "AND (:transportDistance IS NULL OR pd.transportDistance <= :transportDistance)")
+    List<Publish> filterPublishes(
+            @Param("minTotalArea") Double minTotalArea,
+            @Param("maxTotalArea") Double maxTotalArea,
+            @Param("minKitchenArea") Double minKitchenArea,
+            @Param("maxKitchenArea") Double maxKitchenArea,
+            @Param("minLivingArea") Double minLivingArea,
+            @Param("maxLivingArea") Double maxLivingArea,
+            @Param("minYear") Integer minYear,
+            @Param("maxYear") Integer maxYear,
+            @Param("transportType") TransportType transportType,
+            @Param("walkingDistance") Double walkingDistance,
+            @Param("transportDistance") Double transportDistance
     );
 }
