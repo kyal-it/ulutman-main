@@ -18,6 +18,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Principal;
 import java.time.LocalDate;
@@ -197,5 +198,38 @@ public class PublishService {
             appResponses.add(publishMapper.mapToResponse(publish));
         }
         return appResponses;
+    }
+
+    @Transactional(readOnly = true)
+    public List<PublishResponse> filterPublishes(
+            Double minTotalArea,
+            Double maxTotalArea,
+            Double minKitchenArea,
+            Double maxKitchenArea,
+            Double minLivingArea,
+            Double maxLivingArea,
+            Integer minYear,
+            Integer maxYear,
+            TransportType transportType,
+            Double walkingDistance,
+            Double transportDistance
+    ) {
+        List<Publish> publishes = publishRepository.filterPublishes(
+                minTotalArea,
+                maxTotalArea,
+                minKitchenArea,
+                maxKitchenArea,
+                minLivingArea,
+                maxLivingArea,
+                minYear,
+                maxYear,
+                transportType,
+                walkingDistance,
+                transportDistance
+        );
+
+        return publishes.stream()
+                .map(publishMapper::mapToResponse)
+                .collect(Collectors.toList());
     }
 }
