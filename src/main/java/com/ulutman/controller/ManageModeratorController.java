@@ -45,10 +45,12 @@ public class ManageModeratorController {
     @Operation(summary = "Update comment status")
     @ApiResponse(responseCode = "201", description = "Updated comment status successfully")
     @PutMapping("/update/status/{id}")
-    public ResponseEntity<FilteredCommentResponse> updateCommentStatus(@PathVariable Long id,
-                                                                       @RequestParam("newStatus") ModeratorStatus newStatus) {
-        FilteredCommentResponse commentResponse = manageModeratorService.updateCommentStatus(id, newStatus);
-        return ResponseEntity.ok(commentResponse);
+    public ResponseEntity<FilteredCommentResponse> updateCommentStatus(
+            @PathVariable Long id,
+            @RequestParam ModeratorStatus newStatus) {
+
+        FilteredCommentResponse response = manageModeratorService.updateCommentStatus(id, newStatus);
+        return ResponseEntity.ok(response);
     }
 
     @Operation(summary = "Filter comments by criteria")

@@ -28,7 +28,6 @@ public class ManageUserController {
 
     private final ManageUserService manageUserService;
 
-
     @Operation(summary = "Get all users")
     @ApiResponse(responseCode = "201", description = "Return list if users")
     @GetMapping("/getAll")

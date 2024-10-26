@@ -13,6 +13,8 @@ import java.time.LocalDate;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ComplaintResponse {
 
+    Long id;
+
     String userName;
 
     ComplaintType complaintType;

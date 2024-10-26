@@ -9,12 +9,12 @@ import com.ulutman.model.enums.Category;
 import com.ulutman.model.enums.PublishStatus;
 import com.ulutman.repository.PublishRepository;
 import com.ulutman.repository.UserRepository;
+import jakarta.mail.MessagingException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -31,18 +31,33 @@ public class ManagePublishService {
     private final PublishMapper publishMapper;
     private final PublishRepository publishRepository;
     private final UserRepository userRepository;
+    private final MailingService mailingService;
 
     public List<PublishDetailsResponse> getAllPublish() {
         return publishRepository.findAll().stream().map(publishMapper::mapToDetailsResponse).collect(Collectors.toList());
     }
 
-    public PublishDetailsResponse updatePublishStatus(Long id, @RequestBody PublishStatus newStatus) {
-        Publish publish = publishRepository.findById(id).orElseThrow(()
-                -> new NotFoundException("Публикация по идентификатору " + id + " не найдена"));
+    public PublishDetailsResponse updatePublishStatus(Long id, PublishStatus newStatus) {
+        Publish publish = publishRepository.findById(id).orElseThrow(() ->
+                new NotFoundException("Публикация по идентификатору " + id + " не найдена"));
 
         if (newStatus != null && publish.getPublishStatus() != newStatus) {
             publish.setPublishStatus(newStatus);
-            publishRepository.save(publish);
+
+            if (newStatus == PublishStatus.ОТКЛОНЕН) {
+                log.info("Публикация с id {} отклонена, удаляем публикацию и отправляем уведомление.", id);
+                publishRepository.delete(publish);
+
+                try {
+                    String userEmail = publish.getUser().getEmail();
+                    String publicationTitle = publish.getTitle();
+                    mailingService.sendPublicationRejectionNotification(userEmail, publicationTitle);
+                } catch (MessagingException e) {
+                    log.error("Ошибка при отправке уведомления об отклонении публикации с id {} на email: {}", id, e.getMessage());
+                }
+            } else {
+                publishRepository.save(publish);
+            }
         }
         return publishMapper.mapToDetailsResponse(publish);
     }
@@ -53,32 +68,28 @@ public class ManagePublishService {
                                                         String names) {
         List<Publish> filteredPublishes = new ArrayList<>();
 
-        // Проверка на нулевые значения категорий
         if (categories != null && categories.stream().anyMatch(category -> category == null)) {
             throw new IllegalArgumentException("Категории не могут содержать нулевых значений.");
         } else if (categories != null && !categories.isEmpty()) {
             filteredPublishes.addAll(publishRepository.filterPublishesByCategory(categories));
         }
 
-        // Проверка на нулевые значения статусов
         if (publishStatuses != null && publishStatuses.stream().anyMatch(status -> status == null)) {
             throw new IllegalArgumentException("Статусы публикаций не могут содержать нулевых значений.");
         } else if (publishStatuses != null && !publishStatuses.isEmpty()) {
             filteredPublishes.addAll(publishRepository.filterPublishesByStatus(publishStatuses));
         }
 
-        // Проверка на нулевые значения дат создания
         if (createDates != null && createDates.stream().anyMatch(date -> date == null)) {
             throw new IllegalArgumentException("Даты создания не могут содержать нулевых значений.");
         } else if (createDates != null && !createDates.isEmpty()) {
             filteredPublishes.addAll(publishRepository.filterPublishesByCreateDate(createDates));
         }
 
-        // Фильтрация по именам пользователей
         if (names != null && !names.trim().isEmpty()) {
             List<User> filteredUsers = userRepository.findByUserName(names);
             if (filteredUsers.isEmpty()) {
-                return Collections.emptyList();  // Если нет пользователей, возвращаем пустой массив
+                return Collections.emptyList();
             }
 
             for (User user : filteredUsers) {
@@ -89,7 +100,6 @@ public class ManagePublishService {
             }
         }
 
-        // Убираем дубликаты публикаций
         filteredPublishes = filteredPublishes.stream().distinct().collect(Collectors.toList());
 
         // Если нет отфильтрованных публикаций, возвращаем пустой массив
@@ -97,7 +107,6 @@ public class ManagePublishService {
             return Collections.emptyList();
         }
 
-        // Маппинг
         return filteredPublishes.stream()
                 .map(publishMapper::mapToDetailsResponse) // Используем маппер
                 .collect(Collectors.toList());

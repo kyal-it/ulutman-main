@@ -37,9 +37,12 @@ public class ManageComplaintController {
     @Operation(summary = "Update complaint status")
     @ApiResponse(responseCode = "201", description = "Updated complaint status successfully")
     @PutMapping("/update/status/{id}")
-    public ResponseEntity<ComplaintResponse> updateComplaintStatus(@PathVariable Long id, @RequestParam ComplaintStatus newStatus) {
-        ComplaintResponse updatedComplaint = complaintService.updateComplaintStatus(id, newStatus);
-        return ResponseEntity.ok(updatedComplaint);
+    public ResponseEntity<ComplaintResponse> updateComplaintStatus(
+            @PathVariable Long id,
+            @RequestParam ComplaintStatus newStatus) {
+
+        ComplaintResponse response = manageComplaintService.updateComplaintStatus(id, newStatus);
+        return ResponseEntity.ok(response); // Возвращаем ответ с обновленной жалобой
     }
 
     @Operation(summary = "Filter complaints by criteria")

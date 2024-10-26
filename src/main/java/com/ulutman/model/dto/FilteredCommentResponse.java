@@ -15,6 +15,8 @@ import java.time.LocalDate;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class FilteredCommentResponse {
 
+    Long id;
+
     String userName;
 
     String content;

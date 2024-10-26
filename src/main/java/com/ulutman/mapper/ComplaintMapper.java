@@ -24,6 +24,7 @@ public class ComplaintMapper {
         User user = complaint.getUser();
         String userNameResult = user != null ? user.getName() : "Неизвестно";
         return ComplaintResponse.builder()
+                .id(complaint.getId())
                 .userName(complaint.getUser().getName())
                 .complaintType(complaint.getComplaintType())
                 .complaintContent(complaint.getComplaintContent())

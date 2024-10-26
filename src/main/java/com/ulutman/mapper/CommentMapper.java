@@ -9,7 +9,6 @@ import com.ulutman.model.entities.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
-
 @Component
 @RequiredArgsConstructor
 public class CommentMapper {
@@ -32,6 +31,7 @@ public class CommentMapper {
     public ModeratorCommentResponse mapToModeratorCommentResponse(Comment comment) {
         return ModeratorCommentResponse.builder()
                 .commentId(comment.getId())
+                .commentId(comment.getId())
                 .commentContent(comment.getContent())
                 .moderatorStatus(comment.getModeratorStatus())
                 .createDate(comment.getCreateDate())
@@ -43,6 +43,7 @@ public class CommentMapper {
         String userNameResult = user != null ? user.getName() : "Неизвестно";
 
         return FilteredCommentResponse.builder()
+                .id(comment.getId())
                 .userName(userNameResult)
                 .content(comment.getContent())
                 .createDate(comment.getCreateDate())

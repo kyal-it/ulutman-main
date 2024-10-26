@@ -83,29 +83,24 @@ public class ManageCategoryService {
             String names) {
         List<Publish> filteredPublishes = new ArrayList<>();
 
-        // Проверка на нулевые значения категорий
         if (categories != null && categories.stream().anyMatch(category -> category == null)) {
             throw new IllegalArgumentException("Категории не могут содержать нулевых значений.");
         } else if (categories != null && !categories.isEmpty()) {
             filteredPublishes.addAll(publishRepository.filterPublishesByCategory(categories));
         }
 
-        // Проверка на нулевые значения статусов
         if (categoryStatuses != null && categoryStatuses.stream().anyMatch(status -> status == null)) {
             throw new IllegalArgumentException("Статусы публикаций не могут содержать нулевых значений.");
         } else if (categoryStatuses != null && !categoryStatuses.isEmpty()) {
             filteredPublishes.addAll(publishRepository.filterPublishesByCategoryStatus(categoryStatuses));
         }
 
-        // Проверка на нулевые значения дат создания
         if (createDates != null && createDates.stream().anyMatch(date -> date == null)) {
             throw new IllegalArgumentException("Даты создания не могут содержать нулевых значений.");
         } else if (createDates != null && !createDates.isEmpty()) {
             filteredPublishes.addAll(publishRepository.filterPublishesByCreateDate(createDates));
         }
 
-
-        // Фильтрация по названию публикации
         if (title != null && !title.trim().isEmpty()) {
             List<Publish> publishesByTitle = publishRepository.filterPublishesByTitle(title.trim());
             if (!publishesByTitle.isEmpty()) {
@@ -113,7 +108,6 @@ public class ManageCategoryService {
             }
         }
 
-        // Фильтрация по имени пользователя
         if (names != null && !names.trim().isEmpty()) {
             List<User> filteredUsers = userRepository.findByUserName(names);
             if (!filteredUsers.isEmpty()) {
