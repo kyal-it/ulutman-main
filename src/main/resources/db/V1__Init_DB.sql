@@ -148,6 +148,7 @@ create table publishes
                                         'Некрасовка', 'Другое')),
     phone          varchar(255),
     publish_status varchar(255) check (publish_status in ('ОДОБРЕН', 'ОТКЛОНЕН', 'ОЖИДАЕТ')),
+    detail_favorite BOOLEAN DEFAULT FALSE;
     sub_category   varchar(255) check (sub_category in
                                        ('SaleOfCar', 'RentOfCar', 'DailyRent', 'LongTermRent', 'PartTime', 'FullTime',
                                         'House', 'Apartment', 'PartOfLand', 'Space', 'I_RentRoom', 'I_RentBed',
