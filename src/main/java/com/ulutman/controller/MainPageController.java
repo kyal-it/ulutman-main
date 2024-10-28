@@ -2,6 +2,7 @@ package com.ulutman.controller;
 
 import com.ulutman.model.dto.PublishResponse;
 import com.ulutman.model.enums.Category;
+import com.ulutman.model.enums.Metro;
 import com.ulutman.service.MainPageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -71,5 +72,16 @@ public class MainPageController {
             @RequestParam(required = false) List<Category> categories,
             @RequestParam String sortBy) {
         return mainPageService.filterPublishesByCategory(categories, sortBy);
+    }
+
+    @Operation(summary = "Search  publications by criteria")
+    @ApiResponse(responseCode = "201", description = "Search publications  successfully")
+    @GetMapping("/search")
+    public List<PublishResponse> filterPublishes(
+            @RequestParam(required = false) List<Category> categories,
+            @RequestParam(required = false) List<String> titles,
+            @RequestParam(required = false) List<Metro> metros) {
+
+        return mainPageService.searchPublishes(categories, titles, metros);
     }
 }

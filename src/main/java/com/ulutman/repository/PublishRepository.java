@@ -1,10 +1,8 @@
 package com.ulutman.repository;
 
 import com.ulutman.model.entities.Publish;
-import com.ulutman.model.enums.Category;
-import com.ulutman.model.enums.CategoryStatus;
-import com.ulutman.model.enums.PublishStatus;
-import com.ulutman.model.enums.TransportType;
+import com.ulutman.model.enums.*;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -110,4 +108,11 @@ public interface PublishRepository extends JpaRepository<Publish, Long> {
             @Param("walkingDistance") Double walkingDistance,
             @Param("transportDistance") Double transportDistance
     );
+
+    @Query("SELECT p FROM Publish p WHERE p.category IN :categories AND p.title IN :titles AND p.metro IN :metros")
+    List<Publish> findFilteredPublishes(@Param("categories") List<Category> categories,
+                                        @Param("titles") List<String> titles,
+                                        @Param("metros") List<Metro> metros);
+
+    List<Publish> findAll(Specification<Publish> specification);
 }
