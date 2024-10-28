@@ -2,9 +2,11 @@ package com.ulutman.model.entities;
 
 import com.ulutman.model.enums.Category;
 import com.ulutman.model.enums.Metro;
+import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class PublishSpecification {
 
@@ -17,12 +19,22 @@ public class PublishSpecification {
         };
     }
 
-    public static Specification<Publish> hasTitleIn(List<String> titles) {
+    public static Specification<Publish> hasTitleStartingWith(List<String> titles) {
         return (root, query, criteriaBuilder) -> {
             if (titles == null || titles.isEmpty()) {
                 return criteriaBuilder.conjunction();
             }
-            return root.get("title").in(titles);
+
+            // Создаем предикаты для каждого из переданных titles
+            List<Predicate> predicates = titles.stream()
+                    .map(title -> criteriaBuilder.like(
+                            criteriaBuilder.lower(root.get("title")),
+                            title.toLowerCase() + "%"
+                    ))
+                    .collect(Collectors.toList());
+
+            // Объединяем предикаты с помощью OR
+            return criteriaBuilder.or(predicates.toArray(new Predicate[0]));
         };
     }
 

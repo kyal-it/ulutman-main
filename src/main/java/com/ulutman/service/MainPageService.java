@@ -68,7 +68,7 @@ public class MainPageService {
                                                  List<Metro> metros) {
         Specification<Publish> specification = Specification
                 .where(PublishSpecification.hasCategoryIn(categories))
-                .and(PublishSpecification.hasTitleIn(titles))
+                .and(PublishSpecification.hasTitleStartingWith(titles))
                 .and(PublishSpecification.hasMetroIn(metros));
 
         List<Publish> filteredPublishes = publishRepository.findAll(specification);
