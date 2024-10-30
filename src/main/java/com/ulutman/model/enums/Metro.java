@@ -1,5 +1,8 @@
 package com.ulutman.model.enums;
 
+import java.util.Optional;
+import java.util.stream.Stream;
+
 public enum Metro {
         БульварРокоссовкого,
         Черкизовская,
@@ -265,6 +268,19 @@ public enum Metro {
         Лухмановская,
         Некрасовка,
         Другое;
+
+        public static Optional<Metro> getById(int id) {
+                return Stream.of(values()).filter(metro -> metro.ordinal() == id).findFirst();
+        }
+
+        public String getValue() {
+                return this.name();
+        }
+
+        public String getLabel() {
+
+                return this.name().replaceAll("([А-Я])", " $1").trim();
+        }
     }
 
 
