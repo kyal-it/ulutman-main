@@ -9,12 +9,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -83,5 +83,42 @@ public class MainPageController {
             @RequestParam(required = false) List<Metro> metros) {
 
         return mainPageService.searchPublishes(categories, titles, metros);
+    }
+
+    @Operation(summary = "Get metro by id")
+    @ApiResponse(responseCode = "201", description = "Returned the metro by id successfully")
+    @GetMapping("/metro/{id}")
+    public Map<String, String> getMetroById(@PathVariable int id) {
+        Map<String, String> response = new HashMap<>();
+
+        Metro.getById(id).ifPresentOrElse(
+                metro -> {
+                    response.put("id", String.valueOf(id));
+                    response.put("value", metro.getValue());
+                    response.put("label", metro.getLabel());
+                },
+                () -> {
+                    response.put("ошибка", "Станция метро не найдена");
+                }
+        );
+
+        return response;
+    }
+
+    @Operation(summary = "Get all metro ")
+    @ApiResponse(responseCode = "201", description = "Returned all metro by id successfully")
+    @GetMapping("/all/metro")
+    public List<Map<String, String>> getAllMetroStations() {
+        List<Map<String, String>> metroStations = new ArrayList<>();
+
+        for (Metro metro : Metro.values()) {
+            Map<String, String> station = new HashMap<>();
+            station.put("id", String.valueOf(metro.ordinal()+1));
+            station.put("value", metro.name());
+            station.put("label", metro.getLabel());
+            metroStations.add(station);
+        }
+
+        return metroStations;
     }
 }
