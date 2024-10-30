@@ -102,13 +102,13 @@ public class PublishController {
         return "Delete publish with id:" + id + " successfully delete";
     }
 
-    @Operation(summary = "My publishes")
-    @ApiResponse(responseCode = "201", description = "return list of my publishes successfully")
-    @GetMapping("/my")
-    public ResponseEntity<List<PublishResponse>> getMyPublishes(@RequestParam Long userId) {
-        List<PublishResponse> publishes = publishService.myPublishes(userId);
-        return ResponseEntity.ok(publishes);
-    }
+//    @Operation(summary = "My publishes")
+//    @ApiResponse(responseCode = "201", description = "return list of my publishes successfully")
+//    @GetMapping("/my")
+//    public ResponseEntity<List<PublishResponse>> getMyPublishes(@RequestParam Long userId) {
+//        List<PublishResponse> publishes = publishService.myPublishes(userId);
+//        return ResponseEntity.ok(publishes);
+//    }
 
     @Operation(summary = "Filter publishes by criteria")
     @ApiResponse(responseCode = "201", description = "Publishes successfully filtered")

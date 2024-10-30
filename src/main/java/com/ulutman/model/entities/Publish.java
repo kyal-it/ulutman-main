@@ -45,6 +45,9 @@ public class Publish {
     private String address;
 
     private String phone;
+
+    private boolean active;
+
     @ElementCollection
     @CollectionTable(name = "publish_images")  // Отдельная таблица для хранения изображений
     @Column(name = "image")
