@@ -67,6 +67,8 @@ public interface PublishRepository extends JpaRepository<Publish, Long> {
 
     @Query("SELECT publish FROM Publish publish WHERE publish.category=('REAL_ESTATE')")
     List<Publish> findByCategoryRealEstate();
+    @Query("SELECT publish FROM Publish publish WHERE publish.category = 'REAL_ESTATE' AND publish.subCategory = ?1")
+    List<Publish> findBySubCategoryREAL_ESTATE(Subcategory subCategory);
 
     @Query("SELECT p FROM Publish p WHERE p.categoryStatus = :categoryStatus")
     List<Publish> findByCategoryStatus(@Param("categoryStatus") CategoryStatus categoryStatus);
