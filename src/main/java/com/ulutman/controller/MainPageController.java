@@ -32,11 +32,23 @@ public class MainPageController {
         return mainPageService.findPublishByCategoryWork();
     }
 
+    //SubCategory = WORK
+    @GetMapping("/work/subcategory/{subCategory}")
+    public List<PublishResponse> getPublishesBySubCategoryWORK(@PathVariable Subcategory subCategory) {
+        return mainPageService.findPublishByCategoryWORK(subCategory);
+    }
+
     @Operation(summary = "Get publishes by category RENT")
     @ApiResponse(responseCode = "201", description = "return list of publishes by category RENT")
     @GetMapping("/rent")
     List<PublishResponse> getPublishByCategoryRent() {
         return mainPageService.findPublishByCategoryRent();
+    }
+
+    //SubCategory = RENT
+    @GetMapping("/rent/subcategory/{subCategory}")
+    public List<PublishResponse> getPublishesBySubCategoryRENT(@PathVariable Subcategory subCategory) {
+        return mainPageService.findPublishByCategoryRent(subCategory);
     }
 
     @Operation(summary = "Get publishes by category SELL")
@@ -46,17 +58,42 @@ public class MainPageController {
         return mainPageService.findPublishByCategorySell();
     }
 
+    //SubCategory = SELL
+    @GetMapping("/sell/subcategory/{subCategory}")
+    public List<PublishResponse> getPublishesBySubCategorySELL(@PathVariable Subcategory subCategory) {
+        return mainPageService.findPublishByCategorySell(subCategory);
+    }
+
     @Operation(summary = "Get publishes by category HOTEL")
     @ApiResponse(responseCode = "201", description = "return list of publishes by category HOTEL")
     @GetMapping("/hotel")
     List<PublishResponse> getPublishByCategoryHotel() {
         return mainPageService.findPublishByCategoryHotel();
     }
+
+    //SubCategory = SELL
+    @GetMapping("/hotel/subcategory/{subCategory}")
+    public List<PublishResponse> getPublishesBySubCategoryHOTEL(@PathVariable Subcategory subCategory) {
+        return mainPageService.findPublishByCategoryHotel(subCategory);
+    }
+
     @Operation(summary = "Get publishes by category SERVICES")
     @ApiResponse(responseCode = "201", description = "return list of publishes by category SERVICES")
     @GetMapping("/services")
     List<PublishResponse> getPublishByCategoryServices() {
         return mainPageService.findPublishByCategoryServices();
+    }
+
+    //SubCategory = SERVICES
+    @GetMapping("/services/subcategory/{subCategory}")
+    public List<PublishResponse> getPublishesBySubCategoryServices(@PathVariable Subcategory subCategory) {
+        return mainPageService.findPublishByCategoryServices(subCategory);
+    }
+
+    //SubCategory = AUTO
+    @GetMapping("/auto/subcategory/{subCategory}")
+    public List<PublishResponse> getPublishesBySubCategoryAuto(@PathVariable Subcategory subCategory) {
+        return mainPageService.findPublishByCategoryServices(subCategory);
     }
 
     @Operation(summary = "Get publishes by category REAL_ESTATE")
@@ -66,6 +103,7 @@ public class MainPageController {
         return mainPageService.findPublishByCategoryRealEstate();
     }
 
+    //SubCategory = REAL_ESTATE
     @Operation(summary = "Get publishes by subCategory REAL_ESTATE")
     @ApiResponse(responseCode = "201", description = "return list of publishes by subCategory REAL_ESTATE")
     @GetMapping("/real-estate/subcategory/{subCategory}")
@@ -121,7 +159,7 @@ public class MainPageController {
 
         for (Metro metro : Metro.values()) {
             Map<String, String> station = new HashMap<>();
-            station.put("id", String.valueOf(metro.ordinal()+1));
+            station.put("id", String.valueOf(metro.ordinal() + 1));
             station.put("value", metro.name());
             station.put("label", metro.getLabel());
             metroStations.add(station);
