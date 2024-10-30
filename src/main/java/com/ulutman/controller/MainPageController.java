@@ -33,6 +33,8 @@ public class MainPageController {
     }
 
     //SubCategory = WORK
+    @Operation(summary = "Get publishes by subCategory WORK")
+    @ApiResponse(responseCode = "201", description = "return list of publishes by subCategory WORK")
     @GetMapping("/work/subcategory/{subCategory}")
     public List<PublishResponse> getPublishesBySubCategoryWORK(@PathVariable Subcategory subCategory) {
         return mainPageService.findPublishByCategoryWORK(subCategory);
@@ -46,6 +48,8 @@ public class MainPageController {
     }
 
     //SubCategory = RENT
+    @Operation(summary = "Get publishes by subCategory RENT")
+    @ApiResponse(responseCode = "201", description = "return list of publishes by subCategory RENT")
     @GetMapping("/rent/subcategory/{subCategory}")
     public List<PublishResponse> getPublishesBySubCategoryRENT(@PathVariable Subcategory subCategory) {
         return mainPageService.findPublishByCategoryRent(subCategory);
@@ -59,6 +63,8 @@ public class MainPageController {
     }
 
     //SubCategory = SELL
+    @Operation(summary = "Get publishes by subCategory HOTEL")
+    @ApiResponse(responseCode = "201", description = "return list of publishes by subCategory HOTEL")
     @GetMapping("/sell/subcategory/{subCategory}")
     public List<PublishResponse> getPublishesBySubCategorySELL(@PathVariable Subcategory subCategory) {
         return mainPageService.findPublishByCategorySell(subCategory);
@@ -72,6 +78,8 @@ public class MainPageController {
     }
 
     //SubCategory = SELL
+    @Operation(summary = "Get publishes by subCategory SELL")
+    @ApiResponse(responseCode = "201", description = "return list of publishes by subCategory SELL")
     @GetMapping("/hotel/subcategory/{subCategory}")
     public List<PublishResponse> getPublishesBySubCategoryHOTEL(@PathVariable Subcategory subCategory) {
         return mainPageService.findPublishByCategoryHotel(subCategory);
@@ -85,12 +93,16 @@ public class MainPageController {
     }
 
     //SubCategory = SERVICES
+    @Operation(summary = "Get publishes by subCategory SERVICES")
+    @ApiResponse(responseCode = "201", description = "return list of publishes by subCategory SERVICES")
     @GetMapping("/services/subcategory/{subCategory}")
     public List<PublishResponse> getPublishesBySubCategoryServices(@PathVariable Subcategory subCategory) {
         return mainPageService.findPublishByCategoryServices(subCategory);
     }
 
     //SubCategory = AUTO
+    @Operation(summary = "Get publishes by subCategory AUTO")
+    @ApiResponse(responseCode = "201", description = "return list of publishes by subCategory AUTO")
     @GetMapping("/auto/subcategory/{subCategory}")
     public List<PublishResponse> getPublishesBySubCategoryAuto(@PathVariable Subcategory subCategory) {
         return mainPageService.findPublishByCategoryServices(subCategory);
