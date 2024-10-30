@@ -56,5 +56,7 @@ public class PublishResponse {
 
     PropertyDetails propertyDetails;
 
+    boolean active;
+
     Conditions conditions;
 }
