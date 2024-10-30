@@ -3,6 +3,7 @@ package com.ulutman.controller;
 import com.ulutman.model.dto.PublishResponse;
 import com.ulutman.model.enums.Category;
 import com.ulutman.model.enums.Metro;
+import com.ulutman.model.enums.Subcategory;
 import com.ulutman.service.MainPageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -63,6 +64,13 @@ public class MainPageController {
     @GetMapping("/realEstate")
     List<PublishResponse> getPublishByCategoryRealEstate() {
         return mainPageService.findPublishByCategoryRealEstate();
+    }
+
+    @Operation(summary = "Get publishes by subCategory REAL_ESTATE")
+    @ApiResponse(responseCode = "201", description = "return list of publishes by subCategory REAL_ESTATE")
+    @GetMapping("/real-estate/subcategory/{subCategory}")
+    public List<PublishResponse> getPublishesBySubCategoryREAL_ESTATE(@PathVariable Subcategory subCategory) {
+        return mainPageService.findPublishBySubCategoryREAL_ESTATE(subCategory);
     }
 
     @Operation(summary = "Filter categories by criteria ")

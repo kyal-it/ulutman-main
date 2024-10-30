@@ -6,6 +6,7 @@ import com.ulutman.model.entities.Publish;
 import com.ulutman.model.entities.PublishSpecification;
 import com.ulutman.model.enums.Category;
 import com.ulutman.model.enums.Metro;
+import com.ulutman.model.enums.Subcategory;
 import com.ulutman.repository.PublishRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -76,5 +77,10 @@ public class MainPageService {
         return filteredPublishes.stream()
                 .map(publishMapper::mapToResponse)
                 .collect(Collectors.toList());
+    }
+
+    public List<PublishResponse> findPublishBySubCategoryREAL_ESTATE(Subcategory subCategory) {
+        List<Publish> publishes = publishRepository.findBySubCategoryREAL_ESTATE(subCategory);
+        return publishes.stream().map(publishMapper::mapToResponse).toList();
     }
 }
