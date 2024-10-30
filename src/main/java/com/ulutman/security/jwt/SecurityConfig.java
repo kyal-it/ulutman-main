@@ -72,6 +72,7 @@ public class SecurityConfig {
                                         "/api/main-page/**",
                                         "/advertising/**")
                                 .permitAll()
+                                .requestMatchers("/api/users/my-publishes/**").hasAuthority("USER")
                                 .anyRequest()
                                 .authenticated())
                 .sessionManagement((sessionManagement) ->
