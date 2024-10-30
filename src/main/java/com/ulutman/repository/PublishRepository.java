@@ -27,7 +27,7 @@ public interface PublishRepository extends JpaRepository<Publish, Long> {
     List<Publish> filterPublishesByCategory(@Param("categories") List<Category> categories);
 
     @Query("SELECT p FROM Publish p WHERE p.publishStatus IN :publishStatuses")
-    List<Publish>  filterPublishesByStatus(@Param("publishStatuses") List<PublishStatus> publishStatuses);
+    List<Publish> filterPublishesByStatus(@Param("publishStatuses") List<PublishStatus> publishStatuses);
 
     @Query("SELECT p FROM Publish p WHERE (:createDates IS NULL OR p.createDate IN :createDates)")
     List<Publish> filterPublishesByCreateDate(@Param("createDates") List<LocalDate> createDates);
@@ -53,20 +53,39 @@ public interface PublishRepository extends JpaRepository<Publish, Long> {
     @Query("SELECT publish FROM Publish publish WHERE publish.category=('WORK')")
     List<Publish> findByCategoryWork();
 
+    @Query("SELECT  publish FROM Publish publish WHERE  publish.category = 'WORK' AND publish.subCategory= ?1")
+    List<Publish> findBySubCategoryWORK(Subcategory subCategory);
+
     @Query("SELECT publish FROM Publish publish WHERE publish.category=('RENT')")
     List<Publish> findByCategoryRent();
+
+    @Query("SELECT publish FROM Publish  publish WHERE publish.category = 'RENT' AND publish.subCategory= ?1")
+    List<Publish> findBySubCategoryRent(Subcategory subCategory);
 
     @Query("SELECT publish FROM Publish publish WHERE publish.category=('SELL')")
     List<Publish> findByCategorySell();
 
+    @Query("SELECT publish FROM Publish publish WHERE publish.category='SELL' AND publish.subCategory = ?1")
+    List<Publish> findBySubCategorySell(Subcategory subCategory);
+
     @Query("SELECT publish FROM Publish publish WHERE publish.category=('HOTEL')")
     List<Publish> findByCategoryHotel();
+
+    @Query("SELECT publish FROM Publish publish WHERE publish.category = 'HOTEL' AND  publish.subCategory =?1")
+    List<Publish> findBySubCategoryHotel(Subcategory subCategory);
 
     @Query("SELECT publish FROM Publish publish WHERE publish.category =('AUTO')")
     List<Publish> findByCategoryServices();
 
+    @Query("SELECT publish FROM Publish  publish WHERE publish.category = 'AUTO' AND publish.subCategory =?1")
+    List<Publish> findBySubCategoryAUTO(Subcategory subCategory);
+
+    @Query("SELECT publish FROM Publish  publish WHERE publish.category = 'SERVICES' AND publish.subCategory =?1")
+    List<Publish> findBySubCategoryServices(Subcategory subCategory);
+
     @Query("SELECT publish FROM Publish publish WHERE publish.category=('REAL_ESTATE')")
     List<Publish> findByCategoryRealEstate();
+
     @Query("SELECT publish FROM Publish publish WHERE publish.category = 'REAL_ESTATE' AND publish.subCategory = ?1")
     List<Publish> findBySubCategoryREAL_ESTATE(Subcategory subCategory);
 

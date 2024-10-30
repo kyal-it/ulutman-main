@@ -103,7 +103,7 @@ public class AuthService {
 
         String email = firebaseToken.getEmail();
         User user = userRepository.findByEmail(email).orElseGet(() -> {
-            // Если пользователь не найден, создаем нового
+
             User newUser = new User();
             String fullName = firebaseToken.getName();
             int spaceIndex = fullName.indexOf(" ");
@@ -115,9 +115,9 @@ public class AuthService {
             }
             newUser.setEmail(email);
 //            newUser.setPhoneNumber("+996700000000"); // Укажите номер телефона
-            newUser.setPassword(passwordEncoder.encode(firebaseToken.getEmail())); // Используйте email как пароль для создания
-            newUser.setRole(Role.USER); // Установите роль пользователя
-            return userRepository.save(newUser); // Сохраняем нового пользователя в базе данных
+            newUser.setPassword(passwordEncoder.encode(firebaseToken.getEmail()));
+            newUser.setRole(Role.USER);
+            return userRepository.save(newUser);
         });
 
         // Генерируем токен для пользователя
@@ -129,12 +129,11 @@ public class AuthService {
 
 
         return AuthWithGoogleResponse.builder()
-                .googleId(user.getId().toString()) // Используйте id пользователя как googleId
+                .googleId(user.getId().toString())
                 .email(user.getEmail())
-                .name(user.getName() + " " + user.getLastName()) // Собираем полное имя
-                .picture(user.getPicture()) // Убедитесь, что в объекте User есть метод getPictureUrl()
-                .locale(user.getLocale()) // Убедитесь, что в объекте User есть метод getLocale()
+                .name(user.getName() + " " + user.getLastName())
+                .picture(user.getPicture())
+                .locale(user.getLocale())
                 .build();
     }
-
 }

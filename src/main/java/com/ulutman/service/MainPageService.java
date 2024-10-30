@@ -32,8 +32,20 @@ public class MainPageService {
         return work.stream().map(publishMapper::mapToResponse).toList();
     }
 
+    //SubCategory = WORK
+    public List<PublishResponse> findPublishByCategoryWORK(Subcategory subCategory) {
+        List<Publish> work = publishRepository.findBySubCategoryWORK(subCategory);
+        return work.stream().map(publishMapper::mapToResponse).toList();
+    }
+
     public List<PublishResponse> findPublishByCategoryRent() {
         List<Publish> rent = publishRepository.findByCategoryRent();
+        return rent.stream().map(publishMapper::mapToResponse).toList();
+    }
+
+    //SubCategory = RENT
+    public List<PublishResponse> findPublishByCategoryRent(Subcategory subCategory) {
+        List<Publish> rent = publishRepository.findBySubCategoryRent(subCategory);
         return rent.stream().map(publishMapper::mapToResponse).toList();
     }
 
@@ -42,8 +54,20 @@ public class MainPageService {
         return sell.stream().map(publishMapper::mapToResponse).toList();
     }
 
+    //SubCategory = SELL
+    public List<PublishResponse> findPublishByCategorySell(Subcategory subCategory) {
+        List<Publish> sell = publishRepository.findBySubCategorySell(subCategory);
+        return sell.stream().map(publishMapper::mapToResponse).toList();
+    }
+
     public List<PublishResponse> findPublishByCategoryHotel() {
         List<Publish> hotel = publishRepository.findByCategoryHotel();
+        return hotel.stream().map(publishMapper::mapToResponse).toList();
+    }
+
+    //SubCategory = SELL
+    public List<PublishResponse> findPublishByCategoryHotel(Subcategory subCategory) {
+        List<Publish> hotel = publishRepository.findBySubCategoryHotel(subCategory);
         return hotel.stream().map(publishMapper::mapToResponse).toList();
     }
 
@@ -52,9 +76,27 @@ public class MainPageService {
         return services.stream().map(publishMapper::mapToResponse).toList();
     }
 
+    //SubCategory = SERVICES
+    public List<PublishResponse> findPublishByCategoryServices(Subcategory subCategory) {
+        List<Publish> services = publishRepository.findBySubCategoryServices(subCategory);
+        return services.stream().map(publishMapper::mapToResponse).toList();
+    }
+
+    //SubCategory = AUTO
+    public List<PublishResponse> findPublishByCategoryAUTO(Subcategory subCategory) {
+        List<Publish> auto = publishRepository.findBySubCategoryAUTO(subCategory);
+        return auto.stream().map(publishMapper::mapToResponse).toList();
+    }
+
     public List<PublishResponse> findPublishByCategoryRealEstate() {
         List<Publish> realEstate = publishRepository.findByCategoryRealEstate();
         return realEstate.stream().map(publishMapper::mapToResponse).toList();
+    }
+
+    //SubCategory = REAL_ESTATE
+    public List<PublishResponse> findPublishBySubCategoryREAL_ESTATE(Subcategory subCategory) {
+        List<Publish> publishes = publishRepository.findBySubCategoryREAL_ESTATE(subCategory);
+        return publishes.stream().map(publishMapper::mapToResponse).toList();
     }
 
     public List<PublishResponse> filterPublishesByCategory(List<Category> categories, String sortBy) {
@@ -77,10 +119,5 @@ public class MainPageService {
         return filteredPublishes.stream()
                 .map(publishMapper::mapToResponse)
                 .collect(Collectors.toList());
-    }
-
-    public List<PublishResponse> findPublishBySubCategoryREAL_ESTATE(Subcategory subCategory) {
-        List<Publish> publishes = publishRepository.findBySubCategoryREAL_ESTATE(subCategory);
-        return publishes.stream().map(publishMapper::mapToResponse).toList();
     }
 }
