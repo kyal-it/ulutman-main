@@ -90,7 +90,6 @@ public class FavoriteService {
 
         // Используем LinkedHashSet для сохранения порядка
         Set<Publish> publishes = new LinkedHashSet<>(favorite.getPublishes());
-
         // Проверяем, находится ли публикация в избранном
         if (publishes.contains(publish)) {
             // Если публикация уже в избранном, удаляем её из избранного и меняем статус на false (серый)
@@ -157,7 +156,7 @@ public class FavoriteService {
 
         Favorite favorites = favoriteRepository.getFavoritesByUserId(user.getId());
 
-        if (favorites == null || favorites.getPublishes() == null || favorites.getPublishes().isEmpty()) {
+        if (favorites == null || favorites.getPublishes() == null ||  favorites.getPublishes().isEmpty()) {
             return false;
         }
 

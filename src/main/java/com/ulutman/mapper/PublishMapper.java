@@ -53,6 +53,7 @@ public class PublishMapper {
                 .user(mapUserToAuthResponse(publish.getUser()))
                 .propertyDetails(publish.getPropertyDetails())
                 .conditions(publish.getConditions())
+                .active(publish.isActive())
                 .build();
     }
 
