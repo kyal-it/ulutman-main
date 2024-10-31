@@ -23,6 +23,8 @@ public class AuthController {
 
     private final AuthService authService;
 
+    @Operation(summary = "Create a new User and return token")
+    @ApiResponse(responseCode = "201", description = "User created and return successfully")
     @PostMapping("/register")
     public ResponseEntity<AuthResponse> register(@RequestBody AuthRequest request) {
         AuthResponse response = authService.saveUser(request);
