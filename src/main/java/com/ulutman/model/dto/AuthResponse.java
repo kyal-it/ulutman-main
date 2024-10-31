@@ -1,6 +1,5 @@
 package com.ulutman.model.dto;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.ulutman.model.enums.Role;
 import com.ulutman.model.enums.Status;
@@ -31,5 +30,7 @@ public class AuthResponse {
     @JsonManagedReference
     List<PublishResponse> publishes;
 
-    private int numberOfPublications;
+    int numberOfPublications;
+
+    String token;
 }

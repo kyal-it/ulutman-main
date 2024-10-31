@@ -50,6 +50,31 @@ public class AuthMapper {
                 .build();
     }
 
+    public AuthResponse mapToResponseWithToken(String jwt, User user) {
+        if (user == null) {
+            throw new IllegalArgumentException("User cannot be null");
+        }
+
+        List<PublishResponse> publishResponses = user.getPublishes() != null
+                ? user.getPublishes().stream()
+                .map(publishMapper::mapToResponse)
+                .collect(Collectors.toList())
+                : Collections.emptyList();
+
+        return AuthResponse.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .email(user.getEmail())
+                .status(user.getStatus())
+                .role(user.getRole())
+                .createDate(user.getCreateDate())
+                .publishes(publishResponses)
+                .numberOfPublications(publishResponses.size())
+                .token(jwt)  // Установите токена
+                .build();
+    }
+
+
     public UserResponse mapToUserResponse(User user) {
         if (user == null) {
             return null;
