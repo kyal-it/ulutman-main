@@ -53,6 +53,38 @@ public class AuthService {
     AuthenticationManager manager;
     LoginMapper loginMapper;
 
+    public AuthResponse saveUser(AuthRequest request) {
+
+        User user = authMapper.mapToEntity(request);
+        user.setCreateDate(LocalDate.now());
+        log.info("Пользователь успешно создан!");
+
+        if (!request.getPassword().equals(request.getConfirmPassword())) {
+            throw new IllegalArgumentException("Пароли не совпадают");
+        }
+
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setConfirmPassword(passwordEncoder.encode(request.getConfirmPassword()));
+
+        user.setRole(request.getRole() != null ? request.getRole() : Role.USER);
+        user.setStatus(Status.АКТИВНЫЙ);
+
+        Favorite basket = new Favorite();
+        user.setFavorites(basket);
+        basket.setUser(user);
+
+        UserAccount userAccount = new UserAccount();
+        user.setUserAccount(userAccount);
+        userAccount.setUsername(user.getUsername());
+
+        userRepository.save(user);
+
+        String jwt = jwtUtil.generateToken(user);
+
+        return authMapper.mapToResponseWithToken(jwt, user);
+    }
+
+
     public AuthResponse save(AuthRequest request) {
         User user = authMapper.mapToEntity(request);
         user.setCreateDate(LocalDate.now());
