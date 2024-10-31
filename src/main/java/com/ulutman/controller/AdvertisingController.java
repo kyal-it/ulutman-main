@@ -15,7 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @RestController
-@RequestMapping("/advertising")
+@RequestMapping("/api/advertising")
 @Tag(name = "AdVersting")
 @SecurityRequirement(name = "Authorization")
 public class AdvertisingController {

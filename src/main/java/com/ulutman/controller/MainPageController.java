@@ -5,6 +5,7 @@ import com.ulutman.model.enums.Category;
 import com.ulutman.model.enums.Metro;
 import com.ulutman.model.enums.Subcategory;
 import com.ulutman.service.MainPageService;
+import com.ulutman.service.PublishService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -23,7 +24,10 @@ import java.util.Map;
 @Tag(name = "Main - Page")
 @SecurityRequirement(name = "Authorization")
 public class MainPageController {
+
     private final MainPageService mainPageService;
+
+    private final PublishService publishService;
 
     @Operation(summary = "Get publishes by category WORK")
     @ApiResponse(responseCode = "201", description = "return list of publishes by category WORK")
@@ -143,24 +147,11 @@ public class MainPageController {
         return mainPageService.searchPublishes(categories, titles, metros);
     }
 
-    @Operation(summary = "Get metro by id")
-    @ApiResponse(responseCode = "201", description = "Returned the metro by id successfully")
-    @GetMapping("/metro/{id}")
-    public Map<String, String> getMetroById(@PathVariable int id) {
-        Map<String, String> response = new HashMap<>();
-
-        Metro.getById(id).ifPresentOrElse(
-                metro -> {
-                    response.put("id", String.valueOf(id));
-                    response.put("value", metro.getValue());
-                    response.put("label", metro.getLabel());
-                },
-                () -> {
-                    response.put("ошибка", "Станция метро не найдена");
-                }
-        );
-
-        return response;
+    @Operation(summary = "Reset filters publications")
+    @ApiResponse(responseCode = "201", description = "Publishes filters successfully reset")
+    @GetMapping("/resetFilter")
+    public List<PublishResponse> resetFilter() {
+        return publishService.getAll();
     }
 
     @Operation(summary = "Get all metro ")

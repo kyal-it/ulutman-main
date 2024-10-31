@@ -1,6 +1,5 @@
 package com.ulutman.controller;
 
-import com.ulutman.model.dto.PublishDetailsResponse;
 import com.ulutman.model.dto.PublishRequest;
 import com.ulutman.model.dto.PublishResponse;
 import com.ulutman.model.enums.TransportType;
@@ -14,7 +13,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.security.Principal;
 
 import java.util.List;
 
@@ -101,14 +99,6 @@ public class PublishController {
         this.publishService.deletePublish(id);
         return "Delete publish with id:" + id + " successfully delete";
     }
-
-//    @Operation(summary = "My publishes")
-//    @ApiResponse(responseCode = "201", description = "return list of my publishes successfully")
-//    @GetMapping("/my")
-//    public ResponseEntity<List<PublishResponse>> getMyPublishes(@RequestParam Long userId) {
-//        List<PublishResponse> publishes = publishService.myPublishes(userId);
-//        return ResponseEntity.ok(publishes);
-//    }
 
     @Operation(summary = "Filter publishes by criteria")
     @ApiResponse(responseCode = "201", description = "Publishes successfully filtered")
