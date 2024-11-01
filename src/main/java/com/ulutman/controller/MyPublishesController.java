@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,9 +29,10 @@ public class MyPublishesController {
     @ApiResponse(responseCode = "201", description = "successfully returned a list of active user publications")
     @GetMapping("/{userId}")
     public ResponseEntity<List<PublishResponse>> myPublishes(@PathVariable Long userId) {
-        List<PublishResponse> publishes = publishService.myPublishes(userId);
+        List<PublishResponse> publishes = publishService.myActivePublishes(userId);
         return ResponseEntity.ok(publishes);
     }
+
     //Деактивирует публикацию
     @Operation(summary = "Deactivates publication")
     @ApiResponse(responseCode = "201", description = "publication successfully deactivated")
@@ -39,6 +41,7 @@ public class MyPublishesController {
         PublishResponse deactivatedPublish = publishService.deactivatePublish(userId, publishId);
         return ResponseEntity.ok(deactivatedPublish);
     }
+
     //Активирует публикацию
     @Operation(summary = "Activates publication")
     @ApiResponse(responseCode = "201", description = "publication successfully activated")
@@ -47,6 +50,7 @@ public class MyPublishesController {
         PublishResponse activatedPublish = publishService.activatePublish(userId, publishId);
         return ResponseEntity.ok(activatedPublish);
     }
+
     //Удаляет публикации пользователя
     @Operation(summary = "Deletes a user's publishes")
     @ApiResponse(responseCode = "201", description = "Posts successfully deleted")
@@ -55,6 +59,7 @@ public class MyPublishesController {
         publishService.deletePublishesByUser(userId, publishIds);
         return ResponseEntity.noContent().build();
     }
+
     //Удаляет все публикации пользователя
     @Operation(summary = "Deletes all user posts")
     @ApiResponse(responseCode = "201", description = "successfully all publications were deleted")
@@ -63,6 +68,7 @@ public class MyPublishesController {
         publishService.deleteAllUserPublishes(userId);
         return ResponseEntity.ok("Все публикации успешно удалены");
     }
+
     //Возвращает список неактивных публикаций пользователя
     @Operation(summary = "Returns a list of inactive user posts")
     @ApiResponse(responseCode = "201", description = "successfully returned a list of inactive user publications")
@@ -71,6 +77,7 @@ public class MyPublishesController {
         List<PublishResponse> inactivePublishes = publishService.getInactivePublishes(userId);
         return ResponseEntity.ok(inactivePublishes);
     }
+
     //Обновляет информацию о публикации
     @Operation(summary = "Edits publication information")
     @ApiResponse(responseCode = "201", description = "successfully edited information about the publication")
@@ -79,6 +86,7 @@ public class MyPublishesController {
         PublishResponse updatedPublish = publishService.updatePublish(userId, publishId, publishRequest);
         return ResponseEntity.ok(updatedPublish);
     }
+
     //Возвращает список отклоненных публикаций пользователя
     @Operation(summary = "Returns a list of user's rejected posts")
     @ApiResponse(responseCode = "201", description = "The list of rejected user publications was successfully restored")
@@ -86,5 +94,20 @@ public class MyPublishesController {
     public ResponseEntity<List<PublishResponse>> getRejectedPublishes(@PathVariable Long userId) {
         List<PublishResponse> rejectedPublishes = publishService.getRejectedPublishes(userId);
         return ResponseEntity.ok(rejectedPublishes);
+    }
+
+
+    @Operation(summary = "returns to the client the number of favorites for a specific publication")
+    @ApiResponse(responseCode = "201", description = "The number of favorites for a specific publication was successfully returned to the client")
+    @GetMapping("/count")
+    public ResponseEntity<Integer> getFavoritesCount(
+            @RequestParam Long userId,
+            @RequestParam Long publishId) {
+        try {
+            Integer count = publishService.getFavoritesCount(userId, publishId);
+            return new ResponseEntity<>(count, HttpStatus.OK);
+        } catch (NotFoundException | UnauthorizedException e) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
     }
 }
