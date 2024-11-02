@@ -24,7 +24,9 @@ public class PublishMapper {
         publish.setPrice(publishRequest.getPrice());
         publish.setCategory(publishRequest.getCategory());
         publish.setSubCategory(publishRequest.getSubcategory());
-        publish.setBank(publishRequest.getBank());
+//        publish.setBank(publishRequest.getBank());
+        publishRequest.getBank().ifPresent(publish::setBank);
+        publishRequest.getPaymentReceiptFile().ifPresent(publish::setPaymentReceipt);
         publish.setPublishStatus(publishRequest.getPublishStatus());
         publish.setCategory(publishRequest.getCategory());
         publish.setCreateDate(LocalDate.now());
@@ -44,7 +46,7 @@ public class PublishMapper {
                 .images(publish.getImages()) //  список изображений
 //                .image(publish.getImage())
                 .price(publish.getPrice())
-                .bank(publish.getBank())
+//                .bank(publish.getBank())
                 .publishStatus(publish.getPublishStatus())
                 .createDate(publish.getCreateDate())
                 .detailFavorite(publish.isDetailFavorite())

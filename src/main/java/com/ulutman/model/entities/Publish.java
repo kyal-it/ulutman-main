@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.io.File;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -36,8 +37,8 @@ public class Publish {
     @Enumerated(EnumType.STRING)
     private Subcategory subCategory;
 
-    @Enumerated(EnumType.STRING)
-    private Bank bank;
+//    @Enumerated(EnumType.STRING)
+//    private Bank bank;
 
     @Enumerated(EnumType.STRING)
     private Metro metro;
@@ -47,6 +48,12 @@ public class Publish {
     private String phone;
 
     private boolean active;
+
+    private String bank;
+
+    private String chatId;
+
+    private File paymentReceipt;
 
     @ElementCollection
     @CollectionTable(name = "publish_images")  // Отдельная таблица для хранения изображений
