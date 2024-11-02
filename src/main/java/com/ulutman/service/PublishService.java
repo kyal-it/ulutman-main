@@ -22,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -77,7 +76,7 @@ public class PublishService {
                 throw new IllegalArgumentException("Необходимо выбрать банк для категории " + publishRequest.getCategory());
             }
 
-            if (!publishRequest.getPaymentReceiptFile().isPresent()) { // Предполагается, что это поле теперь Optional<File>
+            if (!publishRequest.getPaymentReceiptFile().isPresent()) {
                 throw new IllegalArgumentException("Необходимо предоставить чек оплаты для категории " + publishRequest.getCategory());
             }
 
@@ -136,11 +135,6 @@ public class PublishService {
                 }
             }
         });
-    }
-
-
-    private boolean isValidBank(String bank) {
-        return Arrays.asList("Сбербанк", "Почта Банк", "Тинькофф").contains(bank);
     }
 
     public PublishResponse createPublishDetails(PublishRequest publishRequest) {
