@@ -59,6 +59,14 @@ public class MailingService {
         return mailingMapper.mapToResponse(mailing);
     }
 
+    public void sendMailing1(String to, String subject, String text) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(to);
+        message.setSubject(subject);
+        message.setText(text);
+        javaMailSender.send(message);
+    }
+
     public void sendMailing(Long mailingId, String recipientEmail) throws MessagingException {
         Mailing mailing = mailingRepository.findById(mailingId)
                 .orElseThrow(() -> new IllegalArgumentException("Неверный почтовый идентификатор"));

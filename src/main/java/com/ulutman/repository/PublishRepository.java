@@ -144,5 +144,8 @@ public interface PublishRepository extends JpaRepository<Publish, Long> {
     @Query("SELECT p FROM Publish p WHERE p.user.id = :userId AND p.publishStatus = :status")
     List<Publish> findByUserIdAndStatus(@Param("userId") Long userId, @Param("status") PublishStatus status);
 
+    @Query("SELECT p FROM Publish p WHERE p.active = false")
+    List<Publish> findAllByActiveFalse();
+
 
 }
