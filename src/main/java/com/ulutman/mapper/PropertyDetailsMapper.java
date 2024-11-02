@@ -41,6 +41,9 @@ public class PropertyDetailsMapper {
         propertyDetails.setKitchenArea(request.getKitchenArea());
         propertyDetails.setWalkingDistance(request.getWalkingDistance());
         propertyDetails.setTransportDistance(request.getTransportDistance());
+        propertyDetails.setDistrict(request.getDistrict());
+        propertyDetails.setQuantity(request.getQuantity());
+        propertyDetails.setFloor(request.getFloor());
         return propertyDetails;
     }
 
@@ -76,6 +79,9 @@ public class PropertyDetailsMapper {
                 .kitchenArea(propertyDetails.getKitchenArea())
                 .walkingDistance(propertyDetails.getWalkingDistance())
                 .transportDistance(propertyDetails.getTransportDistance())
+                .district(propertyDetails.getDistrict())
+                .quantity(propertyDetails.getQuantity())
+                .floor(propertyDetails.getFloor())
                 .build();
     }
 }

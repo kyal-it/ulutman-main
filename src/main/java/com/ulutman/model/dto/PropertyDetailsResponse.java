@@ -75,4 +75,10 @@ public class PropertyDetailsResponse {
     Integer walkingDistance;
 
     Integer transportDistance;
+
+    String district;
+
+    String quantity;
+
+    Integer floor;
 }

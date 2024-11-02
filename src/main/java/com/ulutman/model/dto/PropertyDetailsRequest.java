@@ -72,4 +72,10 @@ public class PropertyDetailsRequest {
     Integer walkingDistance;
 
     Integer transportDistance;
+
+    String district;
+
+    String quantity;
+
+    Integer floor;
 }
