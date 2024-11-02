@@ -14,13 +14,18 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import okhttp3.*;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
+
 
 @Service
 @RequiredArgsConstructor
@@ -33,7 +38,8 @@ public class PublishService {
     private final UserRepository userRepository;
     private final PropertyDetailsMapper propertyDetailsMapper;
     private final ConditionsMapper conditionsMapper;
-
+    private static final String TELEGRAM_BOT_TOKEN = "7967485487:AAG-DlDiIW9AOT8hjke6RnWnTRRWUKsOszI";
+    private static final String ADMIN_CHAT_ID = "1818193495";
 
     public PublishResponse createPublish(PublishRequest publishRequest) {
         if (publishRequest.getCategory() == null || publishRequest.getSubcategory() == null) {
@@ -47,14 +53,17 @@ public class PublishService {
         Publish publish = publishMapper.mapToEntity(publishRequest);
 
         User user = userRepository.findById(publishRequest.getUserId())
-                .orElseThrow(() -> new RuntimeException("Пользователь не найден " + publishRequest.getUserId()));
+                .orElseThrow(() -> new RuntimeException("Пользователь не найден: " + publishRequest.getUserId()));
+
         publish.setUser(user);
         publish.setPublishStatus(PublishStatus.ОДОБРЕН);
         publish.setCategoryStatus(CategoryStatus.АКТИВНО);
-        publish.setActive(true);
+        if (publishRequest.getCategory() == Category.RENT || publishRequest.getCategory() == Category.HOTEL) {
+            publish.setActive(false);
+        } else {
+            publish.setActive(true);
+        }
 
-
-        // Проверяем, если данные корректные и создаем публикацию
         Publish savedPublish;
         try {
             savedPublish = publishRepository.save(publish);
@@ -62,13 +71,77 @@ public class PublishService {
             throw new IllegalArgumentException("Ошибка при сохранении публикации: " + e.getMessage());
         }
 
-        // Логируем успешное создание
+        // Если категория RENT или HOTEL, отправляем чек в Telegram
+        if (publishRequest.getCategory() == Category.RENT || publishRequest.getCategory() == Category.HOTEL) {
+            if (!publishRequest.getBank().isPresent()) {
+                throw new IllegalArgumentException("Необходимо выбрать банк для категории " + publishRequest.getCategory());
+            }
+
+            if (!publishRequest.getPaymentReceiptFile().isPresent()) { // Предполагается, что это поле теперь Optional<File>
+                throw new IllegalArgumentException("Необходимо предоставить чек оплаты для категории " + publishRequest.getCategory());
+            }
+
+            sendReceiptAsDocumentToTelegram(publishRequest.getPaymentReceiptFile().get(), savedPublish);
+        }
+
         log.info("Publication created successfully: {}", savedPublish);
 
-        PublishResponse publishResponse = publishMapper.mapToResponse(savedPublish);
-        return publishResponse;
+        return publishMapper.mapToResponse(savedPublish);
     }
 
+    private void sendReceiptAsDocumentToTelegram(File receiptFile, Publish savedPublish) {
+        if (!receiptFile.exists()) {
+            throw new RuntimeException("Файл не найден: " + receiptFile.getAbsolutePath());
+        }
+
+        String userEmail = savedPublish.getUser().getEmail();
+        String userPhoneNumber = savedPublish.getPhone();
+
+        String message = String.format(
+                "Новый чек:" + "\n" +
+                        "Публикация ID: %s" +  "\n" +
+                        "Email пользователя: %s" + "\n" +
+                        "Номер телефона: %s" + "\n" ,
+                savedPublish.getId(),
+                userEmail != null ? userEmail : "Не указан",
+                userPhoneNumber != null ? userPhoneNumber : "Не указан"
+        );
+        OkHttpClient client = new OkHttpClient();
+        String url = String.format("https://api.telegram.org/bot%s/sendDocument", TELEGRAM_BOT_TOKEN);
+
+        MultipartBody.Builder builder = new MultipartBody.Builder()
+                .setType(MultipartBody.FORM)
+                .addFormDataPart("chat_id", ADMIN_CHAT_ID)
+                .addFormDataPart("caption", message)
+                .addFormDataPart("document", receiptFile.getName(),
+                        RequestBody.create(receiptFile, MediaType.parse("application/pdf")));
+
+        RequestBody requestBody = builder.build();
+
+        Request request = new Request.Builder()
+                .url(url)
+                .post(requestBody)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (!response.isSuccessful()) {
+                    throw new IOException("Unexpected code " + response);
+                }
+            }
+        });
+    }
+
+
+    private boolean isValidBank(String bank) {
+        return Arrays.asList("Сбербанк", "Почта Банк", "Тинькофф").contains(bank);
+    }
 
     public PublishResponse createPublishDetails(PublishRequest publishRequest) {
         // Проверка на наличие категории и подкатегории

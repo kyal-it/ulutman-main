@@ -41,7 +41,7 @@ public class PublishResponse {
 
     Subcategory subcategory;
 
-    Bank bank;
+    //Bank bank;
 
     PublishStatus publishStatus;
 

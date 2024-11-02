@@ -1,7 +1,11 @@
 package com.ulutman.controller;
 
+import ch.qos.logback.classic.Logger;
 import com.ulutman.model.dto.PublishRequest;
 import com.ulutman.model.dto.PublishResponse;
+import com.ulutman.model.enums.Category;
+import com.ulutman.model.enums.Metro;
+import com.ulutman.model.enums.Subcategory;
 import com.ulutman.model.enums.TransportType;
 import com.ulutman.service.PublishService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,11 +14,16 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -23,21 +32,69 @@ import java.util.List;
 @Tag(name = "Publish")
 @SecurityRequirement(name = "Authorization")
 public class PublishController {
-
     private final PublishService publishService;
+    private static final Logger logger = (Logger) LoggerFactory.getLogger(PublishController.class);
 
     @Operation(summary = "Create a publication")
     @ApiResponse(responseCode = "201", description = "The publish created successfully")
     @PostMapping("/create")
-    public ResponseEntity<PublishResponse> createPublish(@RequestBody PublishRequest publishRequest) {
+    public ResponseEntity<PublishResponse> createPublish(
+            @RequestParam("title") String title,
+            @RequestParam("description") String description,
+            @RequestParam("metro") Metro metro,
+            @RequestParam("address") String address,
+            @RequestParam("phoneNumber") String phoneNumber,
+            @RequestParam("images") List<String> images,
+            @RequestParam("price") double price,
+            @RequestParam("category") Category category,
+            @RequestParam("subcategory") Subcategory subcategory,
+            @RequestParam(value = "bank", required = false) String bank, // Опционально
+            @RequestParam(value = "paymentReceiptFile", required = false) MultipartFile paymentReceiptFile, // Файл
+            @RequestParam("userId") Long userId) {
+
+        PublishRequest publishRequest = new PublishRequest();
+        publishRequest.setTitle(title);
+        publishRequest.setDescription(description);
+        publishRequest.setMetro(metro);
+        publishRequest.setAddress(address);
+        publishRequest.setPhoneNumber(phoneNumber);
+        publishRequest.setImages(images);
+        publishRequest.setPrice(price);
+        publishRequest.setCategory(category);
+        publishRequest.setSubcategory(subcategory);
+        publishRequest.setBank(Optional.ofNullable(bank));
+        publishRequest.setUserId(userId);
+
+        if (paymentReceiptFile != null && !paymentReceiptFile.isEmpty()) {
+            File tempFile = null;
+            try {
+                tempFile = File.createTempFile("paymentReceipt", ".tmp");
+                paymentReceiptFile.transferTo(tempFile); // Сохраняем файл во временное место
+
+                publishRequest.setPaymentReceiptFile(Optional.of(tempFile));
+            } catch (IOException e) {
+                logger.error("Ошибка при обработке файла: {}", e.getMessage());
+                return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            } finally {
+                if (tempFile != null && tempFile.exists()) {
+                    tempFile.deleteOnExit();
+                }
+            }
+        } else {
+            publishRequest.setPaymentReceiptFile(Optional.empty());
+        }
+
         try {
             PublishResponse response = publishService.createPublish(publishRequest);
             return new ResponseEntity<>(response, HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
+            logger.error("Ошибка в аргументах: {}", e.getMessage());
             return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
         } catch (RuntimeException e) {
+            logger.error("Ошибка выполнения: {}", e.getMessage());
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
+
     }
 
     @Operation(summary = "Create a publication with details")

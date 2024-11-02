@@ -4,7 +4,9 @@ import com.ulutman.model.enums.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.io.File;
 import java.util.List;
+import java.util.Optional;
 
 @Getter
 @Setter
@@ -33,7 +35,10 @@ public class PublishRequest {
 
     Subcategory subcategory;
 
-    Bank bank;
+    Optional<String> bank = Optional.empty(); // Выбор банка
+
+    Optional<File> paymentReceiptFile = Optional.empty(); // Чек оплаты
+
 
     PublishStatus publishStatus;
 
