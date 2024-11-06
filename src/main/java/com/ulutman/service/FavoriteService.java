@@ -16,10 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -38,24 +35,34 @@ public class FavoriteService {
         Publish publish = publishRepository.findById(productId)
                 .orElseThrow(() -> new NotFoundException("Публикация не найдена"));
 
+        // Проверка, уже ли публикация в избранном
         Favorite favorites = favoriteRepository.getFavoritesByUserId(user.getId());
-        Set<Publish> publishes = favorites.getPublishes();
 
-        if (publishes.contains(publish)) {
+        if (favorites != null && favorites.getPublishes().contains(publish)) {
             throw new IncorrectCodeException("Уже в избранном");
         }
 
-        publishes.add(publish);
-        favorites.setPublishes(publishes);
+        if (favorites == null) {
+            // Если у пользователя еще нет избранного, создаем его
+            favorites = new Favorite();
+            favorites.setUser(user);
+            favorites.setPublishes(new HashSet<>());
+        }
+
+        // Добавляем публикацию в избранное
+        favorites.getPublishes().add(publish);
+
+        // Сохранение Favorite в базу данных
+        favoriteRepository.save(favorites);
 
         publish.setDetailFavorite(true);
-        publishRepository.save(publish); // Сохраняем изменения в базе данных
-
-        favoriteRepository.save(favorites);
+        publishRepository.save(publish);
 
         log.info("Added to favorites");
         return favoriteMapper.mapToResponse(favorites, publish);
     }
+
+
 
     public FavoriteResponseList getAllFavorites(Principal principal) {
         User user = userRepository.findByEmail(principal.getName())
@@ -86,7 +93,7 @@ public class FavoriteService {
         Publish publish = publishRepository.findById(productId)
                 .orElseThrow(() -> new NotFoundException("Product not found"));
 
-        Favorite favorite = user.getFavorites();
+        Favorite favorite = (Favorite) user.getFavorites();
 
         // Используем LinkedHashSet для сохранения порядка
         Set<Publish> publishes = new LinkedHashSet<>(favorite.getPublishes());
@@ -135,7 +142,7 @@ public class FavoriteService {
         User user = userRepository.findByEmail(principal.getName())
                 .orElseThrow(() -> new NotFoundException("User not found with this username " + principal));
 
-        Favorite favorites = user.getFavorites();
+        Favorite favorites = (Favorite) user.getFavorites();
         if (favorites != null && !favorites.getPublishes().isEmpty()) {
 
             Set<Publish> publishes = favorites.getPublishes();
