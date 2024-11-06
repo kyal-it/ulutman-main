@@ -37,7 +37,7 @@ public class PublishService {
     private final UserRepository userRepository;
     private final PropertyDetailsMapper propertyDetailsMapper;
     private final ConditionsMapper conditionsMapper;
-    private static final String TELEGRAM_BOT_TOKEN = "7967485487:AAG-DlDiIW9AOT8hjke6RnWnTRRWUKsOszI";
+    private static final String TELEGRAM_BOT_TOKEN = "7967485487:AAGhVVsiOZ3V2ZFonfZqWXoxCpRpVL0D1nE";
     private static final String ADMIN_CHAT_ID = "1818193495";
 
     public PublishResponse createPublish(PublishRequest publishRequest) {
@@ -49,6 +49,10 @@ public class PublishService {
             throw new IllegalArgumentException("Неверная категория");
         }
 
+        if (!publishRequest.getCategory().getSubcategories().contains(publishRequest.getSubcategory())) {
+            throw new IllegalArgumentException("Неверная подкатегория для выбранной категории");
+        }
+
         Publish publish = publishMapper.mapToEntity(publishRequest);
 
         User user = userRepository.findById(publishRequest.getUserId())
@@ -57,6 +61,7 @@ public class PublishService {
         publish.setUser(user);
         publish.setPublishStatus(PublishStatus.ОДОБРЕН);
         publish.setCategoryStatus(CategoryStatus.АКТИВНО);
+
         if (publishRequest.getCategory() == Category.RENT || publishRequest.getCategory() == Category.HOTEL) {
             publish.setActive(false);
         } else {
@@ -70,7 +75,6 @@ public class PublishService {
             throw new IllegalArgumentException("Ошибка при сохранении публикации: " + e.getMessage());
         }
 
-        // Если категория RENT или HOTEL, отправляем чек в Telegram
         if (publishRequest.getCategory() == Category.RENT || publishRequest.getCategory() == Category.HOTEL) {
             if (!publishRequest.getBank().isPresent()) {
                 throw new IllegalArgumentException("Необходимо выбрать банк для категории " + publishRequest.getCategory());
@@ -81,6 +85,8 @@ public class PublishService {
             }
 
             sendReceiptAsDocumentToTelegram(publishRequest.getPaymentReceiptFile().get(), savedPublish);
+        } else {
+            log.info("Bank and payment receipt are not required for category: {}", publishRequest.getCategory());
         }
 
         log.info("Publication created successfully: {}", savedPublish);
@@ -95,12 +101,15 @@ public class PublishService {
 
         String userEmail = savedPublish.getUser().getEmail();
         String userPhoneNumber = savedPublish.getPhone();
+        String nameBank = savedPublish.getBank();
 
         String message = String.format(
                 "Новый чек:" + "\n" +
+                        "Имя карты: %s" +  "\n" +
                         "Публикация ID: %s" +  "\n" +
                         "Email пользователя: %s" + "\n" +
                         "Номер телефона: %s" + "\n" ,
+                nameBank,
                 savedPublish.getId(),
                 userEmail != null ? userEmail : "Не указан",
                 userPhoneNumber != null ? userPhoneNumber : "Не указан"

@@ -3,10 +3,9 @@ package com.ulutman.controller;
 import ch.qos.logback.classic.Logger;
 import com.ulutman.model.dto.PublishRequest;
 import com.ulutman.model.dto.PublishResponse;
-import com.ulutman.model.enums.Category;
-import com.ulutman.model.enums.Metro;
-import com.ulutman.model.enums.Subcategory;
-import com.ulutman.model.enums.TransportType;
+import com.ulutman.model.entities.BankCard;
+import com.ulutman.model.enums.*;
+import com.ulutman.repository.BankCardRepository;
 import com.ulutman.service.PublishService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -33,7 +32,9 @@ import java.util.Optional;
 @SecurityRequirement(name = "Authorization")
 public class PublishController {
     private final PublishService publishService;
+    private final BankCardRepository bankCardRepository;
     private static final Logger logger = (Logger) LoggerFactory.getLogger(PublishController.class);
+
 
     @Operation(summary = "Create a publication")
     @ApiResponse(responseCode = "201", description = "The publish created successfully")
@@ -62,7 +63,10 @@ public class PublishController {
         publishRequest.setPrice(price);
         publishRequest.setCategory(category);
         publishRequest.setSubcategory(subcategory);
-        publishRequest.setBank(Optional.ofNullable(bank));
+
+        if (bankCardRepository.existsByName(bank)){
+            publishRequest.setBank(Optional.ofNullable(bank));
+        }
         publishRequest.setUserId(userId);
 
         if (paymentReceiptFile != null && !paymentReceiptFile.isEmpty()) {

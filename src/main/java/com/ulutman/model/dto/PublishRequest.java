@@ -1,5 +1,6 @@
 package com.ulutman.model.dto;
 
+import com.ulutman.model.entities.BankCard;
 import com.ulutman.model.enums.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
