@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.web.bind.annotation.ModelAttribute;
 
 import java.io.File;
 import java.time.LocalDate;
@@ -49,11 +50,11 @@ public class Publish {
 
     private boolean active;
 
-    private String bank;
-
     private String chatId;
 
     private File paymentReceipt;
+
+    private String bank;
 
     @ElementCollection
     @CollectionTable(name = "publish_images")  // Отдельная таблица для хранения изображений

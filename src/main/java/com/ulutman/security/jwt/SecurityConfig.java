@@ -71,7 +71,8 @@ public class SecurityConfig {
                                         "/api/favorites/check",
                                         "/api/user-accounts/{userId}",
                                         "/api/main-page/**",
-                                        "/advertising/**")
+                                        "/advertising/**",
+                                "/api/bank-cards/**")
                                 .permitAll()
                                 .requestMatchers("/api/users/my-publishes/**").hasAuthority("USER")
                                 .anyRequest()
