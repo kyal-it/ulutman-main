@@ -18,6 +18,8 @@ import org.springframework.stereotype.Service;
 
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -53,8 +55,11 @@ public class AdminService {
         user.setConfirmPassword(passwordEncoder.encode(request.getConfirmPassword()));
         user.setRole(Role.ADMIN); // По умолчанию USER, если роль не указана
         Favorite basket = new Favorite();
-        user.setFavorites(basket);
-        basket.setUser(user);
+        Set<Favorite> favorites = new HashSet<>();
+        favorites.add(basket);
+
+
+        user.setFavorites(favorites);
 
         userRepository.save(user);
         return authMapper.mapToResponse(user);

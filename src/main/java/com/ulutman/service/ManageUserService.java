@@ -18,9 +18,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,8 +43,11 @@ public class ManageUserService {
         user.setRole(request.getRole() != null ? request.getRole() : Role.USER); // По умолчанию USER, если роль не указана
         user.setStatus(Status.АКТИВНЫЙ);
         Favorite basket = new Favorite();
-        user.setFavorites(basket);
-        basket.setUser(user);
+        Set<Favorite> favorites = new HashSet<>();
+        favorites.add(basket);
+
+
+        user.setFavorites(favorites);
         userRepository.save(user);
         return authMapper.mapToResponse(user);
     }
@@ -129,15 +130,3 @@ public class ManageUserService {
         userRepository.deleteAll(users);
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-

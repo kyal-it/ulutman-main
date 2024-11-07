@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -18,18 +17,17 @@ import java.util.Set;
 public class Favorite {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @JsonBackReference // Обратная связь с User
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne // Many favorites to one User
     @JoinColumn(name = "user_id")
     private User user;
 
-    @JsonBackReference // Обратная связь с userAccount
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_account_id")
-    private UserAccount userAccount;
+    // @JsonBackReference // Обратная связь с userAccount
+    // @OneToOne(cascade = CascadeType.ALL)
+    // @JoinColumn(name = "user_account_id")
+    // private UserAccount userAccount;
 
     @JsonBackReference // Обратная связь с Publish
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -37,4 +35,6 @@ public class Favorite {
             joinColumns = @JoinColumn(name = "favorite_id"),
             inverseJoinColumns = @JoinColumn(name = "publish_id"))
     Set<Publish> publishes = new LinkedHashSet<>();
+
+
 }

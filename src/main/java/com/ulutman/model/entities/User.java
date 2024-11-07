@@ -80,9 +80,8 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Message> messages;
 
-    @JsonManagedReference // Это поле будет ссылаться на Favorite
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "user")
-    private Favorite favorites;
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Favorite> favorites = new HashSet<>();
 
     @JsonManagedReference // Это поле будет ссылаться на Mailing
     @ManyToMany(mappedBy = "recipients")

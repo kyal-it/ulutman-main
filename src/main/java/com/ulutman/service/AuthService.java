@@ -70,7 +70,7 @@ public class AuthService {
         user.setStatus(Status.АКТИВНЫЙ);
 
         Favorite basket = new Favorite();
-        user.setFavorites(basket);
+        user.setFavorites((Set<Favorite>) basket);
         basket.setUser(user);
 
         UserAccount userAccount = new UserAccount();
@@ -99,8 +99,11 @@ public class AuthService {
         user.setStatus(Status.АКТИВНЫЙ);
 
         Favorite basket = new Favorite();
-        user.setFavorites(basket);
-        basket.setUser(user);
+        Set<Favorite> favorites = new HashSet<>();
+        favorites.add(basket);
+
+
+        user.setFavorites(favorites);
 
         UserAccount userAccount = new UserAccount();
         user.setUserAccount(userAccount);
