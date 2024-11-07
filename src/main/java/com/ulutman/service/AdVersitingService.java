@@ -31,11 +31,11 @@ public class AdVersitingService {
         int width = img.getWidth();
         int height = img.getHeight();
 
-        if ((width == 285 && height == 407) || (width == 564 && height == 246)) {
+        if (width == 285 && height == 407){
             saveAdvertising(imageFile);
             System.out.println("Реклама создана с изображением: " + imageFile.getOriginalFilename());
         } else {
-            throw new IllegalArgumentException("Размер изображения должен быть 285x407 или 564x246.");
+            throw new IllegalArgumentException("Размер изображения должен быть 285x407");
         }
     }
 

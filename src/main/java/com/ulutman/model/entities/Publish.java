@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 
 import java.io.File;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -25,6 +26,9 @@ public class Publish {
             strategy = GenerationType.IDENTITY
     )
     private Long id;
+
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
 
     private String title;
 

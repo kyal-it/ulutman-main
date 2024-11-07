@@ -29,15 +29,15 @@ public class ManageCreatePaymentSystem {
                 .orElseThrow(() -> new RuntimeException("Публикация не найдена: " + publicationId));
 
         publication.setActive(true);
+        publishRepository.save(publication);
         mailingService.sendMailing1(
                 publication.getUser().getEmail(),
                 "Ваша публикация активирована!",
-                "Мы рады сообщить вам, что ваша публикация «" + publication.getTitle() + "» успешно активирована на сайте ULUTMAN.ru \n" +
+                "Мы рады сообщить вам, что ваша публикация «" + publication + "» успешно активирована на сайте ULUTMAN.ru \n" +
                         "Если у вас есть вопросы, пишите на: ulutman@gmail.comnn \n" +
                         "С уважением, " +
                         "Команда ULUTMAN"
         );
-        publishRepository.save(publication);
         log.info("Публикация активирована и уведомление отправлено пользователю: {}", publication.getUser().getId());
     }
 
@@ -47,16 +47,16 @@ public class ManageCreatePaymentSystem {
                 .orElseThrow(() -> new RuntimeException("Публикация не найдена: " + publicationId));
 
         publication.setActive(false);
-        mailingService.sendMailing1(
-                publication.getUser().getEmail(),
-                "Уведомление о завершении срока действия",
-                "Привет, на связи отдел договоров Ulutman.ru!\n"+
-                        "Срок действия вашего объявления: {"+ publication.getTitle()+ "} подошел к концу. \n" +
-                        " Оно больше не будет отображаться на Ulutman.ru.\n" +
-                        " С уважением," +
-                        " Команда Ulutman.ru"
-        );
         publishRepository.save(publication);
+        mailingService.sendMailing1(
+                publication.getUser ().getEmail(),
+                "Уведомление о том, что ваша публикация не активирована",
+                "Привет, на связи отдел договоров Ulutman.ru!\n" +
+                        "Ваша публикация не активирована: {" + publication + "}. Возможно, причины связаны с оплатой или с условиями Ulutman.ru.\n" +
+                        "Она не будет отображаться на Ulutman.ru.\nСвяжитесь с поддержкой сайта для получения дополнительной информации." +
+                        "\nС уважением," +
+                        "\nКоманда Ulutman.ru"
+        );
         log.info("Публикация деактивирована: {}", publication);
     }
 }

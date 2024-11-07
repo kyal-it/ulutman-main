@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -129,6 +130,9 @@ public interface PublishRepository extends JpaRepository<Publish, Long> {
             @Param("walkingDistance") Double walkingDistance,
             @Param("transportDistance") Double transportDistance
     );
+
+    @Query("SELECT p FROM Publish p WHERE p.createdAt < :expirationTime")
+    List<Publish> findAllByCreatedAtBefore(@Param("expirationTime") LocalDateTime expirationTime);
 
     @Query("SELECT p FROM Publish p WHERE p.category IN :categories AND p.title IN :titles AND p.metro IN :metros")
     List<Publish> findFilteredPublishes(@Param("categories") List<Category> categories,
