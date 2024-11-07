@@ -16,12 +16,14 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.*;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,6 +39,7 @@ public class PublishService {
     private final UserRepository userRepository;
     private final PropertyDetailsMapper propertyDetailsMapper;
     private final ConditionsMapper conditionsMapper;
+    private MailingService mailingService;
     private static final String TELEGRAM_BOT_TOKEN = "7967485487:AAGhVVsiOZ3V2ZFonfZqWXoxCpRpVL0D1nE";
     private static final String ADMIN_CHAT_ID = "1818193495";
 
@@ -54,7 +57,7 @@ public class PublishService {
         }
 
         Publish publish = publishMapper.mapToEntity(publishRequest);
-
+        publish.setCreatedAt(LocalDateTime.now());
         User user = userRepository.findById(publishRequest.getUserId())
                 .orElseThrow(() -> new RuntimeException("Пользователь не найден: " + publishRequest.getUserId()));
 
@@ -92,6 +95,11 @@ public class PublishService {
         log.info("Publication created successfully: {}", savedPublish);
 
         return publishMapper.mapToResponse(savedPublish);
+    }
+
+    @Scheduled(fixedRate = 86400000)
+    public void scheduleExpiredPublishesRemoval() {
+        removeExpiredPublishes();
     }
 
     private void sendReceiptAsDocumentToTelegram(File receiptFile, Publish savedPublish) {
@@ -144,6 +152,26 @@ public class PublishService {
                 }
             }
         });
+    }
+
+    @Transactional
+    public void removeExpiredPublishes() {
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime expirationTime = now.minusDays(30);// 30 дней назад
+
+        List<Publish> expiredPublishes = publishRepository.findAllByCreatedAtBefore(expirationTime);
+
+        for (Publish publish : expiredPublishes) {
+            publishRepository.delete(publish);
+            mailingService.sendMailing1(
+                    publish.getUser().getEmail(),
+                    "Уведомление о завершении срока действия",
+                    "Привет, на связи отдел договоров Ulutman.ru!\n" +
+                            "Срок действия вашего объявления: {" + publish + "} подошел к концу. \n" +
+                            " Оно больше не будет отображаться на Ulutman.ru.\n" +
+                            " С уважением," +
+                            " Команда Ulutman.ru");
+        }
     }
 
     public PublishResponse createPublishDetails(PublishRequest publishRequest) {
