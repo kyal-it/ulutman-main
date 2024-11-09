@@ -52,7 +52,8 @@ public class SecurityConfig {
                                         "/api/manage/mailing",
                                         "api/payment/**",
                                         "/api/mailing",
-                                        "/api/manage/category").hasAuthority("ADMIN")
+                                        "/api/manage/category",
+                                        "/api/bank-cards").hasAuthority("ADMIN")
                                 .requestMatchers(
                                         "/",
                                         "/login", "/oauth2/**",
