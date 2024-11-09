@@ -78,6 +78,12 @@ public class PropertyDetails {
 
     private Integer transportDistance;
 
+    private String district;
+
+    private String quantity;
+
+    private Integer floor;
+
     @JsonBackReference // Обратная связь с publish
     @OneToOne(mappedBy = "propertyDetails", fetch = FetchType.LAZY)
     private Publish publish;

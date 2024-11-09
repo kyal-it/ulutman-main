@@ -72,7 +72,7 @@ public class SecurityConfig {
                                         "/api/user-accounts/{userId}",
                                         "/api/main-page/**",
                                         "/advertising/**",
-                                "/api/bank-cards/**")
+                                        "/api/language/welcome")
                                 .permitAll()
                                 .requestMatchers("/api/users/my-publishes/**").hasAuthority("USER")
                                 .anyRequest()

@@ -7,6 +7,7 @@ import com.ulutman.model.dto.PublishRequest;
 import com.ulutman.model.dto.PublishResponse;
 import com.ulutman.model.entities.*;
 import com.ulutman.model.enums.*;
+import com.ulutman.repository.MyPublishRepository;
 import com.ulutman.repository.PublishRepository;
 import com.ulutman.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -42,6 +43,8 @@ public class PublishService {
     private MailingService mailingService;
     private static final String TELEGRAM_BOT_TOKEN = "7967485487:AAGhVVsiOZ3V2ZFonfZqWXoxCpRpVL0D1nE";
     private static final String ADMIN_CHAT_ID = "1818193495";
+    private final MyPublishRepository myPublishRepository;
+
 
     public PublishResponse createPublish(PublishRequest publishRequest) {
         if (publishRequest.getCategory() == null || publishRequest.getSubcategory() == null) {
@@ -71,6 +74,8 @@ public class PublishService {
             publish.setActive(true);
         }
 
+
+        // Проверяем, если данные корректные и создаем публикацию
         Publish savedPublish;
         try {
             savedPublish = publishRepository.save(publish);
@@ -92,6 +97,13 @@ public class PublishService {
             log.info("Bank and payment receipt are not required for category: {}", publishRequest.getCategory());
         }
 
+        MyPublish myPublish = new MyPublish();
+        myPublish.setUserAccount(user.getUserAccount()); // Убедитесь, что у вас есть метод getUserAccount() в User
+        myPublish.setPublish(savedPublish); // Устанавливаем сохраненную публикацию
+
+        myPublishRepository.save(myPublish);
+
+        // Логируем успешное создание
         log.info("Publication created successfully: {}", savedPublish);
 
         return publishMapper.mapToResponse(savedPublish);
