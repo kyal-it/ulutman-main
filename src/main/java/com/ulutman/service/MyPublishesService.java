@@ -5,13 +5,18 @@ import com.ulutman.exception.UnauthorizedException;
 import com.ulutman.mapper.PublishMapper;
 import com.ulutman.model.dto.PublishRequest;
 import com.ulutman.model.dto.PublishResponse;
+import com.ulutman.model.entities.Favorite;
 import com.ulutman.model.entities.Publish;
 import com.ulutman.model.enums.PublishStatus;
+import com.ulutman.repository.FavoriteRepository;
 import com.ulutman.repository.PublishRepository;
 import com.ulutman.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,19 +29,17 @@ public class MyPublishesService {
     private final UserRepository userRepository;
     private final PublishMapper publishMapper;
     private final PublishRepository publishRepository;
+    private final FavoriteRepository favoriteRepository;
 
-    public List<PublishResponse> myPublishes(Long userId) {
-        List<Publish> myPublish = userRepository.getAllPublishByUserId(userId);
-        List<PublishResponse> appResponses = new ArrayList<>();
 
-        for (Publish publish : myPublish) {
-            if (publish.isActive()) {
-                appResponses.add(publishMapper.mapToResponse(publish));
-            }
-        }
+    public List<PublishResponse> myActivePublishes(Long userId) {
+        List<Publish> myActivePublish = userRepository.getAllPublishByUserId(userId);
 
-        return appResponses;
+        return myActivePublish.stream()
+                .map(publishMapper::mapToResponse)
+                .collect(Collectors.toList());
     }
+
 
     @Transactional
     public PublishResponse deactivatePublish(Long userId, Long publishId) throws UnauthorizedException {
@@ -108,5 +111,18 @@ public class MyPublishesService {
         return rejectedPublishes.stream()
                 .map(publishMapper::mapToResponse)
                 .collect(Collectors.toList());
+    }
+
+    public Integer getFavoritesCount(Long userId, Long publishId) {
+        Publish publish = publishRepository.findById(publishId)
+                .orElseThrow(() -> new NotFoundException("Публикация не найдена"));
+
+        if (!publish.getUser().getId().equals(userId)) {
+            throw new UnauthorizedException("Недостаточно прав для просмотра статистики этой публикации");
+        }
+
+        Long count = favoriteRepository.countByPublishId(publishId);
+
+        return count.intValue();
     }
 }
