@@ -69,9 +69,14 @@ public class AuthService {
         user.setRole(request.getRole() != null ? request.getRole() : Role.USER);
         user.setStatus(Status.АКТИВНЫЙ);
 
+        Set<Favorite> favorites = new HashSet<>();
+
         Favorite basket = new Favorite();
-        user.setFavorites((Set<Favorite>) basket);
+        favorites.add(basket);
+        user.setFavorites(favorites);
+
         basket.setUser(user);
+
 
         UserAccount userAccount = new UserAccount();
         user.setUserAccount(userAccount);
