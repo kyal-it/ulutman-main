@@ -7,6 +7,7 @@ import com.ulutman.model.dto.PublishRequest;
 import com.ulutman.model.dto.PublishResponse;
 import com.ulutman.model.entities.*;
 import com.ulutman.model.enums.*;
+import com.ulutman.repository.MyPublishRepository;
 import com.ulutman.repository.PublishRepository;
 import com.ulutman.repository.UserRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -33,6 +34,7 @@ public class PublishService {
     private final UserRepository userRepository;
     private final PropertyDetailsMapper propertyDetailsMapper;
     private final ConditionsMapper conditionsMapper;
+    private final MyPublishRepository myPublishRepository;
 
 
     public PublishResponse createPublish(PublishRequest publishRequest) {
@@ -61,6 +63,12 @@ public class PublishService {
         } catch (DataIntegrityViolationException e) {
             throw new IllegalArgumentException("Ошибка при сохранении публикации: " + e.getMessage());
         }
+
+        MyPublish myPublish = new MyPublish();
+        myPublish.setUserAccount(user.getUserAccount()); // Убедитесь, что у вас есть метод getUserAccount() в User
+        myPublish.setPublish(savedPublish); // Устанавливаем сохраненную публикацию
+
+        myPublishRepository.save(myPublish);
 
         // Логируем успешное создание
         log.info("Publication created successfully: {}", savedPublish);

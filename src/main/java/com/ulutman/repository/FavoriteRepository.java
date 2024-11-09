@@ -19,4 +19,6 @@ public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
     @Query("SELECT p FROM Publish p JOIN p.favorites f WHERE f.id = :id")
     List<Publish> findProductsInFavorites(@Param("id") Long favoritesId);
 
+    @Query("SELECT COUNT(f) FROM Favorite f JOIN f.publishes p WHERE p.id = :publishId")
+    Long countByPublishId(@Param("publishId") Long publishId);
 }
