@@ -5,6 +5,8 @@ import com.ulutman.model.dto.BankCardDTO;
 import com.ulutman.model.dto.BankCardRequest;
 import com.ulutman.model.entities.BankCard;
 import com.ulutman.service.BankCardService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -24,6 +26,8 @@ public class BankCardController {
 
     private final BankCardService bankCardService;
 
+    @Operation(summary = "Create a Bank")
+    @ApiResponse(responseCode = "201", description = "Bank created successfully")
     @PostMapping
     public ResponseEntity<BankCard> createBankCard(@RequestBody BankCardRequest bankCardRequest) {
         try {
@@ -35,12 +39,16 @@ public class BankCardController {
         }
     }
 
+    @Operation(summary = "Create a getAllBanks")
+    @ApiResponse(responseCode = "201", description = "GetAllBank created successfully")
     @GetMapping("")
     public ResponseEntity<List<BankCardDTO>> getAllBankCards() {
         List<BankCardDTO> bankCards = bankCardService.getAllBankCards();
         return ResponseEntity.ok(bankCards);
     }
 
+    @Operation(summary = "Create a getBankCardById")
+    @ApiResponse(responseCode = "201", description = "getBankCardById created successfully")
     @GetMapping("/{id}")
     public ResponseEntity<BankCard> getBankCardById(@PathVariable Long id) {
         try {
@@ -52,6 +60,8 @@ public class BankCardController {
         }
     }
 
+    @Operation(summary = "Create a deleteBankCardById")
+    @ApiResponse(responseCode = "201", description = "deleteBankCardById created successfully")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteBankCardById(@PathVariable Long id) {
         try {
