@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
+import org.springframework.web.multipart.MultipartFile;
+
 
 @Getter
 @Setter
@@ -14,5 +16,9 @@ public class AdVersitingRequest {
 
     Long id;
 
-    String imageFile; // Например, путь или URL к изображению
+    MultipartFile imageFile;
+
+    private MultipartFile paymentReceipt;
+
+    private String bank;
 }

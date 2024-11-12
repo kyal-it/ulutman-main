@@ -3,6 +3,8 @@ package com.ulutman.controller;
 import com.ulutman.model.entities.AdVersiting;
 import com.ulutman.service.AdVersitingService;
 import io.jsonwebtoken.io.IOException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
@@ -26,6 +28,8 @@ public class AdvertisingController {
         this.adVersitingService = adVersitingService;
     }
 
+    @Operation(summary = "Create a Adversting")
+    @ApiResponse(responseCode = "201", description = "successfully create a Adversting")
     @PostMapping
     public ResponseEntity<String> createAdvertising(@RequestParam("imageFile") MultipartFile imageFile,
                                                     @RequestParam("bank") String bank,
@@ -48,20 +52,11 @@ public class AdvertisingController {
         }
     }
 
+    @Operation(summary = "returns all active posts")
+    @ApiResponse(responseCode = "201", description = "successfully returns all active posts")
     @GetMapping
     public ResponseEntity<List<AdVersiting>> getAllAds() {
         List<AdVersiting> ads = adVersitingService.getAllActiveAds();
         return ResponseEntity.ok(ads);
     }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteAd(@PathVariable Long id) {
-        boolean deleted =adVersitingService.deleteAd(id);
-        if (deleted) {
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-    }
-
 }

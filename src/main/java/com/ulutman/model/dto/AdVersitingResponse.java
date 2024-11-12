@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
+
 @Getter
 @Setter
 @Builder
@@ -14,6 +15,12 @@ public class AdVersitingResponse {
 
     Long id;
 
-    String imageFile; // Например, путь или URL к изображению
+    String imageFile;
+
+    private boolean active;
+
+    private String paymentReceipt;
+
+    private String bank;
 
 }
