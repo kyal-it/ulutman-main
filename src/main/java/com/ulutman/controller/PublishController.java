@@ -64,6 +64,7 @@ public class PublishController {
         publishRequest.setCategory(category);
         publishRequest.setSubcategory(subcategory);
         publishRequest.setBank(Optional.ofNullable(bank));
+        publishRequest.setUserId(userId);
 
 
         if (paymentReceiptFile != null && !paymentReceiptFile.isEmpty()) {
