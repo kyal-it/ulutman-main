@@ -3,15 +3,15 @@ package com.ulutman.controller;
 import com.ulutman.model.entities.AdVersiting;
 import com.ulutman.service.AdVersitingService;
 import io.jsonwebtoken.io.IOException;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.mail.MessagingException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.security.Principal;
 import java.util.List;
 
 @RestController
@@ -26,38 +26,42 @@ public class AdvertisingController {
         this.adVersitingService = adVersitingService;
     }
 
-    @Operation(summary = "Create a AdVersting")
-    @ApiResponse(responseCode = "201", description = "AdVersting created successfully")
-    @PostMapping(value = "/create", consumes = "multipart/form-data")
-    public ResponseEntity<String> createAdvertising(@RequestPart("imageFile") MultipartFile imageFile) {
+    @PostMapping
+    public ResponseEntity<String> createAdvertising(@RequestParam("imageFile") MultipartFile imageFile,
+                                                    @RequestParam("bank") String bank,
+                                                    @RequestParam("paymentReceiptFile") MultipartFile paymentReceiptFile,
+                                                    Principal principal) {
+        System.out.println("Received bank: " + bank);
+        System.out.println("Received imageFile: " + (imageFile != null ? imageFile.getOriginalFilename() : "null"));
+        System.out.println("Received paymentReceiptFile: " + (paymentReceiptFile != null ? paymentReceiptFile.getOriginalFilename() : "null"));
         try {
-           adVersitingService.createAdvertising(imageFile);
-            return ResponseEntity.ok("Реклама успешно создана.");
-        } catch (IllegalArgumentException | IOException e) {
+            adVersitingService.createAdvertising(imageFile, bank, paymentReceiptFile, principal);
+            return ResponseEntity.status(HttpStatus.CREATED).body("Реклама успешно создана");
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
-        } catch (java.io.IOException e) {
-            throw new RuntimeException(e);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ошибка при обработке файлов: " + e.getMessage());
+        } catch (MessagingException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Ошибка при отправке уведомления: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Неизвестная ошибка: " + e.getMessage());
         }
     }
 
-    @Operation(summary = "Get all  AdVerstings")
-    @ApiResponse(responseCode = "201", description = " Return AdVerstings  successfully")
     @GetMapping
     public ResponseEntity<List<AdVersiting>> getAllAds() {
-        List<AdVersiting> ads = adVersitingService.getAllAds();
-        return new ResponseEntity<>(ads, HttpStatus.OK);
+        List<AdVersiting> ads = adVersitingService.getAllActiveAds();
+        return ResponseEntity.ok(ads);
     }
 
-    @Operation(summary = "Delete a  AdVerstings")
-    @ApiResponse(responseCode = "201", description = " Deleted AdVerstings  successfully")
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteAd(@PathVariable Long id) {
-        boolean isDeleted = adVersitingService.deleteAd(id);
-
-        if (isDeleted) {
-            return ResponseEntity.ok("Реклама успешно удалена.");
+    public ResponseEntity<Void> deleteAd(@PathVariable Long id) {
+        boolean deleted =adVersitingService.deleteAd(id);
+        if (deleted) {
+            return ResponseEntity.noContent().build();
         } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Реклама не найдена.");
+            return ResponseEntity.notFound().build();
         }
     }
+
 }
