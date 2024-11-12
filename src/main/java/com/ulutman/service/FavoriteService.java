@@ -93,7 +93,9 @@ public class FavoriteService {
         Publish publish = publishRepository.findById(productId)
                 .orElseThrow(() -> new NotFoundException("Product not found"));
 
-        Favorite favorite = (Favorite) user.getFavorites();
+        // Получаем объект Favorite для текущего пользователя
+        Favorite favorite = favoriteRepository.findByUser(user)
+                .orElseThrow(() -> new NotFoundException("Favorite not found"));
 
         // Используем LinkedHashSet для сохранения порядка
         Set<Publish> publishes = new LinkedHashSet<>(favorite.getPublishes());
@@ -108,13 +110,15 @@ public class FavoriteService {
             publishes.add(publish); // Добавляем публикацию в избранное
             publish.setDetailFavorite(true); // Публикация в избранном
         }
-        publish.setDetailFavorite(false);
-        publishRepository.save(publish);
 
         // Сохраняем обновленное избранное, сохраняя порядок
         favorite.setPublishes(publishes);
         favoriteRepository.save(favorite);
+
+        // Сохраняем изменения в публикации
+        publishRepository.save(publish);
     }
+
 
 //    public void deleteFromFavorites(Long productId, Principal principal) {
 //        User user = userRepository.findByEmail(principal.getName())
