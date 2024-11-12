@@ -63,11 +63,8 @@ public class PublishController {
         publishRequest.setPrice(price);
         publishRequest.setCategory(category);
         publishRequest.setSubcategory(subcategory);
+        publishRequest.setBank(Optional.ofNullable(bank));
 
-        if (bankCardRepository.existsByName(bank)){
-            publishRequest.setBank(Optional.ofNullable(bank));
-        }
-        publishRequest.setUserId(userId);
 
         if (paymentReceiptFile != null && !paymentReceiptFile.isEmpty()) {
             File tempFile = null;
