@@ -79,6 +79,8 @@ public class Publish {
     @Enumerated(EnumType.STRING)
     private CategoryStatus categoryStatus;
 
+    private LocalDateTime lastBoostedAt;
+
     @ManyToOne(
             cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}
     )

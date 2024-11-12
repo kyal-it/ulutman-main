@@ -110,4 +110,13 @@ public class MyPublishesController {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
+
+    // Поднять свои публикации на первый ряд в методе getAll
+    @Operation(summary = "Raise your publications to the front row")
+    @ApiResponse(responseCode = "201", description = "All your publications have successfully risen to the first row")
+    @GetMapping("/raising-the- publication")
+    public ResponseEntity<List<PublishResponse>> getMyActivePublishes(@RequestParam Long userId) {
+        List<PublishResponse> myActivePublishes =publishService.myActivePublications(userId);
+        return ResponseEntity.ok(myActivePublishes);
+    }
 }

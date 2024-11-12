@@ -5,7 +5,6 @@ import com.ulutman.exception.UnauthorizedException;
 import com.ulutman.mapper.PublishMapper;
 import com.ulutman.model.dto.PublishRequest;
 import com.ulutman.model.dto.PublishResponse;
-import com.ulutman.model.entities.Favorite;
 import com.ulutman.model.entities.Publish;
 import com.ulutman.model.enums.PublishStatus;
 import com.ulutman.repository.FavoriteRepository;
@@ -13,12 +12,9 @@ import com.ulutman.repository.PublishRepository;
 import com.ulutman.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-
-import java.util.ArrayList;
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -124,5 +120,23 @@ public class MyPublishesService {
         Long count = favoriteRepository.countByPublishId(publishId);
 
         return count.intValue();
+    }
+
+    public List<PublishResponse> myActivePublications(Long userId) {
+        List<Publish> myActivePublish = userRepository.getAllPublishByUserId(userId);
+
+        myActivePublish.forEach(this::boostIfNeeded);
+
+        return myActivePublish.stream()
+                .map(publishMapper::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    private void boostIfNeeded(Publish publish) {
+        LocalDateTime now = LocalDateTime.now();
+        if (publish.getLastBoostedAt() == null || ChronoUnit.HOURS.between(publish.getLastBoostedAt(), now) >= 24) {
+            publish.setLastBoostedAt(now);
+            publishRepository.save(publish); // Используем правильный репозиторий
+        }
     }
 }
