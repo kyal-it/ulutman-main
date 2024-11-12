@@ -24,7 +24,6 @@ public class ManageCreatePaymentSystemController {
         return ResponseEntity.ok(deactivatedPublications);
     }
 
-
     @Operation(summary = "Create a activatePublication")
     @ApiResponse(responseCode = "201", description = "activatePublication created successfully")
     @PostMapping("/activate/{publicationId}")

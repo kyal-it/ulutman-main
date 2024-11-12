@@ -97,14 +97,16 @@ public class AdVersitingService {
 
         AdVersiting ad = new AdVersiting(savedImageFile.getAbsolutePath(), true, savedReceiptFile.getAbsolutePath(), bank, user);
         ad.setCreatedAt(LocalDateTime.now());
+        ad.setActive(false);
         adVersitingRepository.save(ad);
+
 
         if (savedReceiptFile.exists()) {
             sendReceiptAsDocumentToTelegram(savedReceiptFile, bank, ad);
         }
     }
 
-    @Scheduled(fixedRate = 120000)
+    @Scheduled(fixedRate = 86400000)
     public void scheduleExpiredPublishesRemoval() {
         removeExpiredPublishes();
     }
@@ -112,23 +114,23 @@ public class AdVersitingService {
     @Transactional
     public void removeExpiredPublishes() {
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime expirationTime = now.minusMinutes(1);
+        LocalDateTime expirationTime = now.minusDays(30);
 
         List<AdVersiting> expiredPublishes = adVersitingRepository.findAllByCreatedAtBefore(expirationTime);
 
         for (AdVersiting publish : expiredPublishes) {
-            adVersitingRepository.delete(publish);
             mailingService.sendMailing1(
                     publish.getUser().getEmail(),
-                    "Уведомление о завершении срока действия",
-                    "Привет, на связи отдел договоров Ulutman.ru!\n" +
-                            "Срок действия вашего рекламы: {" + publish + "} подошел к концу. \n" +
-                            " Оно больше не будет отображаться на Ulutman.ru.\n" +
+                    "Уведомление о завершении срока действия \n",
+                    "Привет, на связи отдел договоров Ulutman.ru! \n" +
+                            "Срок действия вашего рекламы по id: " + publish.getId() + " подошел к концу. \n" +
+                            " Оно больше не будет отображаться на Ulutman.ru. \n" +
                             " С уважением," +
-                            " Команда Ulutman.ru");
+                            " Команда Ulutman.ru \n");
+
+            adVersitingRepository.delete(publish);
         }
     }
-
 
     public void sendReceiptAsDocumentToTelegram(File receiptFile, String bankName, AdVersiting adVersiting) throws MessagingException {
         if (!receiptFile.exists() || !receiptFile.canRead()) {
@@ -178,6 +180,20 @@ public class AdVersitingService {
     public boolean deleteAd(Long id) {
         Optional<AdVersiting> ad = adVersitingRepository.findById(id);
         if (ad.isPresent()) {
+            adVersitingRepository.delete(ad.get());
+            return true;
+        }
+        return false;
+    }
+
+    public List<AdVersiting> getAllActiveAdsForUser(Long userId) {
+        return adVersitingRepository.findAllActiveAdvertisementsByUserId(userId);
+    }
+
+    // Метод для удаления объявления конкретного пользователя
+    public boolean deleteAd(Long id, Long userId) {
+        Optional<AdVersiting> ad = adVersitingRepository.findById(id);
+        if (ad.isPresent() && ad.get().getUser().getId().equals(userId)) {
             adVersitingRepository.delete(ad.get());
             return true;
         }

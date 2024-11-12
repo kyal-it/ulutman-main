@@ -4,6 +4,9 @@ import com.ulutman.exception.NotFoundException;
 import com.ulutman.exception.UnauthorizedException;
 import com.ulutman.model.dto.PublishRequest;
 import com.ulutman.model.dto.PublishResponse;
+import com.ulutman.model.entities.AdVersiting;
+import com.ulutman.model.entities.User;
+import com.ulutman.service.AdVersitingService;
 import com.ulutman.service.MyPublishesService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -12,6 +15,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,6 +27,7 @@ import java.util.Set;
 @Tag(name = "my-publishes")
 public class MyPublishesController {
     private final MyPublishesService publishService;
+    private  final AdVersitingService adVersitingService;
 
     //Возвращает список активных публикаций пользователя
     @Operation(summary = "Returns a list of the user's active posts")
@@ -33,23 +38,46 @@ public class MyPublishesController {
         return ResponseEntity.ok(publishes);
     }
 
-    //Деактивирует публикацию
-    @Operation(summary = "Deactivates publication")
-    @ApiResponse(responseCode = "201", description = "publication successfully deactivated")
-    @PutMapping("/deactivate/{userId}/{publishId}")
-    public ResponseEntity<PublishResponse> deactivatePublish(@PathVariable Long userId, @PathVariable Long publishId) throws UnauthorizedException {
-        PublishResponse deactivatedPublish = publishService.deactivatePublish(userId, publishId);
-        return ResponseEntity.ok(deactivatedPublish);
+    //Возвращает список активных рекламы пользователя
+    @Operation(summary = "Returns a list of the user's active advertisements")
+    @ApiResponse(responseCode = "201", description = "successfully returns a list of the user's active advertisements")
+    @GetMapping("/my-ads")
+    public List<AdVersiting> getMyAds(@AuthenticationPrincipal User user) {
+        Long userId = user.getId();
+        return adVersitingService.getAllActiveAdsForUser(userId);
     }
 
-    //Активирует публикацию
-    @Operation(summary = "Activates publication")
-    @ApiResponse(responseCode = "201", description = "publication successfully activated")
-    @PutMapping("/activate/{userId}/{publishId}")
-    public ResponseEntity<PublishResponse> activatePublish(@PathVariable Long userId, @PathVariable Long publishId) throws UnauthorizedException {
-        PublishResponse activatedPublish = publishService.activatePublish(userId, publishId);
-        return ResponseEntity.ok(activatedPublish);
+    //Удаляет рекламы по id пользователя
+    @Operation(summary = "Removes advertisements by user ID")
+    @ApiResponse(responseCode = "201", description = "successfully removes advertisements by user ID")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteAd(@PathVariable Long id, @AuthenticationPrincipal User userDetails) {
+        Long userId = userDetails.getId();
+        boolean deleted = adVersitingService.deleteAd(id, userId);
+        if (deleted) {
+            return ResponseEntity.ok("Объявление успешно удалено");
+        } else {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Вы не можете удалить это объявление");
+        }
     }
+
+//    //Деактивирует публикацию
+//    @Operation(summary = "Deactivates publication")
+//    @ApiResponse(responseCode = "201", description = "publication successfully deactivated")
+//    @PutMapping("/deactivate/{userId}/{publishId}")
+//    public ResponseEntity<PublishResponse> deactivatePublish(@PathVariable Long userId, @PathVariable Long publishId) throws UnauthorizedException {
+//        PublishResponse deactivatedPublish = publishService.deactivatePublish(userId, publishId);
+//        return ResponseEntity.ok(deactivatedPublish);
+//    }
+
+//    //Активирует публикацию
+//    @Operation(summary = "Activates publication")
+//    @ApiResponse(responseCode = "201", description = "publication successfully activated")
+//    @PutMapping("/activate/{userId}/{publishId}")
+//    public ResponseEntity<PublishResponse> activatePublish(@PathVariable Long userId, @PathVariable Long publishId) throws UnauthorizedException {
+//        PublishResponse activatedPublish = publishService.activatePublish(userId, publishId);
+//        return ResponseEntity.ok(activatedPublish);
+//    }
 
     //Удаляет публикации пользователя
     @Operation(summary = "Deletes a user's publishes")

@@ -18,12 +18,16 @@ public class EmailConfig {
         mailSender.setHost("smtp.gmail.com");
         mailSender.setPort(587);
         mailSender.setUsername("ulutmanmoscow@gmail.com");
-        mailSender.setPassword("urpg zguk jxpp hhig");
+        mailSender.setPassword("urpg zguk jxpp hhig"); // Обратите внимание на безопасность: используйте безопасные методы хранения паролей
+
         Properties props = mailSender.getJavaMailProperties();
         props.put("mail.transport.protocol", "smtp");
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.starttls.enable", "true");
         props.put("mail.debug", "true");
+        props.put("mail.smtp.encoding", "UTF-8"); // Исправлено: убрано лишнее кавычка
+
         return mailSender;
     }
+
 }
