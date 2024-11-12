@@ -151,5 +151,6 @@ public interface PublishRepository extends JpaRepository<Publish, Long> {
     @Query("SELECT p FROM Publish p WHERE p.active = false")
     List<Publish> findAllByActiveFalse();
 
-
+    @Query("SELECT p FROM Publish p WHERE p.active = true ORDER BY p.lastBoostedAt DESC NULLS LAST")
+    List<Publish> findAllActivePublishes();
 }

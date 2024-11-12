@@ -300,12 +300,19 @@ public class PublishService {
     }
 
     public List<PublishResponse> getAll() {
-        return publishRepository.findAll().stream()
-                .peek(publish -> publish.setDetailFavorite(false)) // Устанавливаем detailFavorite в false
-                .filter(Publish::isActive)
+        return publishRepository.findAllActivePublishes().stream()
+                .peek(publish -> publish.setDetailFavorite(false))
                 .map(publishMapper::mapToResponse)
                 .collect(Collectors.toList());
     }
+
+//    public List<PublishResponse> getAll() {
+//        return publishRepository.findAll().stream()
+//                .peek(publish -> publish.setDetailFavorite(false)) // Устанавливаем detailFavorite в false
+//                .filter(Publish::isActive)
+//                .map(publishMapper::mapToResponse)
+//                .collect(Collectors.toList());
+//    }
 
     @Transactional(readOnly = true)
     public List<PublishResponse> filterPublishes(
