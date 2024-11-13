@@ -5,16 +5,20 @@ import com.ulutman.exception.UnauthorizedException;
 import com.ulutman.mapper.PublishMapper;
 import com.ulutman.model.dto.PublishRequest;
 import com.ulutman.model.dto.PublishResponse;
+import com.ulutman.model.entities.AdVersiting;
 import com.ulutman.model.entities.Publish;
 import com.ulutman.model.enums.PublishStatus;
+import com.ulutman.repository.AdVersitingRepository;
 import com.ulutman.repository.FavoriteRepository;
 import com.ulutman.repository.PublishRepository;
 import com.ulutman.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -26,6 +30,7 @@ public class MyPublishesService {
     private final PublishMapper publishMapper;
     private final PublishRepository publishRepository;
     private final FavoriteRepository favoriteRepository;
+    private final AdVersitingRepository adVersitingRepository;
 
 
     public List<PublishResponse> myActivePublishes(Long userId) {
@@ -39,25 +44,26 @@ public class MyPublishesService {
 
     @Transactional
     public PublishResponse deactivatePublish(Long userId, Long publishId) throws UnauthorizedException {
-    Publish publish = publishRepository.findById(publishId).orElseThrow(() -> new NotFoundException("Публикация не найдена"));
-    if (!publish.getUser().getId().equals(userId)) {
-        throw new UnauthorizedException("Недостаточно прав для деактивации этой публикации");
+        Publish publish = publishRepository.findById(publishId).orElseThrow(() -> new NotFoundException("Публикация не найдена"));
+        if (!publish.getUser().getId().equals(userId)) {
+            throw new UnauthorizedException("Недостаточно прав для деактивации этой публикации");
+        }
+        publish.setActive(false);
+        Publish deactivatedPublish = publishRepository.save(publish);
+        return publishMapper.mapToResponse(deactivatedPublish);
     }
-    publish.setActive(false);
-    Publish deactivatedPublish = publishRepository.save(publish);
-    return publishMapper.mapToResponse(deactivatedPublish);
-}
 
     @Transactional
     public PublishResponse activatePublish(Long userId, Long publishId) throws UnauthorizedException {
-    Publish publish = publishRepository.findById(publishId).orElseThrow(() -> new NotFoundException("Публикация не найдена"));
-    if (!publish.getUser().getId().equals(userId)) {
-        throw new UnauthorizedException("Недостаточно прав для активации этой публикации");
+        Publish publish = publishRepository.findById(publishId).orElseThrow(() -> new NotFoundException("Публикация не найдена"));
+        if (!publish.getUser().getId().equals(userId)) {
+            throw new UnauthorizedException("Недостаточно прав для активации этой публикации");
+        }
+        publish.setActive(true);
+        Publish activatedPublish = publishRepository.save(publish);
+        return publishMapper.mapToResponse(activatedPublish);
     }
-    publish.setActive(true);
-    Publish activatedPublish = publishRepository.save(publish);
-    return publishMapper.mapToResponse(activatedPublish);
-}
+
     @Transactional
     public void deletePublishesByUser(Long userId, Set<Long> publishIds) {
         List<Publish> userPublishes = userRepository.getAllPublishByUserId(userId);
@@ -136,7 +142,24 @@ public class MyPublishesService {
         LocalDateTime now = LocalDateTime.now();
         if (publish.getLastBoostedAt() == null || ChronoUnit.HOURS.between(publish.getLastBoostedAt(), now) >= 24) {
             publish.setLastBoostedAt(now);
-            publishRepository.save(publish); // Используем правильный репозиторий
+            publishRepository.save(publish);
+        }
+    }
+
+    public List<AdVersiting> getAllActiveAds() {
+        List<AdVersiting> activeAds = adVersitingRepository.findAllActiveAdverting();
+
+        activeAds.forEach(this::boostIfNeeded);
+        return activeAds.stream()
+                .sorted(Comparator.comparing(AdVersiting::getLastBoostedTime, Comparator.nullsFirst(Comparator.reverseOrder())))
+                .toList();
+    }
+
+    private void boostIfNeeded(AdVersiting ad) {
+        LocalDateTime now = LocalDateTime.now();
+        if (ad.getLastBoostedTime() == null || ChronoUnit.HOURS.between(ad.getLastBoostedTime(), now) >= 24) {
+            ad.setLastBoostedTime(now);
+            adVersitingRepository.save(ad);
         }
     }
 }

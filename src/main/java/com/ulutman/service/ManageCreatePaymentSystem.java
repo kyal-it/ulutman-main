@@ -34,9 +34,9 @@ public class ManageCreatePaymentSystem {
                 publication.getUser().getEmail(),
                 "Ваша публикация активирована!",
                 "Мы рады сообщить вам, что ваша публикация «" + publication + "» успешно активирована на сайте ULUTMAN.ru \n" +
-                        "Если у вас есть вопросы, пишите на: ulutman@gmail.comnn \n" +
-                        "С уважением, " +
-                        "Команда ULUTMAN"
+                "Если у вас есть вопросы, пишите на: ulutman@gmail.comnn \n" +
+                "С уважением, " +
+                "Команда ULUTMAN"
         );
         log.info("Публикация активирована и уведомление отправлено пользователю: {}", publication.getUser().getId());
     }
@@ -49,13 +49,13 @@ public class ManageCreatePaymentSystem {
         publication.setActive(false);
         publishRepository.save(publication);
         mailingService.sendMailing1(
-                publication.getUser ().getEmail(),
+                publication.getUser().getEmail(),
                 "Уведомление о том, что ваша публикация не активирована",
                 "Привет, на связи отдел договоров Ulutman.ru!\n" +
-                        "Ваша публикация не активирована: {" + publication + "}. Возможно, причины связаны с оплатой или с условиями Ulutman.ru.\n" +
-                        "Она не будет отображаться на Ulutman.ru.\nСвяжитесь с поддержкой сайта для получения дополнительной информации." +
-                        "\nС уважением," +
-                        "\nКоманда Ulutman.ru"
+                "Ваша публикация не активирована: {" + publication + "}. Возможно, причины связаны с оплатой или с условиями Ulutman.ru.\n" +
+                "Она не будет отображаться на Ulutman.ru.\nСвяжитесь с поддержкой сайта для получения дополнительной информации." +
+                "\nС уважением," +
+                "\nКоманда Ulutman.ru"
         );
         log.info("Публикация деактивирована: {}", publication);
     }

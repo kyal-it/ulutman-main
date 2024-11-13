@@ -30,6 +30,8 @@ public class AdVersiting {
 
     private String bank;
 
+    private LocalDateTime lastBoostedTime;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     private User user;

@@ -28,7 +28,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -125,10 +124,10 @@ public class PublishService {
 
         String message = String.format(
                 "Новый чек:" + "\n" +
-                        "Имя карты: %s" +  "\n" +
-                        "Публикация ID: %s" +  "\n" +
-                        "Email пользователя: %s" + "\n" +
-                        "Номер телефона: %s" + "\n" ,
+                "Имя карты: %s" + "\n" +
+                "Публикация ID: %s" + "\n" +
+                "Email пользователя: %s" + "\n" +
+                "Номер телефона: %s" + "\n",
                 nameBank,
                 savedPublish.getId(),
                 userEmail != null ? userEmail : "Не указан",
@@ -179,10 +178,10 @@ public class PublishService {
                     publish.getUser().getEmail(),
                     "Уведомление о завершении срока действия",
                     "Привет, на связи отдел договоров Ulutman.ru!\n" +
-                            "Срок действия вашего объявления: {" + publish + "} подошел к концу. \n" +
-                            " Оно больше не будет отображаться на Ulutman.ru.\n" +
-                            " С уважением," +
-                            " Команда Ulutman.ru");
+                    "Срок действия вашего объявления: {" + publish + "} подошел к концу. \n" +
+                    " Оно больше не будет отображаться на Ulutman.ru.\n" +
+                    " С уважением," +
+                    " Команда Ulutman.ru");
         }
     }
 

@@ -28,6 +28,7 @@ import java.util.Set;
 public class MyPublishesController {
     private final MyPublishesService publishService;
     private  final AdVersitingService adVersitingService;
+    private final MyPublishesService myPublishesService;
 
     //Возвращает список активных публикаций пользователя
     @Operation(summary = "Returns a list of the user's active posts")
@@ -146,5 +147,13 @@ public class MyPublishesController {
     public ResponseEntity<List<PublishResponse>> getMyActivePublishes(@RequestParam Long userId) {
         List<PublishResponse> myActivePublishes =publishService.myActivePublications(userId);
         return ResponseEntity.ok(myActivePublishes);
+    }
+   // Поднять свои рекламы на первый ряд в методе getAllActiveAds
+    @Operation(summary = "Raise your publications to the front row")
+    @ApiResponse(responseCode = "201", description = "All your publications have successfully risen to the first row")
+    @GetMapping("/raising-the-adVersting")
+    public ResponseEntity<List<AdVersiting>> getAllActiveAds() {
+        List<AdVersiting> activeAds = myPublishesService.getAllActiveAds();
+        return ResponseEntity.ok(activeAds);
     }
 }

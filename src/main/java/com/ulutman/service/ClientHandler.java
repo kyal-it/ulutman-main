@@ -1,6 +1,5 @@
 package com.ulutman.service;
 
-
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
