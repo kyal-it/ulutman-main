@@ -63,7 +63,6 @@ public class FavoriteService {
     }
 
 
-
     public FavoriteResponseList getAllFavorites(Principal principal) {
         User user = userRepository.findByEmail(principal.getName())
                 .orElseThrow(() -> new NotFoundException("User not found with email: " + principal.getName()));
@@ -74,9 +73,9 @@ public class FavoriteService {
         favoriteResponseList.setId(user.getId()); // Устанавливаем id пользователя
 
         if (favorites != null && favorites.getPublishes() != null) {
-            // Используем Set<Publish> вместо List<Publish>
+
             Set<Publish> products = favorites.getPublishes();
-            // Преобразуем Set в список, если нужно
+
             favoriteResponseList.setPublishResponseList(favoriteMapper.mapListToResponseList(new ArrayList<>(products)));
         } else {
             favoriteResponseList.setPublishResponseList(new ArrayList<>());
@@ -93,14 +92,11 @@ public class FavoriteService {
         Publish publish = publishRepository.findById(productId)
                 .orElseThrow(() -> new NotFoundException("Product not found"));
 
-        // Получаем объект Favorite для текущего пользователя
         Favorite favorite = favoriteRepository.findByUser(user)
                 .orElseThrow(() -> new NotFoundException("Favorite not found"));
 
-        // Используем LinkedHashSet для сохранения порядка
         Set<Publish> publishes = new LinkedHashSet<>(favorite.getPublishes());
 
-        // Проверяем, находится ли публикация в избранном
         if (publishes.contains(publish)) {
             // Если публикация уже в избранном, удаляем её из избранного и меняем статус на false (серый)
             publishes.remove(publish); // Удаляем публикацию из избранного

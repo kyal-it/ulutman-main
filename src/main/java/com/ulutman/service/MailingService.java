@@ -15,7 +15,6 @@ import jakarta.mail.internet.MimeMessage;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -23,7 +22,6 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Random;
@@ -79,7 +77,6 @@ public class MailingService {
         helper.setTo(recipientEmail);
         helper.setSubject(mailing.getTitle());
 
-        // Форматирование тела сообщения
         String body = "<html><body>"
                       + "<h1>" + mailing.getTitle() + "</h1>"
                       + "<p>" + mailing.getMessage() + "</p>"
@@ -89,10 +86,6 @@ public class MailingService {
                       + "</body></html>";
 
         helper.setText(body, true);
-
-        // Если вы хотите прикрепить файл, вы можете использовать следующий код
-        // FileSystemResource file = new FileSystemResource(new File(mailing.getPhotoPath()));
-        // helper.addAttachment("Фотография", file);
 
         try {
             javaMailSender.send(message);
@@ -133,14 +126,13 @@ public class MailingService {
     }
 
     public void sendCommentRejectionNotification(String recipientEmail, String commentContent) throws MessagingException {
-        // Создание сообщения и отправка его, аналогично методу для публикаций
+
         MimeMessage message = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
 
         helper.setTo(recipientEmail);
         helper.setSubject("Ваш комментарий отклонен");
 
-        // Форматирование тела сообщения
         String body = "<html><body>"
                       + "<p>Ваш комментарий был отклонен:</p>"
                       + "<p><strong>Содержимое:</strong> " + commentContent + "</p>"
@@ -157,14 +149,13 @@ public class MailingService {
     }
 
     public void sendComplaintRejectionNotification(String recipientEmail, String complaintDetails) throws MessagingException {
-        // Логика для отправки уведомления пользователю о том, что его жалоба отклонена
+
         MimeMessage message = javaMailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, "UTF-8");
 
         helper.setTo(recipientEmail);
         helper.setSubject("Ваша жалоба отклонена");
 
-        // Форматирование тела сообщения
         String body = "<html><body>"
                       + "<p>К сожалению, ваша жалоба была отклонена.</p>"
                       + "<p><strong>Детали жалобы:</strong> " + complaintDetails + "</p>"
