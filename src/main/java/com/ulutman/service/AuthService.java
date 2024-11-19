@@ -1,13 +1,8 @@
 package com.ulutman.service;
 
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
-import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
-import com.google.api.client.http.javanet.NetHttpTransport;
-import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
-import com.google.firebase.auth.UserRecord;
 import com.ulutman.exception.IncorrectCodeException;
 import com.ulutman.exception.NotFoundException;
 import com.ulutman.mapper.AuthMapper;
@@ -20,7 +15,6 @@ import com.ulutman.model.enums.Role;
 import com.ulutman.model.enums.Status;
 import com.ulutman.repository.UserRepository;
 import com.ulutman.security.jwt.JwtUtil;
-import io.jsonwebtoken.io.IOException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -29,16 +23,10 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.security.oauth2.core.OAuth2AuthenticatedPrincipal;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.security.GeneralSecurityException;
 import java.time.LocalDate;
 import java.util.*;
-
-import static org.springframework.security.oauth2.core.OAuth2TokenIntrospectionClaimNames.CLIENT_ID;
 
 @Service
 @RequiredArgsConstructor

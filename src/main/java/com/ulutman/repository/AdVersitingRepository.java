@@ -23,4 +23,8 @@ public interface AdVersitingRepository  extends JpaRepository<AdVersiting,Long> 
 
     @Query("SELECT p FROM AdVersiting p WHERE p.active = false")
     List<AdVersiting> findAllByActiveFalse();
+
+    @Query("SELECT ad FROM AdVersiting ad WHERE ad.active = true ORDER BY ad.lastBoostedTime DESC NULLS LAST")
+    List<AdVersiting> findAllActiveAdverting();
+
 }

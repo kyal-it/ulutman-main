@@ -1,6 +1,5 @@
 package com.ulutman.service;
 
-
 import com.ulutman.exception.NotFoundException;
 import com.ulutman.mapper.MessageMapper;
 import com.ulutman.model.dto.MessageRequest;
