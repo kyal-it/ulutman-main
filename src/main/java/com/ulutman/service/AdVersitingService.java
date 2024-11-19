@@ -31,7 +31,7 @@ public class AdVersitingService {
     private final UserRepository userRepository;
     private static final String TELEGRAM_BOT_TOKEN = "7967485487:AAGhVVsiOZ3V2ZFonfZqWXoxCpRpVL0D1nE";
     private static final String ADMIN_CHAT_ID = "1818193495";
-    private  final MailingService mailingService;
+    private final MailingService mailingService;
 
     String baseDirectoryPath = System.getProperty("user.dir") + File.separator + "ads";
 
@@ -123,10 +123,10 @@ public class AdVersitingService {
                     publish.getUser().getEmail(),
                     "Уведомление о завершении срока действия \n",
                     "Привет, на связи отдел договоров Ulutman.ru! \n" +
-                            "Срок действия вашего рекламы по id: " + publish.getId() + " подошел к концу. \n" +
-                            " Оно больше не будет отображаться на Ulutman.ru. \n" +
-                            " С уважением," +
-                            " Команда Ulutman.ru \n");
+                    "Срок действия вашего рекламы по id: " + publish.getId() + " подошел к концу. \n" +
+                    " Оно больше не будет отображаться на Ulutman.ru. \n" +
+                    " С уважением," +
+                    " Команда Ulutman.ru \n");
 
             adVersitingRepository.delete(publish);
         }
@@ -144,9 +144,9 @@ public class AdVersitingService {
         RequestBody fileBody = RequestBody.create(mediaType, receiptFile);
 
         String messageBody = "Новый чек: \n" +
-                "Имя карты: " + bankName + "\n" +
-                "Реклама ID: " + adVersiting.getId() + "\n" +
-                "Email пользователя: " + (adVersiting.getUser() != null ? adVersiting.getUser().getEmail() : "Не указан");
+                             "Имя карты: " + bankName + "\n" +
+                             "Реклама ID: " + adVersiting.getId() + "\n" +
+                             "Email пользователя: " + (adVersiting.getUser() != null ? adVersiting.getUser().getEmail() : "Не указан");
 
 
         MultipartBody.Builder builder = new MultipartBody.Builder()

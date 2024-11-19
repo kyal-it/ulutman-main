@@ -24,7 +24,7 @@ import java.util.Optional;
 public class ComplaintService {
 
     private final UserRepository userRepository;
-    private  final ComplaintRepository complaintRepository;
+    private final ComplaintRepository complaintRepository;
     private final ComplaintMapper complaintMapper;
 
     public ComplaintResponse createComplaint(ComplaintRequest complaintRequest) {
