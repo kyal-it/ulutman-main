@@ -30,7 +30,7 @@ public class AdvertisingController {
 
     @Operation(summary = "Create a Adversting")
     @ApiResponse(responseCode = "201", description = "successfully create a Adversting")
-    @PostMapping
+    @PostMapping(consumes = "multipart/form-data")
     public ResponseEntity<String> createAdvertising(@RequestParam("imageFile") MultipartFile imageFile,
                                                     @RequestParam("bank") String bank,
                                                     @RequestParam("paymentReceiptFile") MultipartFile paymentReceiptFile,
