@@ -45,7 +45,7 @@ public class PublishController {
             @RequestParam("metro") Metro metro,
             @RequestParam("address") String address,
             @RequestParam("phoneNumber") String phoneNumber,
-            @RequestParam("images") List<String> images,
+            @RequestParam("images") List<MultipartFile> images,
             @RequestParam("price") double price,
             @RequestParam("category") Category category,
             @RequestParam("subcategory") Subcategory subcategory,

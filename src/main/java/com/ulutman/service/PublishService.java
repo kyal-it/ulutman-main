@@ -283,7 +283,6 @@ public class PublishService {
         existingPublish.setDescription(publishRequest.getDescription());
         existingPublish.setMetro(publishRequest.getMetro());
         existingPublish.setAddress(publishRequest.getAddress());
-        existingPublish.setImages(publishRequest.getImages());
 //        existingPublish.setImage(publishRequest.getImage());
         existingPublish.setCategory(publishRequest.getCategory());
         existingPublish.setSubCategory(publishRequest.getSubcategory());

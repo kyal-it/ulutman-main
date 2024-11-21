@@ -101,7 +101,6 @@ public class MyPublishesService {
         existingPublish.setSubCategory(publishRequest.getSubcategory());
         existingPublish.setMetro(publishRequest.getMetro());
         existingPublish.setAddress(publishRequest.getAddress());
-        existingPublish.setImages(publishRequest.getImages());
         existingPublish.setPublishStatus(publishRequest.getPublishStatus());
         Publish updatedPublish = publishRepository.save(existingPublish);
         return publishMapper.mapToResponse(updatedPublish);
