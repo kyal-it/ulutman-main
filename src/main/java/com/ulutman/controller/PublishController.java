@@ -38,7 +38,7 @@ public class PublishController {
 
     @Operation(summary = "Create a publication")
     @ApiResponse(responseCode = "201", description = "The publish created successfully")
-    @PostMapping("/create")
+    @PostMapping(value = "/create", consumes = "multipart/form-data")
     public ResponseEntity<PublishResponse> createPublish(
             @RequestParam("title") String title,
             @RequestParam("description") String description,
