@@ -8,10 +8,7 @@ import com.ulutman.model.dto.PublishResponse;
 import com.ulutman.model.entities.AdVersiting;
 import com.ulutman.model.entities.Publish;
 import com.ulutman.model.enums.PublishStatus;
-import com.ulutman.repository.AdVersitingRepository;
-import com.ulutman.repository.FavoriteRepository;
-import com.ulutman.repository.PublishRepository;
-import com.ulutman.repository.UserRepository;
+import com.ulutman.repository.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -31,6 +28,7 @@ public class MyPublishesService {
     private final PublishRepository publishRepository;
     private final FavoriteRepository favoriteRepository;
     private final AdVersitingRepository adVersitingRepository;
+    private final MyPublishRepository myPublishRepository;
 
 
     public List<PublishResponse> myActivePublishes(Long userId) {
@@ -70,8 +68,16 @@ public class MyPublishesService {
 
         userPublishes.removeIf(publish -> !publishIds.contains(publish.getId()));
 
+        List<Long> publishIdsToDelete = userPublishes.stream()
+                .map(Publish::getId)
+                .collect(Collectors.toList());
+
+        myPublishRepository.deleteAllByPublishIds(publishIdsToDelete);
+
+
         publishRepository.deleteAll(userPublishes);
     }
+
 
     @Transactional
     public void deleteAllUserPublishes(Long userId) {
