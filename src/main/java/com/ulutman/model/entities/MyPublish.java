@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Set;
+
 @Entity
 @Table(name = "myPublishes")
 @Getter
@@ -24,8 +26,9 @@ public class MyPublish {
     @JoinColumn(name = "user_account_id", nullable = false)
     private UserAccount userAccount;
 
-    @JsonManagedReference //  ссылаться на Publish
-    @ManyToOne
-    @JoinColumn(name = "publish_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "publish_id", nullable = false, foreignKey = @ForeignKey(name = "fk_mypublish_publish", value = ConstraintMode.CONSTRAINT, foreignKeyDefinition = "FOREIGN KEY (publish_id) REFERENCES publishes(id) ON DELETE CASCADE"))
     private Publish publish;
+
+
 }

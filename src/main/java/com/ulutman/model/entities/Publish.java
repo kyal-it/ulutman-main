@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import java.io.File;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "publishes")
@@ -107,4 +109,9 @@ public class Publish {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "conditions_id",referencedColumnName = "id")
     private Conditions conditions;
+
+
+    @OneToMany(mappedBy = "publish", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<MyPublish> myPublishes;
+
 }

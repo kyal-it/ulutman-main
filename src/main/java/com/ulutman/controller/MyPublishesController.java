@@ -84,10 +84,18 @@ public class MyPublishesController {
     @Operation(summary = "Deletes a user's publishes")
     @ApiResponse(responseCode = "201", description = "Posts successfully deleted")
     @DeleteMapping("/delete-by-user/{userId}")
-    public ResponseEntity<Void> deletePublishesByUser(@PathVariable Long userId, @RequestBody Set<Long> publishIds) {
-        publishService.deletePublishesByUser(userId, publishIds);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<String> deletePublishesByUser(
+            @PathVariable Long userId,
+            @RequestBody Set<Long> publishIds) {
+        try {
+            publishService.deletePublishesByUser(userId, publishIds);
+            return ResponseEntity.ok("Публикации успешно удалены");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Произошла ошибка при удалении публикаций: " + e.getMessage());
+        }
     }
+
 
     //Удаляет все публикации пользователя
     @Operation(summary = "Deletes all user posts")
