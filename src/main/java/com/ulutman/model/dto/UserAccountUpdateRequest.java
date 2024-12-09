@@ -11,11 +11,11 @@ import lombok.Setter;
 @AllArgsConstructor
 public class UserAccountUpdateRequest {
 
-    private String username;
+    private String email;
 
     private String lastName;
 
     private String phoneNumber;
 
-    private String emailAddress;
+    private String name;
 }
