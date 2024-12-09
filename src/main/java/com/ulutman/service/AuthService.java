@@ -68,7 +68,7 @@ public class AuthService {
 
         UserAccount userAccount = new UserAccount();
         user.setUserAccount(userAccount);
-        userAccount.setUsername(user.getUsername());
+        userAccount.setEmail(user.getUsername());
 
         userRepository.save(user);
 
@@ -100,7 +100,7 @@ public class AuthService {
 
         UserAccount userAccount = new UserAccount();
         user.setUserAccount(userAccount);
-        userAccount.setUsername(user.getUsername());
+        userAccount.setEmail(user.getUsername());
 
         userRepository.save(user);
         return authMapper.mapToResponse(user);

@@ -31,10 +31,10 @@ public class UserAccountController {
                                                          @RequestBody UserAccountUpdateRequest request) {
         UserAccount userAccount = userAccountService.updateUserAccount(
                 userId,
-                request.getUsername(),
+                request.getEmail(),
                 request.getLastName(),
                 request.getPhoneNumber(),
-                request.getEmailAddress()
+                request.getName()
         );
         return new ResponseEntity<>(userAccount, HttpStatus.OK);
     }

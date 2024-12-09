@@ -16,7 +16,7 @@ public class ProfileService {
     private final UserRepository userRepository;
     private final UserAccontRepository userAccontRepository;
 
-    public UserAccount updateUserAccount(Long userId, String username, String lastName, String phoneNumber, String emailAddress) {
+    public UserAccount updateUserAccount(Long userId, String username, String lastName, String phoneNumber, String name) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Колдонуучу табылган жок"));
 
@@ -26,11 +26,16 @@ public class ProfileService {
             throw new IllegalArgumentException("Жеке кабинет табылган жок");
         }
 
-        userAccount.setUsername(username);
+        userAccount.setEmail(username);
         userAccount.setLastName(lastName);
         userAccount.setNumber(phoneNumber);
+        userAccount.setName(name);
 
-        user.setName(username);
+
+
+        user.setEmail(username);
+        user.setLastName(lastName);
+        user.setName(name);
         userRepository.save(user);
 
         return userAccontRepository.save(userAccount);
