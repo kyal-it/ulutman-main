@@ -59,15 +59,15 @@ public class AdVersitingService {
             throw new IllegalArgumentException("Не удалось прочитать изображение.");
         }
 
-        int width = img.getWidth();
-        int height = img.getHeight();
+       // int width = img.getWidth();
+        // int height = img.getHeight();
 
-        if ((width == 285 && height == 407) || (width == 564 && height == 246)) {
+      //  if ((width == 285 && height == 407) || (width == 564 && height == 246)) {
             saveAdvertising(imageFile, bank, paymentReceiptFile, user.getEmail());
             System.out.println("Реклама создана с изображением: " + imageFile.getOriginalFilename());
-        } else {
-            throw new IllegalArgumentException("Размер изображения должен быть 285x407 или 564x246.");
-        }
+      //  } else {
+        //    throw new IllegalArgumentException("Размер изображения должен быть 285x407 или 564x246.");
+       // }
     }
 
 
