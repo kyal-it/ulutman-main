@@ -297,12 +297,23 @@ public class PublishService {
         this.publishRepository.deleteById(productId);
     }
 
+//    public List<PublishResponse> getAll() {
+//        return publishRepository.findAllActivePublishes().stream()
+//                .peek(publish -> publish.setDetailFavorite(false))
+//                .map(publishMapper::mapToResponse)
+//                .collect(Collectors.toList());
+//    }
+
     public List<PublishResponse> getAll() {
         return publishRepository.findAllActivePublishes().stream()
-                .peek(publish -> publish.setDetailFavorite(false))
-                .map(publishMapper::mapToResponse)
+                .map(publish -> {
+                    PublishResponse publishResponse = publishMapper.mapToResponse(publish);
+                    publishResponse.setDetailFavorite(publish.isDetailFavorite()); // Просто копируем значение из сущности
+                    return publishResponse;
+                })
                 .collect(Collectors.toList());
     }
+
 
 //    public List<PublishResponse> getAll() {
 //        return publishRepository.findAll().stream()
