@@ -1,5 +1,6 @@
 package com.ulutman.controller;
 
+import com.ulutman.model.dto.PublishResponse;
 import com.ulutman.model.entities.Publish;
 import com.ulutman.service.ManageCreatePaymentSystem;
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,10 +20,20 @@ public class ManageCreatePaymentSystemController {
     @Operation(summary = "Create a getAllDeactivatedPublications")
     @ApiResponse(responseCode = "201", description = "getAllDeactivatedPublications created successfully")
     @GetMapping("/deactivated")
-    public ResponseEntity<List<Publish>> getAllDeactivatedPublications() {
-        List<Publish> deactivatedPublications = manageCreatePaymentSystem.getAllDeactivatedPublications();
-        return ResponseEntity.ok(deactivatedPublications);
+    public ResponseEntity<List<PublishResponse>> findDeactivatedPublications() {
+        try {
+            List<PublishResponse> deactivatedPublications = manageCreatePaymentSystem.findAllDeactivatedPublications();
+            return ResponseEntity.ok(deactivatedPublications);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+            // Or a specific error response like:
+            // return ResponseEntity.badRequest().body("Error retrieving deactivated publications: " + e.getMessage());
+        }
     }
+//    public ResponseEntity<List<Publish>> getAllDeactivatedPublications() {
+//        List<Publish> deactivatedPublications = manageCreatePaymentSystem.getAllDeactivatedPublications();
+//        return ResponseEntity.ok(deactivatedPublications);
+//    }
 
     @Operation(summary = "Create a activatePublication")
     @ApiResponse(responseCode = "201", description = "activatePublication created successfully")
