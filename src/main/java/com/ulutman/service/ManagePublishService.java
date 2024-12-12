@@ -3,6 +3,7 @@ package com.ulutman.service;
 import com.ulutman.exception.NotFoundException;
 import com.ulutman.mapper.PublishMapper;
 import com.ulutman.model.dto.PublishDetailsResponse;
+import com.ulutman.model.dto.PublishResponse;
 import com.ulutman.model.entities.Publish;
 import com.ulutman.model.entities.User;
 import com.ulutman.model.enums.Category;
@@ -32,6 +33,8 @@ public class ManagePublishService {
     private final PublishRepository publishRepository;
     private final UserRepository userRepository;
     private final MailingService mailingService;
+
+
 
     public List<PublishDetailsResponse> getAllPublish() {
         return publishRepository.findAll().stream().map(publishMapper::mapToDetailsResponse).collect(Collectors.toList());

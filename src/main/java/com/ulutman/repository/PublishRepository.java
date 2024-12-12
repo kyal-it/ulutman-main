@@ -157,6 +157,10 @@ public interface PublishRepository extends JpaRepository<Publish, Long> {
     @Query("SELECT p FROM Publish p WHERE p.active = false")
     List<Publish> findAllByActiveFalse();
 
+//    @Query("SELECT new com.ulutman.model.entities.Publish(p.id, p.createdAt, p.title, p.description, p.price, p.category, p.subCategory, p.metro, p.address, p.phone, p.active) FROM Publish p WHERE p.active = false")
+//    List<Publish> findAllByActiveFalse();
+
+
     @Query("SELECT p FROM Publish p WHERE p.active = true ORDER BY p.lastBoostedAt DESC NULLS LAST")
     List<Publish> findAllActivePublishes();
 

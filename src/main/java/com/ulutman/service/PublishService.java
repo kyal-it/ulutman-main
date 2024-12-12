@@ -297,13 +297,6 @@ public class PublishService {
         this.publishRepository.deleteById(productId);
     }
 
-//    public List<PublishResponse> getAll() {
-//        return publishRepository.findAllActivePublishes().stream()
-//                .peek(publish -> publish.setDetailFavorite(false))
-//                .map(publishMapper::mapToResponse)
-//                .collect(Collectors.toList());
-//    }
-
     public List<PublishResponse> getAll() {
         return publishRepository.findAllActivePublishes().stream()
                 .map(publish -> {
@@ -313,7 +306,6 @@ public class PublishService {
                 })
                 .collect(Collectors.toList());
     }
-
 
 //    public List<PublishResponse> getAll() {
 //        return publishRepository.findAll().stream()
