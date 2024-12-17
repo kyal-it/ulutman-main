@@ -8,6 +8,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -59,4 +60,8 @@ public class PublishResponse {
     boolean active;
 
     Conditions conditions;
+
+    private LocalDateTime nextBoostTime;
+    private String timeToNextBoost; // Добавляем поле для строки с временем до следующего бустинга
+
 }

@@ -113,6 +113,9 @@ public class Publish {
 
     private LocalDateTime lastBoostedAt;
 
+    private LocalDateTime nextBoostTime;
+    private String timeToNextBoost; // Добавляем поле для строки с временем до следующего бустинга
+
     @ManyToOne(
             cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}
     )
