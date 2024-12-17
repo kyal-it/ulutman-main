@@ -13,6 +13,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
@@ -133,13 +134,23 @@ public class MyPublishesService {
         return count.intValue();
     }
 
+//    public List<PublishResponse> myActivePublications(Long userId) {
+//        List<Publish> myActivePublish = userRepository.getAllPublishByUserId(userId);
+//
+//        myActivePublish.forEach(this::boostIfNeeded);
+//
+//        return myActivePublish.stream()
+//                .map(publishMapper::mapToResponse)
+//                .collect(Collectors.toList());
+//    }
+
     public List<PublishResponse> myActivePublications(Long userId) {
         List<Publish> myActivePublish = userRepository.getAllPublishByUserId(userId);
 
         myActivePublish.forEach(this::boostIfNeeded);
 
         return myActivePublish.stream()
-                .map(publishMapper::mapToResponse)
+                .map(this::mapToResponseWithNextBoost) // Изменение: используем новый метод map
                 .collect(Collectors.toList());
     }
 
@@ -167,4 +178,43 @@ public class MyPublishesService {
             adVersitingRepository.save(ad);
         }
     }
+
+    private PublishResponse mapToResponseWithNextBoost(Publish publish) {
+        PublishResponse response = publishMapper.mapToResponse(publish);
+        response.setNextBoostTime(calculateNextBoostTime(publish));
+        response.setTimeToNextBoost(formatTimeToNextBoost(response.getNextBoostTime()));
+        return response;
+    }
+
+    private String formatTimeToNextBoost(LocalDateTime nextBoostTime) {
+        if (nextBoostTime == null) return ""; // Или другое значение по умолчанию
+
+        Duration duration = Duration.between(LocalDateTime.now(), nextBoostTime);
+        long hours = duration.toHours();
+        long minutes = duration.toMinutesPart();
+
+        StringBuilder timeString = new StringBuilder();
+
+        if (hours > 0) {
+            timeString.append(hours).append("ч ").append(minutes).append("мин");
+        } else if (minutes > 0) {
+            timeString.append(minutes).append("мин");
+        } else {
+            return "Сейчас"; // Или "" если нужно пустую строку
+        }
+
+        return   "можно поднимать через: " + timeString;
+    }
+
+
+    private LocalDateTime calculateNextBoostTime(Publish publish) {
+        LocalDateTime lastBoostedAt = publish.getLastBoostedAt();
+        if (lastBoostedAt == null) {
+            return LocalDateTime.now().plusHours(24); // Первый буст через 24 часа
+        } else {
+            LocalDateTime nextBoost = lastBoostedAt.plusHours(24);
+            return nextBoost.isBefore(LocalDateTime.now()) ? LocalDateTime.now().plusHours(24) : nextBoost; //Если уже пора бустить - через 24 часа от СЕЙЧАС
+        }
+    }
+
 }
