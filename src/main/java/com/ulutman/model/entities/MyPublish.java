@@ -13,7 +13,6 @@ import java.util.Set;
 @Table(name = "myPublishes")
 @Getter
 @Setter
-@NoArgsConstructor
 public class MyPublish {
     @Id
     @GeneratedValue(
@@ -23,7 +22,7 @@ public class MyPublish {
 
     @JsonBackReference // Обратная связь с userAccount
     @ManyToOne // Изменено на ManyToOne
-    @JoinColumn(name = "user_account_id", nullable = false)
+    @JoinColumn(name = "user_account_id")
     private UserAccount userAccount;
 
     @ManyToOne(fetch = FetchType.LAZY)
