@@ -18,7 +18,8 @@ public class EmailConfig {
         mailSender.setHost("smtp.gmail.com");
         mailSender.setPort(587);
         mailSender.setUsername("ulutmanmoscow@gmail.com");
-        mailSender.setPassword("urpg zguk jxpp hhig"); // Обратите внимание на безопасность: используйте безопасные методы хранения паролей
+        mailSender .setPassword(System.getenv("Ulutm@n2024!"));
+        // mailSender.setPassword("urpg zguk jxpp hhig"); // Обратите внимание на безопасность: используйте безопасные методы хранения паролей
 
         Properties props = mailSender.getJavaMailProperties();
         props.put("mail.transport.protocol", "smtp");
