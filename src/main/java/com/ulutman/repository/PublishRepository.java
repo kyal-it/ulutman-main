@@ -167,4 +167,13 @@ public interface PublishRepository extends JpaRepository<Publish, Long> {
     @Modifying
     @Query(value = "DELETE FROM publishes p USING my_publishes mp WHERE p.id = mp.publish_id AND p.id IN (:publishIds) AND p.user_id = :userId", nativeQuery = true)
     int deletePublishesAndMyPublishes(Set<Long> publishIds, Long userId);
+
+    @Query("SELECT p FROM Publish p WHERE p.id = :id AND p.user.id = :userId")
+    Publish findByIdAndUserId(@Param("id") Long id, @Param("userId") Long userId);
+
+    @Query("SELECT p FROM Publish p WHERE p.user.id = :userId AND p.active = true") //Добавлен фильтр по isActive
+    List<Publish> getAllPublishByUserId(@Param("userId") Long userId);
+
+
+
 }
