@@ -2,13 +2,16 @@ package com.ulutman.service;
 
 import com.ulutman.exception.NotFoundException;
 import com.ulutman.exception.UnauthorizedException;
+import com.ulutman.mapper.AdVersitingMapper;
 import com.ulutman.mapper.PublishMapper;
+import com.ulutman.model.dto.AdVersitingResponse;
 import com.ulutman.model.dto.PublishRequest;
 import com.ulutman.model.dto.PublishResponse;
 import com.ulutman.model.entities.AdVersiting;
 import com.ulutman.model.entities.Publish;
 import com.ulutman.model.enums.PublishStatus;
 import com.ulutman.repository.*;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,14 +33,24 @@ public class MyPublishesService {
     private final FavoriteRepository favoriteRepository;
     private final AdVersitingRepository adVersitingRepository;
     private final MyPublishRepository myPublishRepository;
+    private final AdVersitingMapper adVersitingMapper;
 
 
     public List<PublishResponse> myActivePublishes(Long userId) {
-        List<Publish> myActivePublish = userRepository.getAllPublishByUserId(userId);
+        List<Publish> myActivePublish = publishRepository.getAllPublishByUserId(userId);
 
         return myActivePublish.stream()
-                .map(publishMapper::mapToResponse)
+                .map(this::mapToResponseWithNextBoost) // Изменение: используем новый метод map
                 .collect(Collectors.toList());
+    }
+
+    public List<AdVersitingResponse> myActiveAdVerstings(Long userId) {
+        List<AdVersiting> myActivePublish = adVersitingRepository.findActiveAdverstingsByUserId(userId);
+
+        return myActivePublish.stream()
+                .map(this::mapToAdResponseWithNextBoost)
+                .collect(Collectors.toList());
+
     }
 
 
@@ -144,15 +157,43 @@ public class MyPublishesService {
 //                .collect(Collectors.toList());
 //    }
 
-    public List<PublishResponse> myActivePublications(Long userId) {
-        List<Publish> myActivePublish = userRepository.getAllPublishByUserId(userId);
+    // новый метод
+    public PublishResponse boostPublication(Long userId, Long publishId) {
+        Publish publish = publishRepository.findByIdAndUserId(publishId, userId);
 
-        myActivePublish.forEach(this::boostIfNeeded);
+        if (publish == null) {
+            throw new EntityNotFoundException("Publication not found");
+        }
 
-        return myActivePublish.stream()
-                .map(this::mapToResponseWithNextBoost) // Изменение: используем новый метод map
-                .collect(Collectors.toList());
+        boostIfNeeded(publish);
+        publishRepository.save(publish);
+
+        return mapToResponseWithNextBoost(publish);
     }
+
+
+    public AdVersitingResponse boostAdversting(Long userId, Long adId) {
+        AdVersiting ad = adVersitingRepository.findByIdAndUserId(adId, userId);
+
+        if (ad == null) {
+            throw new EntityNotFoundException("Advertisement not found");
+        }
+
+        boostIfNeeded(ad);
+
+        return mapToAdResponseWithNextBoost(ad); // Новый метод для маппинга
+    }
+
+
+//    public List<PublishResponse> myActivePublications(Long userId) {
+//        List<Publish> myActivePublish = userRepository.getAllPublishByUserId(userId);
+//
+//        myActivePublish.forEach(this::boostIfNeeded);
+//
+//        return myActivePublish.stream()
+//                .map(this::mapToResponseWithNextBoost) // Изменение: используем новый метод map
+//                .collect(Collectors.toList());
+//    }
 
     private void boostIfNeeded(Publish publish) {
         LocalDateTime now = LocalDateTime.now();
@@ -162,14 +203,14 @@ public class MyPublishesService {
         }
     }
 
-    public List<AdVersiting> getAllActiveAds() {
-        List<AdVersiting> activeAds = adVersitingRepository.findAllActiveAdverting();
-
-        activeAds.forEach(this::boostIfNeeded);
-        return activeAds.stream()
-                .sorted(Comparator.comparing(AdVersiting::getLastBoostedTime, Comparator.nullsFirst(Comparator.reverseOrder())))
-                .toList();
-    }
+//    public List<AdVersiting> getAllActiveAds() {
+//        List<AdVersiting> activeAds = adVersitingRepository.findAllActiveAdverting();
+//
+//        activeAds.forEach(this::boostIfNeeded);
+//        return activeAds.stream()
+//                .sorted(Comparator.comparing(AdVersiting::getLastBoostedTime, Comparator.nullsFirst(Comparator.reverseOrder())))
+//                .toList();
+//    }
 
     private void boostIfNeeded(AdVersiting ad) {
         LocalDateTime now = LocalDateTime.now();
@@ -184,6 +225,13 @@ public class MyPublishesService {
         response.setNextBoostTime(calculateNextBoostTime(publish));
         response.setTimeToNextBoost(formatTimeToNextBoost(response.getNextBoostTime()));
         return response;
+    }
+
+    private AdVersitingResponse mapToAdResponseWithNextBoost(AdVersiting ad) {
+        AdVersitingResponse adVersitingResponse = adVersitingMapper.mapToResponse(ad);
+        adVersitingResponse.setNextBoostTime(calculateNextBoostTimeAdcersting(ad));
+        adVersitingResponse.setTimeToNextBoost(formatTimeToNextBoost(adVersitingResponse.getNextBoostTime()));
+        return adVersitingResponse;
     }
 
     private String formatTimeToNextBoost(LocalDateTime nextBoostTime) {
@@ -217,4 +265,13 @@ public class MyPublishesService {
         }
     }
 
+    private LocalDateTime calculateNextBoostTimeAdcersting(AdVersiting publish) {
+        LocalDateTime lastBoostedAt = publish.getLastBoostedAt();
+        if (lastBoostedAt == null) {
+            return LocalDateTime.now().plusHours(24); // Первый буст через 24 часа
+        } else {
+            LocalDateTime nextBoost = lastBoostedAt.plusHours(24);
+            return nextBoost.isBefore(LocalDateTime.now()) ? LocalDateTime.now().plusHours(24) : nextBoost; //Если уже пора бустить - через 24 часа от СЕЙЧАС
+        }
+    }
 }
