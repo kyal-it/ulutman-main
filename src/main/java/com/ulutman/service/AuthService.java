@@ -162,6 +162,9 @@ public class AuthService {
                 .name(user.getName() + " " + user.getLastName())
                 .picture(user.getPicture())
                 .locale(user.getLocale())
+                .role(user.getRole())
+                .status(user.getStatus())
+                .createDate(user.getCreateDate())
                 .build();
     }
 }
