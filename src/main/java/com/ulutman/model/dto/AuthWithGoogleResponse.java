@@ -16,7 +16,7 @@ import java.time.LocalDate;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AuthWithGoogleResponse {
 
-    String googleId;
+    String userId;
 
     String email;
 
@@ -31,4 +31,8 @@ public class AuthWithGoogleResponse {
     Status status;
 
     LocalDate createDate;
+
+    String token;
+
+
 }
