@@ -5,8 +5,11 @@ import com.ulutman.model.entities.Publish;
 import com.ulutman.model.entities.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -19,7 +22,13 @@ public class PublishMapper {
         publish.setMetro(publishRequest.getMetro());
         publish.setAddress(publishRequest.getAddress());
         publish.setPhone(publishRequest.getPhoneNumber());
-        publish.setImages(publishRequest.getImages());
+        List<String> imagePaths = new ArrayList<>();
+        for (MultipartFile image : publishRequest.getImages()) {
+            // Здесь вы можете реализовать логику сохранения изображения и получения его пути
+            String imagePath = saveImage(image); // Метод для сохранения изображения
+            imagePaths.add(imagePath);
+        }
+        publish.setImages(imagePaths);
 //        publish.setImage(publishRequest.getImage());
         publish.setPrice(publishRequest.getPrice());
         publish.setCategory(publishRequest.getCategory());
@@ -31,6 +40,10 @@ public class PublishMapper {
         publish.setCategory(publishRequest.getCategory());
         publish.setCreateDate(LocalDate.now());
         return publish;
+    }
+
+    private String saveImage(MultipartFile image) {
+        return "/////path////to/////saved//////image//////"; // Верните фактический путь к сохраненному изображению
     }
 
     public PublishResponse mapToResponse(Publish publish) {
@@ -99,4 +112,5 @@ public class PublishMapper {
 //                .createDate(user.getCreateDate())
                 .build();
     }
+
 }

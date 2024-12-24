@@ -27,4 +27,10 @@ public interface AdVersitingRepository  extends JpaRepository<AdVersiting,Long> 
     @Query("SELECT ad FROM AdVersiting ad WHERE ad.active = true ORDER BY ad.lastBoostedTime DESC NULLS LAST")
     List<AdVersiting> findAllActiveAdverting();
 
+    @Query("SELECT a FROM AdVersiting a WHERE a.user.id = :userId AND a.active = true")
+    List<AdVersiting> findActiveAdverstingsByUserId(@Param("userId") Long userId);
+
+    @Query("SELECT p FROM AdVersiting p WHERE p.id = :id AND p.user.id = :userId")
+    AdVersiting findByIdAndUserId(@Param("id") Long id, @Param("userId") Long userId);
+
 }

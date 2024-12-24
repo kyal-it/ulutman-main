@@ -1,5 +1,7 @@
 package com.ulutman.service;
 
+import com.ulutman.mapper.PublishMapper;
+import com.ulutman.model.dto.PublishResponse;
 import com.ulutman.model.entities.Publish;
 import com.ulutman.repository.PublishRepository;
 import lombok.AccessLevel;
@@ -9,6 +11,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -17,11 +20,22 @@ import java.util.List;
 public class ManageCreatePaymentSystem {
     final PublishRepository publishRepository;
     final MailingService mailingService;
+    final PublishMapper publishMapper;
 
-    public List<Publish> getAllDeactivatedPublications() {
-        log.info("Получение всех деактивированных публикаций");
-        return publishRepository.findAllByActiveFalse();
+//    public List<Publish> getAllDeactivatedPublications() {
+//        log.info("Получение всех деактивированных публикаций");
+//        return publishRepository.findAllByActiveFalse();
+//    }
+
+
+    public List<PublishResponse> findAllDeactivatedPublications() {
+        List<Publish> publishes = publishRepository.findAllByActiveFalse();
+
+        return publishes.stream()
+                .map(publish -> publishMapper.mapToResponse(publish))
+                .collect(Collectors.toList());
     }
+
 
     public void activatePublication(Long publicationId) {
         log.info("Активация публикации с ID: {}", publicationId);

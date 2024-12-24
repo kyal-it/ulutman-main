@@ -7,11 +7,12 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.Set;
+
 @Entity
 @Table(name = "myPublishes")
 @Getter
 @Setter
-@NoArgsConstructor
 public class MyPublish {
     @Id
     @GeneratedValue(
@@ -21,11 +22,12 @@ public class MyPublish {
 
     @JsonBackReference // Обратная связь с userAccount
     @ManyToOne // Изменено на ManyToOne
-    @JoinColumn(name = "user_account_id", nullable = false)
+    @JoinColumn(name = "user_account_id")
     private UserAccount userAccount;
 
-    @JsonManagedReference //  ссылаться на Publish
-    @ManyToOne
-    @JoinColumn(name = "publish_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "publish_id", nullable = false, foreignKey = @ForeignKey(name = "fk_mypublish_publish", value = ConstraintMode.CONSTRAINT, foreignKeyDefinition = "FOREIGN KEY (publish_id) REFERENCES publishes(id) ON DELETE CASCADE"))
     private Publish publish;
+
+
 }

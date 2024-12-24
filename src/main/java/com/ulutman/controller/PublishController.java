@@ -38,14 +38,14 @@ public class PublishController {
 
     @Operation(summary = "Create a publication")
     @ApiResponse(responseCode = "201", description = "The publish created successfully")
-    @PostMapping("/create")
+    @PostMapping(value = "/create", consumes = "multipart/form-data")
     public ResponseEntity<PublishResponse> createPublish(
             @RequestParam("title") String title,
             @RequestParam("description") String description,
             @RequestParam("metro") Metro metro,
             @RequestParam("address") String address,
             @RequestParam("phoneNumber") String phoneNumber,
-            @RequestParam("images") List<String> images,
+            @RequestParam("images") List<MultipartFile> images,
             @RequestParam("price") double price,
             @RequestParam("category") Category category,
             @RequestParam("subcategory") Subcategory subcategory,

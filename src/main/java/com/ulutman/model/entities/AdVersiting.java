@@ -39,6 +39,12 @@ public class AdVersiting {
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
+    private LocalDateTime lastBoostedAt;
+
+    private LocalDateTime nextBoostTime;
+    private String timeToNextBoost; // Добавляем поле для строки с временем до следующего бустинга
+
+
     public AdVersiting(String imagePath, boolean active, String paymentReceipt, String bank, User user) {
         this.imagePath = imagePath;
         this.active = active;

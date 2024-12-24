@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
+
 
 @Getter
 @Setter
@@ -22,5 +24,10 @@ public class AdVersitingResponse {
     private String paymentReceipt;
 
     private String bank;
+
+    private LocalDateTime nextBoostTime;
+
+    private String timeToNextBoost; // Добавляем поле для строки с временем до следующего бустинга
+
 
 }

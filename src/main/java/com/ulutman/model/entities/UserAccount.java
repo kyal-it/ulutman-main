@@ -20,9 +20,10 @@ public class UserAccount {
     @Column(name = "user_id")
     private Long id;
 
-    private String username;
+    private String email;
     private String number;
     private String lastName;
+    private String name;
 
     @OneToMany(mappedBy = "userAccount", cascade = CascadeType.ALL)
     private List<Message> messages;

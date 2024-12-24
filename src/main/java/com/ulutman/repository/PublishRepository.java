@@ -4,6 +4,8 @@ import com.ulutman.model.entities.Publish;
 import com.ulutman.model.enums.*;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
+
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -11,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Repository
 public interface PublishRepository extends JpaRepository<Publish, Long> {
@@ -20,6 +23,9 @@ public interface PublishRepository extends JpaRepository<Publish, Long> {
 
     @Query("SELECT p FROM Publish p WHERE p.user.id = :userId")
     List<Publish> findByUserId(@Param("userId") Long userId);
+
+    @Query("SELECT p FROM Publish p WHERE p.id IN (:publishIds) AND p.user.id = :userId")
+    List<Publish> findByIdInAndUserId(@Param("publishIds") Set<Long> publishIds, @Param("userId") Long userId);
 
     @Query("SELECT p FROM Publish p WHERE LOWER(p.title) LIKE LOWER(CONCAT( :title, '%'))")
     List<Publish> filterPublishesByTitle(@Param("title") String title);
@@ -151,6 +157,23 @@ public interface PublishRepository extends JpaRepository<Publish, Long> {
     @Query("SELECT p FROM Publish p WHERE p.active = false")
     List<Publish> findAllByActiveFalse();
 
+//    @Query("SELECT new com.ulutman.model.entities.Publish(p.id, p.createdAt, p.title, p.description, p.price, p.category, p.subCategory, p.metro, p.address, p.phone, p.active) FROM Publish p WHERE p.active = false")
+//    List<Publish> findAllByActiveFalse();
+
+
     @Query("SELECT p FROM Publish p WHERE p.active = true ORDER BY p.lastBoostedAt DESC NULLS LAST")
     List<Publish> findAllActivePublishes();
+
+    @Modifying
+    @Query(value = "DELETE FROM publishes p USING my_publishes mp WHERE p.id = mp.publish_id AND p.id IN (:publishIds) AND p.user_id = :userId", nativeQuery = true)
+    int deletePublishesAndMyPublishes(Set<Long> publishIds, Long userId);
+
+    @Query("SELECT p FROM Publish p WHERE p.id = :id AND p.user.id = :userId")
+    Publish findByIdAndUserId(@Param("id") Long id, @Param("userId") Long userId);
+
+    @Query("SELECT p FROM Publish p WHERE p.user.id = :userId AND p.active = true") //Добавлен фильтр по isActive
+    List<Publish> getAllPublishByUserId(@Param("userId") Long userId);
+
+
+
 }

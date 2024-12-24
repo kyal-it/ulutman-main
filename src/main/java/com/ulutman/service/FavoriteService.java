@@ -5,6 +5,7 @@ import com.ulutman.exception.NotFoundException;
 import com.ulutman.mapper.FavoriteMapper;
 import com.ulutman.model.dto.FavoriteResponse;
 import com.ulutman.model.dto.FavoriteResponseList;
+import com.ulutman.model.dto.PublishResponse;
 import com.ulutman.model.entities.Favorite;
 import com.ulutman.model.entities.Publish;
 import com.ulutman.model.entities.User;
@@ -27,6 +28,7 @@ public class FavoriteService {
     private final UserRepository userRepository;
     private final PublishRepository publishRepository;
     private final FavoriteMapper favoriteMapper;
+
 
     public FavoriteResponse addToFavorites(Long productId, Principal principal) {
         User user = userRepository.findByEmail(principal.getName())
@@ -57,6 +59,8 @@ public class FavoriteService {
 
         publish.setDetailFavorite(true);
         publishRepository.save(publish);
+
+
 
         log.info("Added to favorites");
         return favoriteMapper.mapToResponse(favorites, publish);

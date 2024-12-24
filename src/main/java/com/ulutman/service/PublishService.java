@@ -283,7 +283,6 @@ public class PublishService {
         existingPublish.setDescription(publishRequest.getDescription());
         existingPublish.setMetro(publishRequest.getMetro());
         existingPublish.setAddress(publishRequest.getAddress());
-        existingPublish.setImages(publishRequest.getImages());
 //        existingPublish.setImage(publishRequest.getImage());
         existingPublish.setCategory(publishRequest.getCategory());
         existingPublish.setSubCategory(publishRequest.getSubcategory());
@@ -300,8 +299,11 @@ public class PublishService {
 
     public List<PublishResponse> getAll() {
         return publishRepository.findAllActivePublishes().stream()
-                .peek(publish -> publish.setDetailFavorite(false))
-                .map(publishMapper::mapToResponse)
+                .map(publish -> {
+                    PublishResponse publishResponse = publishMapper.mapToResponse(publish);
+                    publishResponse.setDetailFavorite(publish.isDetailFavorite()); // Просто копируем значение из сущности
+                    return publishResponse;
+                })
                 .collect(Collectors.toList());
     }
 

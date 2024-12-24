@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.ulutman.model.enums.*;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -12,13 +13,16 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import java.io.File;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "publishes")
 @Getter
 @Setter
 @NoArgsConstructor
+
 public class Publish {
 
     @Id
@@ -49,6 +53,34 @@ public class Publish {
     private Metro metro;
 
     private String address;
+
+    public Publish(Long id, LocalDateTime createdAt, String title, String description, double price, Category category, Subcategory subCategory, Metro metro, String address, String phone, boolean active, String chatId, File paymentReceipt, String bank, List<String> images, LocalDate createDate, PublishStatus publishStatus, boolean detailFavorite, CategoryStatus categoryStatus, LocalDateTime lastBoostedAt, Payment payment, List<Favorite> favorites, User user, PropertyDetails propertyDetails, Conditions conditions) {
+        this.id = id;
+        this.createdAt = createdAt;
+        this.title = title;
+        this.description = description;
+        this.price = price;
+        this.category = category;
+        this.subCategory = subCategory;
+        this.metro = metro;
+        this.address = address;
+        this.phone = phone;
+        this.active = active;
+        this.chatId = chatId;
+        this.paymentReceipt = paymentReceipt;
+        this.bank = bank;
+        this.images = images;
+        this.createDate = createDate;
+        this.publishStatus = publishStatus;
+        this.detailFavorite = detailFavorite;
+        this.categoryStatus = categoryStatus;
+        this.lastBoostedAt = lastBoostedAt;
+        this.payment = payment;
+        this.favorites = favorites;
+        this.user = user;
+        this.propertyDetails = propertyDetails;
+        this.conditions = conditions;
+    }
 
     private String phone;
 
@@ -81,6 +113,9 @@ public class Publish {
 
     private LocalDateTime lastBoostedAt;
 
+    private LocalDateTime nextBoostTime;
+    private String timeToNextBoost; // Добавляем поле для строки с временем до следующего бустинга
+
     @ManyToOne(
             cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}
     )
@@ -107,4 +142,8 @@ public class Publish {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "conditions_id",referencedColumnName = "id")
     private Conditions conditions;
+
+    @OneToMany(mappedBy = "publish", cascade = CascadeType.REMOVE, orphanRemoval = true)
+    private List<MyPublish> myPublishes;
+
 }
