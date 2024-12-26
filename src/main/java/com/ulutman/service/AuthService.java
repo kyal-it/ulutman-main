@@ -157,11 +157,15 @@ public class AuthService {
 
 
         return AuthWithGoogleResponse.builder()
-                .googleId(user.getId().toString())
+                .userId(user.getId().toString())
                 .email(user.getEmail())
                 .name(user.getName() + " " + user.getLastName())
                 .picture(user.getPicture())
                 .locale(user.getLocale())
+                .role(user.getRole())
+                .status(user.getStatus())
+                .createDate(user.getCreateDate())
+                .token(userAccountToken)
                 .build();
     }
 }
