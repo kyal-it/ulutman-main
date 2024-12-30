@@ -64,4 +64,6 @@ public class PublishResponse {
     private LocalDateTime nextBoostTime;
     private String timeToNextBoost; // Добавляем поле для строки с временем до следующего бустинга
 
+    Long accountId;
+
 }
