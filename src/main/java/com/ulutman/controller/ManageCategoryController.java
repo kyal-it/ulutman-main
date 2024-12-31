@@ -42,12 +42,6 @@ public class ManageCategoryController {
     public ResponseEntity<List<AuthResponse>> getAllUsersWithPublishes() {
         List<AuthResponse> users = manageCategoryService.getAllUsersWithPublishes();
 
-
-        if (users.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
-
-
         return ResponseEntity.ok(users);
     }
 
@@ -77,7 +71,6 @@ public class ManageCategoryController {
 
         return ResponseEntity.ok(filteredPublishes);
     }
-
 
     @Operation(summary = "Reset filters categories")
     @ApiResponse(responseCode = "201", description = "Category filters successfully reset")
