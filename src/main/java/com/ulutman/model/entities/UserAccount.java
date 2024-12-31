@@ -21,8 +21,7 @@ public class UserAccount {
     private Long id;
 
     private String email;
-    private String number;
-    private String lastName;
+
     private String name;
 
     @OneToMany(mappedBy = "userAccount", cascade = CascadeType.ALL)

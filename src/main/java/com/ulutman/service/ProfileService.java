@@ -16,7 +16,7 @@ public class ProfileService {
     private final UserRepository userRepository;
     private final UserAccontRepository userAccontRepository;
 
-    public UserAccount updateUserAccount(Long userId, String username, String lastName, String phoneNumber, String name) {
+    public UserAccount updateUserAccount(Long userId, String username, String name) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("Колдонуучу табылган жок"));
 
@@ -27,14 +27,9 @@ public class ProfileService {
         }
 
         userAccount.setEmail(username);
-        userAccount.setLastName(lastName);
-        userAccount.setNumber(phoneNumber);
         userAccount.setName(name);
 
-
-
         user.setEmail(username);
-        user.setLastName(lastName);
         user.setName(name);
         userRepository.save(user);
 
