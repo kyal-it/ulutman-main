@@ -22,13 +22,7 @@ public class PublishMapper {
         publish.setMetro(publishRequest.getMetro());
         publish.setAddress(publishRequest.getAddress());
         publish.setPhone(publishRequest.getPhoneNumber());
-        List<String> imagePaths = new ArrayList<>();
-        for (MultipartFile image : publishRequest.getImages()) {
-            // Здесь вы можете реализовать логику сохранения изображения и получения его пути
-            String imagePath = saveImage(image); // Метод для сохранения изображения
-            imagePaths.add(imagePath);
-        }
-        publish.setImages(imagePaths);
+        publish.setImages(publishRequest.getImages());
 //        publish.setImage(publishRequest.getImage());
         publish.setPrice(publishRequest.getPrice());
         publish.setCategory(publishRequest.getCategory());

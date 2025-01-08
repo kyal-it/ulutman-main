@@ -27,7 +27,7 @@ public class PublishRequest {
 
     String phoneNumber;
 
-    private List<MultipartFile> images;
+    private List<String> images;
 
 //    String image;
 

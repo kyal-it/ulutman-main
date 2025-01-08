@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -59,14 +60,18 @@ public class PublishController {
         publishRequest.setMetro(metro);
         publishRequest.setAddress(address);
         publishRequest.setPhoneNumber(phoneNumber);
-        publishRequest.setImages(images);
+
+        List<String> imagePaths = new ArrayList<>();
+        for (MultipartFile file : images) {
+            String path = saveFile(file); // Правильный вызов метода
+            imagePaths.add(path);
+        }
+        publishRequest.setImages(imagePaths);
         publishRequest.setPrice(price);
         publishRequest.setCategory(category);
         publishRequest.setSubcategory(subcategory);
         publishRequest.setBank(Optional.ofNullable(bank));
         publishRequest.setUserId(userId);
-
-
         if (paymentReceiptFile != null && !paymentReceiptFile.isEmpty()) {
             File tempFile = null;
             try {
@@ -97,6 +102,30 @@ public class PublishController {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
 
+    }
+
+    private String saveFile(MultipartFile file) {
+        String directoryPath = "";
+
+        // Создайте директорию, если она не существует
+        File directory = new File(directoryPath);
+        if (!directory.exists()) {
+            directory.mkdirs(); // Создает папки, если их нет
+        }
+
+        // Генерируйте уникальное имя файла
+        String uniqueFileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+
+        // Полный путь к сохранению файла
+        String fullPath = directoryPath + uniqueFileName;
+
+        try {
+            // Сохраните файл
+            file.transferTo(new File(fullPath));
+            return fullPath; // Верните полный путь для дальнейшего использования
+        } catch (IOException e) {
+            throw new RuntimeException("Ошибка при сохранении файла: " + e.getMessage());
+        }
     }
 
     @Operation(summary = "Create a publication with details")
