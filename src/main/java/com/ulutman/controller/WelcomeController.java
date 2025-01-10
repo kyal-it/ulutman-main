@@ -1,6 +1,7 @@
 package com.ulutman.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -22,10 +23,19 @@ public class WelcomeController {
 
     private final MessageSource messageSource;
 
-    @Operation(summary = "Multi-lingual")
+    @Operation(
+            summary = "Multi-lingual",
+            description = "Returns a welcome message based on the specified language.",
+            parameters = @Parameter(
+                    name = "Accept-Language",
+                    description = "Language header for localization (e.g., en, ru, ky, tg)",
+                    required = false
+            )
+    )
     @ApiResponse(responseCode = "201", description = "Successfully recognizes languages")
     @GetMapping("/welcome")
-    public String welcomeMessage(@RequestHeader(name = "Accept-Language", required = false) Locale locale) {
+    public String welcomeMessage(
+            @RequestHeader(name = "Accept-Language", required = false) Locale locale) {
         return messageSource.getMessage("welcome.message", null, locale);
     }
 }
