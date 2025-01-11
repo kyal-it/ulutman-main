@@ -12,7 +12,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/payment/adversting")
+@RequestMapping("/api/manage/adversting")
 public class ManageAdverstingPaymentController {
 
     private final ManagePaymentAdversting managePaymentAdversting;

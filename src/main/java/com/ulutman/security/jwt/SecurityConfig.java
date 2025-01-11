@@ -49,7 +49,7 @@ public class SecurityConfig {
                                         "/api/manage/moderator",
                                         "/api/manage/publishes",
                                         "/api/manage/mailing",
-                                        "api/payment/adversting/**",
+                                        "/api/manage/adversting/**",
                                         "/api/mailing",
                                         "/api/manage/category",
                                         "/api/bank-cards/**").hasAuthority("ADMIN")
