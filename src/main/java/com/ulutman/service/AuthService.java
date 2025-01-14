@@ -42,7 +42,9 @@ public class AuthService {
     LoginMapper loginMapper;
 
     public AuthResponse saveUser(AuthRequest request) {
-
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new IllegalArgumentException("Пользователь с таким email уже существует");
+        }
         User user = authMapper.mapToEntity(request);
         user.setCreateDate(LocalDate.now());
         log.info("Пользователь успешно создан!");
@@ -79,6 +81,9 @@ public class AuthService {
 
 
     public AuthResponse save(AuthRequest request) {
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new IllegalArgumentException("Пользователь с таким email уже существует");
+        }
         User user = authMapper.mapToEntity(request);
         user.setCreateDate(LocalDate.now());
         log.info("Пользователь успешно создан!");
