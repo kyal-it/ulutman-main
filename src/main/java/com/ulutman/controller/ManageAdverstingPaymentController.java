@@ -4,6 +4,8 @@ import com.ulutman.model.entities.AdVersiting;
 import com.ulutman.service.ManagePaymentAdversting;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +15,8 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/manage/adversting")
+@Tag(name = "Manage AdVersting")
+@SecurityRequirement(name = "Authorization")
 public class ManageAdverstingPaymentController {
 
     private final ManagePaymentAdversting managePaymentAdversting;
