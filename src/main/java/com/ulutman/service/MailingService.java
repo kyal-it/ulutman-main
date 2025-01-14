@@ -166,50 +166,5 @@ public class MailingService {
         javaMailSender.send(message);
     }
 
-
-    public void sendPasswordResetCode(String email) throws EntityNotFoundException {
-        int pinCode = generatePinCode();
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(email);
-        message.setFrom("ajzirektoktosunova853@gmail.com");
-        message.setSubject("Password reset");
-        message.setText(String.valueOf(pinCode));
-        try {
-            javaMailSender.send(message);
-            updateUserPinCode(email, pinCode);
-        } catch (MailException e) {
-            throw new MailSendingException("Не удалось отправить код для сброса пароля", e);
-        }
-    }
-
-    public String resetPassword(String email, int pinCode, String newPassword, String confirmPassword)
-            throws EntityNotFoundException, PasswordsDoNotMatchException {
-        if (!newPassword.equals(confirmPassword)) {
-            throw new PasswordsDoNotMatchException("Пароли не совпадают");
-        } else {
-            User user = userRepository.findByEmail(email)
-                    .orElseThrow(() -> new EntityNotFoundException("Пользователь не найден"));
-            if (user.getEmail().equals(email)) {
-                if (pinCode == user.getPinCode()) {
-                    user.setPassword(passwordEncoder.encode(newPassword));
-                    userRepository.save(user);
-                    return "Сброс пароля прошел успешно";
-                }
-            }
-            return "Неверный PIN-код";
-        }
-    }
-
-    private int generatePinCode() {
-        Random random = new Random();
-        return random.nextInt(100000, 1000000);
-    }
-
-    private void updateUserPinCode(String email, int pinCode) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException("Пользователь не найден"));
-        user.setPinCode(pinCode);
-        userRepository.save(user);
-    }
 }
 

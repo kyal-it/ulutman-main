@@ -4,7 +4,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.auth.FirebaseToken;
 import com.ulutman.exception.IncorrectCodeException;
+import com.ulutman.exception.MailSendingException;
 import com.ulutman.exception.NotFoundException;
+import com.ulutman.exception.PasswordsDoNotMatchException;
 import com.ulutman.mapper.AuthMapper;
 import com.ulutman.mapper.LoginMapper;
 import com.ulutman.model.dto.*;
@@ -15,10 +17,14 @@ import com.ulutman.model.enums.Role;
 import com.ulutman.model.enums.Status;
 import com.ulutman.repository.UserRepository;
 import com.ulutman.security.jwt.JwtUtil;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.mail.MailException;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -40,6 +46,7 @@ public class AuthService {
     PasswordEncoder passwordEncoder;
     AuthenticationManager manager;
     LoginMapper loginMapper;
+    JavaMailSender mailSender;
 
     public AuthResponse saveUser(AuthRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -172,5 +179,50 @@ public class AuthService {
                 .createDate(user.getCreateDate())
                 .token(userAccountToken)
                 .build();
+    }
+
+    public void sendPasswordResetCode(String email) throws EntityNotFoundException {
+        int pinCode = generatePinCode();
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(email);
+        message.setFrom("ajzirektoktosunova853@gmail.com");
+        message.setSubject("Password reset");
+        message.setText(String.valueOf(pinCode));
+        try {
+            mailSender.send(message);
+            updateUserPinCode(email, pinCode);
+        } catch (MailException e) {
+            throw new MailSendingException("Не удалось отправить код для сброса пароля", e);
+        }
+    }
+
+    public String resetPassword(String email, int pinCode, String newPassword, String confirmPassword)
+            throws EntityNotFoundException, PasswordsDoNotMatchException {
+        if (!newPassword.equals(confirmPassword)) {
+            throw new PasswordsDoNotMatchException("Пароли не совпадают");
+        } else {
+            User user = userRepository.findByEmail(email)
+                    .orElseThrow(() -> new EntityNotFoundException("Пользователь не найден"));
+            if (user.getEmail().equals(email)) {
+                if (pinCode == user.getPinCode()) {
+                    user.setPassword(passwordEncoder.encode(newPassword));
+                    userRepository.save(user);
+                    return "Сброс пароля прошел успешно";
+                }
+            }
+            return "Неверный PIN-код";
+        }
+    }
+
+    private int generatePinCode() {
+        Random random = new Random();
+        return random.nextInt(100000, 1000000);
+    }
+
+    private void updateUserPinCode(String email, int pinCode) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new EntityNotFoundException("Пользователь не найден"));
+        user.setPinCode(pinCode);
+        userRepository.save(user);
     }
 }

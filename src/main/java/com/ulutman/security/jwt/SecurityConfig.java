@@ -65,8 +65,6 @@ public class SecurityConfig {
                                         "/api/users/messages",
                                         "/api/users/comments",
                                         "/api/users/complaints",
-                                        "/api/mailing/sendPasswordResetCode",
-                                        "/api/mailing/resetPassword",
                                         "/api/S3/upload",
                                         "/api/favorites/check",
                                         "/api/user-accounts/{userId}",
