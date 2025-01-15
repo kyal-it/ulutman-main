@@ -57,13 +57,17 @@ public class PublishService {
         if (!publishRequest.getCategory().getSubcategories().contains(publishRequest.getSubcategory())) {
             throw new IllegalArgumentException("Неверная подкатегория для выбранной категории");
         }
-
+        List<String> imageUrls = publishRequest.getImages()
+                .stream()
+                .map(image -> image.startsWith("http") ? image : generateImageUrl(image))
+                .collect(Collectors.toList());
         Publish publish = publishMapper.mapToEntity(publishRequest);
         publish.setCreatedAt(LocalDateTime.now());
         User user = userRepository.findById(publishRequest.getUserId())
                 .orElseThrow(() -> new RuntimeException("Пользователь не найден: " + publishRequest.getUserId()));
 
         publish.setUser(user);
+        publish.setImages(imageUrls);
         publish.setPublishStatus(PublishStatus.ОДОБРЕН);
         publish.setCategoryStatus(CategoryStatus.АКТИВНО);
 
@@ -106,6 +110,11 @@ public class PublishService {
         log.info("Publication created successfully: {}", savedPublish);
 
         return publishMapper.mapToResponse(savedPublish);
+    }
+
+    private String generateImageUrl(String imageName) {
+        String baseUrl = "https://example.com/";
+        return baseUrl + imageName;
     }
 
     @Scheduled(fixedRate = 86400000)
@@ -183,15 +192,15 @@ public class PublishService {
                     " С уважением," +
                     " Команда Ulutman.ru");
         }
+
     }
 
     public PublishResponse createPublishDetails(PublishRequest publishRequest) {
-        // Проверка на наличие категории и подкатегории
+
         if (publishRequest.getCategory() == null || publishRequest.getSubcategory() == null) {
             throw new IllegalArgumentException("Необходимо выбрать категорию и подкатегорию");
         }
 
-        // Проверка корректности категории и подкатегории
         if (!Category.getAllSubcategories(publishRequest.getCategory()).contains(publishRequest.getSubcategory())) {
             throw new IllegalArgumentException("Неверная подкатегория для выбранной категории");
         }
@@ -200,7 +209,6 @@ public class PublishService {
             throw new IllegalArgumentException("Неверная категория");
         }
 
-        // Создание публикации
         Publish publish = publishMapper.mapToEntity(publishRequest);
         User user = userRepository.findById(publishRequest.getUserId())
                 .orElseThrow(() -> new RuntimeException("Пользователь не найден " + publishRequest.getUserId()));
@@ -213,7 +221,6 @@ public class PublishService {
         publish.setPublishStatus(PublishStatus.ОДОБРЕН);
         publish.setCategoryStatus(CategoryStatus.АКТИВНО);
 
-        // Проверка необходимости PropertyDetails для категории
         if (publishRequest.getCategory() == Category.REAL_ESTATE || publishRequest.getCategory() == Category.RENT) {
             if (publishRequest.getPropertyDetails() == null) {
                 throw new IllegalArgumentException("Необходимо заполнить данные о недвижимости (PropertyDetails) для категории REAL_ESTATE или RENT.");
@@ -222,7 +229,6 @@ public class PublishService {
             publish.setPropertyDetails(propertyDetails);
         }
 
-        // Проверка на наличие условий
         if (publishRequest.getConditions() == null) {
             throw new IllegalArgumentException("Необходимо заполнить данные о условиях (Conditions) для категории REAL_ESTATE или RENT.");
         }
