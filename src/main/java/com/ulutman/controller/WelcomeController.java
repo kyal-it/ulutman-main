@@ -17,7 +17,6 @@ import java.util.Locale;
 @RestController
 @RequestMapping("/api/language")
 @Tag(name = "Multi-lingual")
-@SecurityRequirement(name = "Authorization")
 @RequiredArgsConstructor
 public class WelcomeController {
 
