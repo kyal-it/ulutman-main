@@ -60,22 +60,6 @@ public class S3Service {
         return fileUrls;
     }
 
-//    public String uploadFile(String fileName, Path filePath) {
-//        try {
-//
-//            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-//                    .bucket(bucketName)
-//                    .key(fileName)
-//                    .build();
-//
-//            s3Client.putObject(putObjectRequest, filePath);
-//
-//            return getFileUrl(fileName);
-//        } catch (S3Exception | IOException e) {
-//            throw new RuntimeException("Ошибка при загрузке файла: " + e.getMessage());
-//        }
-//    }
-
     public String getFileUrl(String fileName) {
         return "https://" + bucketName + ".s3." + awsRegion + ".amazonaws.com/" + fileName;
     }
