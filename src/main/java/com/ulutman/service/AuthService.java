@@ -22,6 +22,8 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -196,23 +198,41 @@ public class AuthService {
         }
     }
 
-    public String resetPassword(String email, int pinCode, String newPassword, String confirmPassword)
+
+    public ResponseEntity<String> resetPassword(String email, int pinCode, String newPassword, String confirmPassword)
             throws EntityNotFoundException, PasswordsDoNotMatchException {
         if (!newPassword.equals(confirmPassword)) {
             throw new PasswordsDoNotMatchException("Пароли не совпадают");
         } else {
             User user = userRepository.findByEmail(email)
                     .orElseThrow(() -> new EntityNotFoundException("Пользователь не найден"));
-            if (user.getEmail().equals(email)) {
-                if (pinCode == user.getPinCode()) {
-                    user.setPassword(passwordEncoder.encode(newPassword));
-                    userRepository.save(user);
-                    return "Сброс пароля прошел успешно";
-                }
+
+            if (pinCode == user.getPinCode()) {
+                user.setPassword(passwordEncoder.encode(newPassword));
+                userRepository.save(user);
+                return new ResponseEntity<>("Сброс пароля прошел успешно", HttpStatus.OK);
             }
-            return "Неверный PIN-код";
         }
+        return new ResponseEntity<>("Неверный PIN-код", HttpStatus.UNAUTHORIZED);
     }
+
+//    public String resetPassword(String email, int pinCode, String newPassword, String confirmPassword)
+//            throws EntityNotFoundException, PasswordsDoNotMatchException {
+//        if (!newPassword.equals(confirmPassword)) {
+//            throw new PasswordsDoNotMatchException("Пароли не совпадают");
+//        } else {
+//            User user = userRepository.findByEmail(email)
+//                    .orElseThrow(() -> new EntityNotFoundException("Пользователь не найден"));
+//            if (user.getEmail().equals(email)) {
+//                if (pinCode == user.getPinCode()) {
+//                    user.setPassword(passwordEncoder.encode(newPassword));
+//                    userRepository.save(user);
+//                    return "Сброс пароля прошел успешно";
+//                }
+//            }
+//            return "Неверный PIN-код";
+//        }
+//    }
 
     private int generatePinCode() {
         Random random = new Random();
