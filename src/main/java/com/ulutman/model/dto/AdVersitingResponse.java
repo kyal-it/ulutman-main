@@ -19,15 +19,18 @@ public class AdVersitingResponse {
 
     String imageFile;
 
-    private boolean active;
+    boolean active;
 
-    private String paymentReceipt;
+    String paymentReceipt;
 
-    private String bank;
+    String bank;
 
-    private LocalDateTime nextBoostTime;
+    LocalDateTime nextBoostTime;
 
-    private String timeToNextBoost; // Добавляем поле для строки с временем до следующего бустинга
+    String timeToNextBoost; // Добавляем поле для строки с временем до следующего бустинга
 
+    Long userId;
+
+    String userGmail;
 
 }

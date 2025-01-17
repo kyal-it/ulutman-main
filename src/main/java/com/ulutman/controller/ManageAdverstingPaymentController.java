@@ -1,5 +1,6 @@
 package com.ulutman.controller;
 
+import com.ulutman.model.dto.AdVersitingResponse;
 import com.ulutman.model.entities.AdVersiting;
 import com.ulutman.service.ManagePaymentAdversting;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,13 +23,35 @@ public class ManageAdverstingPaymentController {
 
     private final ManagePaymentAdversting managePaymentAdversting;
 
+//    @GetMapping("/deactivated")
+//    @Operation(summary = "Create a getAllDeactivatedPublications")
+//    @ApiResponse(responseCode = "201", description = "getAllDeactivatedPublications created successfully")
+//    public ResponseEntity<List<AdVersiting>> getAllDeactivatedPublications() {
+//        List<AdVersiting> deactivatedPublications = managePaymentAdversting.getAllDeactivatedPublications();
+//        return ResponseEntity.ok(deactivatedPublications);
+//    }
+
     @GetMapping("/deactivated")
     @Operation(summary = "Create a getAllDeactivatedPublications")
-    @ApiResponse(responseCode = "201", description = "getAllDeactivatedPublications created successfully")
-    public ResponseEntity<List<AdVersiting>> getAllDeactivatedPublications() {
+    @ApiResponse(responseCode = "200", description = "getAllDeactivatedPublications retrieved successfully")
+    public ResponseEntity<List<AdVersitingResponse>> getAllDeactivatedPublications() {
         List<AdVersiting> deactivatedPublications = managePaymentAdversting.getAllDeactivatedPublications();
-        return ResponseEntity.ok(deactivatedPublications);
+
+        List<AdVersitingResponse> responseList = deactivatedPublications.stream()
+                .map(ad -> AdVersitingResponse.builder()
+                        .id(ad.getId())
+                        .imageFile(ad.getImagePath())
+                        .active(ad.isActive())
+                        .paymentReceipt(ad.getPaymentReceipt())
+                        .bank(ad.getBank())
+                        .userId(ad.getUser().getId())
+                        .userGmail(ad.getUser().getEmail())
+                        .build())
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(responseList);
     }
+
 
 
     @Operation(summary = "Create a activatePublication")
