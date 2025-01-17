@@ -41,8 +41,11 @@ public class PublishService {
     private final PropertyDetailsMapper propertyDetailsMapper;
     private final ConditionsMapper conditionsMapper;
     private MailingService mailingService;
-    private static final String TELEGRAM_BOT_TOKEN = "7967485487:AAGhVVsiOZ3V2ZFonfZqWXoxCpRpVL0D1nE";
-    private static final String ADMIN_CHAT_ID = "1818193495";
+//    private static final String TELEGRAM_BOT_TOKEN = "7967485487:AAGhVVsiOZ3V2ZFonfZqWXoxCpRpVL0D1nE";
+//    private static final String ADMIN_CHAT_ID = "1818193495";
+
+    private static final String ADMIN_CHAT_ID = "6640338760";
+    private static final String TELEGRAM_BOT_TOKEN = "7721979760:AAGc8x9AXc5auPzVZX8ajUQjJvXAgNpK6_g";
     private final MyPublishRepository myPublishRepository;
     private final S3Service s3Service;
 
