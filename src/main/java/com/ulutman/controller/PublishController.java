@@ -40,6 +40,79 @@ public class PublishController {
 
     @Operation(summary = "Create a publication")
     @ApiResponse(responseCode = "201", description = "The publish created successfully")
+//    @PostMapping(value = "/create", consumes = "multipart/form-data")
+//    public ResponseEntity<PublishResponse> createPublish(
+//            @RequestParam("title") String title,
+//            @RequestParam("description") String description,
+//            @RequestParam("metro") Metro metro,
+//            @RequestParam("address") String address,
+//            @RequestParam("phoneNumber") String phoneNumber,
+//            @RequestParam("images") List<MultipartFile> images,
+//            @RequestParam("price") double price,
+//            @RequestParam("category") Category category,
+//            @RequestParam("subcategory") Subcategory subcategory,
+//            @RequestParam(value = "bank", required = false) String bank, // Опционально
+//            @RequestParam(value = "paymentReceiptFile", required = false) MultipartFile paymentReceiptFile, // Файл
+//            @RequestParam("userId") Long userId) {
+//
+//        PublishRequest publishRequest = new PublishRequest();
+//        publishRequest.setTitle(title);
+//        publishRequest.setDescription(description);
+//        publishRequest.setMetro(metro);
+//        publishRequest.setAddress(address);
+//        publishRequest.setPhoneNumber(phoneNumber);
+//
+//        String tempDir = System.getProperty("java.io.tmpdir");
+//
+//        try {
+//            Map<String, Path> filesMap = new HashMap<>();
+//            for (MultipartFile file : images) {
+//                Path tempFile = Paths.get(tempDir, file.getOriginalFilename());
+//                Files.write(tempFile, file.getBytes());
+//                filesMap.put(file.getOriginalFilename(), tempFile);
+//            }
+//
+//            List<String> imageUrls = s3Service.uploadFiles(filesMap);
+//            publishRequest.setImages(imageUrls);
+//
+//            for (Path tempFile : filesMap.values()) {
+//                Files.deleteIfExists(tempFile);
+//            }
+//
+//            if (paymentReceiptFile != null && !paymentReceiptFile.isEmpty()) {
+//                Path tempFile = Paths.get(tempDir, paymentReceiptFile.getOriginalFilename());
+//                Files.write(tempFile, paymentReceiptFile.getBytes());
+//                Map<String, Path> receiptMap = Map.of(paymentReceiptFile.getOriginalFilename(), tempFile);
+//                List<String> receiptUrls = s3Service.uploadFiles(receiptMap);
+//                publishRequest.setPaymentReceiptFile(Optional.of(new File(receiptUrls.get(0))));
+//                Files.deleteIfExists(tempFile);
+//            } else {
+//                publishRequest.setPaymentReceiptFile(Optional.empty());
+//            }
+//        } catch (Exception e) {
+//            logger.error("Ошибка загрузки файлов в S3: {}", e.getMessage());
+//            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//
+//        publishRequest.setPrice(price);
+//        publishRequest.setCategory(category);
+//        publishRequest.setSubcategory(subcategory);
+//        publishRequest.setBank(Optional.ofNullable(bank));
+//        publishRequest.setUserId(userId);
+//
+//        try {
+//            PublishResponse response = publishService.createPublish(publishRequest, images.get(0)); // Используем первый файл изображения
+//            return new ResponseEntity<>(response, HttpStatus.CREATED);
+//        } catch (IllegalArgumentException e) {
+//            logger.error("Ошибка в аргументах: {}", e.getMessage());
+//            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+//        } catch (RuntimeException e) {
+//            logger.error("Ошибка выполнения: {}", e.getMessage());
+//            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+//        }
+//    }
+
+
     @PostMapping(value = "/create", consumes = "multipart/form-data")
     public ResponseEntity<PublishResponse> createPublish(
             @RequestParam("title") String title,
@@ -61,7 +134,6 @@ public class PublishController {
         publishRequest.setMetro(metro);
         publishRequest.setAddress(address);
         publishRequest.setPhoneNumber(phoneNumber);
-
         String tempDir = System.getProperty("java.io.tmpdir");
 
         try {
@@ -112,28 +184,6 @@ public class PublishController {
         }
     }
 
-//    @PostMapping(value = "/create", consumes = "multipart/form-data")
-//    public ResponseEntity<PublishResponse> createPublish(
-//            @RequestParam("title") String title,
-//            @RequestParam("description") String description,
-//            @RequestParam("metro") Metro metro,
-//            @RequestParam("address") String address,
-//            @RequestParam("phoneNumber") String phoneNumber,
-//            @RequestParam("images") List<MultipartFile> images,
-//            @RequestParam("price") double price,
-//            @RequestParam("category") Category category,
-//            @RequestParam("subcategory") Subcategory subcategory,
-//            @RequestParam(value = "bank", required = false) String bank, // Опционально
-//            @RequestParam(value = "paymentReceiptFile", required = false) MultipartFile paymentReceiptFile, // Файл
-//            @RequestParam("userId") Long userId) {
-//
-//        PublishRequest publishRequest = new PublishRequest();
-//        publishRequest.setTitle(title);
-//        publishRequest.setDescription(description);
-//        publishRequest.setMetro(metro);
-//        publishRequest.setAddress(address);
-//        publishRequest.setPhoneNumber(phoneNumber);
-//
 //        List<String> imagePaths = new ArrayList<>();
 //        for (MultipartFile file : images) {
 //            String path = saveFile(file); // Правильный вызов метода
@@ -176,30 +226,30 @@ public class PublishController {
 //        }
 //
 //    }
-//
-//    private String saveFile(MultipartFile file) {
-//        String directoryPath = "";
-//
-//        // Создайте директорию, если она не существует
-//        File directory = new File(directoryPath);
-//        if (!directory.exists()) {
-//            directory.mkdirs(); // Создает папки, если их нет
-//        }
-//
-//        // Генерируйте уникальное имя файла
-//        String uniqueFileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-//
-//        // Полный путь к сохранению файла
-//        String fullPath = directoryPath + uniqueFileName;
-//
-//        try {
-//            // Сохраните файл
-//            file.transferTo(new File(fullPath));
-//            return fullPath; // Верните полный путь для дальнейшего использования
-//        } catch (IOException e) {
-//            throw new RuntimeException("Ошибка при сохранении файла: " + e.getMessage());
-//        }
-//    }
+
+    private String saveFile(MultipartFile file) {
+        String directoryPath = "";
+
+        // Создайте директорию, если она не существует
+        File directory = new File(directoryPath);
+        if (!directory.exists()) {
+            directory.mkdirs(); // Создает папки, если их нет
+        }
+
+        // Генерируйте уникальное имя файла
+        String uniqueFileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+
+        // Полный путь к сохранению файла
+        String fullPath = directoryPath + uniqueFileName;
+
+        try {
+            // Сохраните файл
+            file.transferTo(new File(fullPath));
+            return fullPath; // Верните полный путь для дальнейшего использования
+        } catch (IOException e) {
+            throw new RuntimeException("Ошибка при сохранении файла: " + e.getMessage());
+        }
+    }
 
     @Operation(summary = "Create a publication with details")
     @ApiResponse(responseCode = "201", description = "The publish with details  created successfully")
