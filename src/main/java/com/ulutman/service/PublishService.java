@@ -20,6 +20,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
@@ -43,9 +44,10 @@ public class PublishService {
     private static final String TELEGRAM_BOT_TOKEN = "7967485487:AAGhVVsiOZ3V2ZFonfZqWXoxCpRpVL0D1nE";
     private static final String ADMIN_CHAT_ID = "1818193495";
     private final MyPublishRepository myPublishRepository;
+    private final S3Service s3Service;
 
 
-    public PublishResponse createPublish(PublishRequest publishRequest) {
+    public PublishResponse createPublish(PublishRequest publishRequest, MultipartFile multipartFile) {
         if (publishRequest.getCategory() == null || publishRequest.getSubcategory() == null) {
             throw new IllegalArgumentException("Необходимо выбрать категорию и подкатегорию");
         }

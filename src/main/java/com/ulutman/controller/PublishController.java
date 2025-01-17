@@ -3,10 +3,10 @@ package com.ulutman.controller;
 import ch.qos.logback.classic.Logger;
 import com.ulutman.model.dto.PublishRequest;
 import com.ulutman.model.dto.PublishResponse;
-import com.ulutman.model.entities.BankCard;
 import com.ulutman.model.enums.*;
 import com.ulutman.repository.BankCardRepository;
 import com.ulutman.service.PublishService;
+import com.ulutman.service.S3Service;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -21,9 +21,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -35,7 +36,7 @@ public class PublishController {
     private final PublishService publishService;
     private final BankCardRepository bankCardRepository;
     private static final Logger logger = (Logger) LoggerFactory.getLogger(PublishController.class);
-
+    private final S3Service s3Service;
 
     @Operation(summary = "Create a publication")
     @ApiResponse(responseCode = "201", description = "The publish created successfully")
@@ -61,38 +62,46 @@ public class PublishController {
         publishRequest.setAddress(address);
         publishRequest.setPhoneNumber(phoneNumber);
 
-        List<String> imagePaths = new ArrayList<>();
-        for (MultipartFile file : images) {
-            String path = saveFile(file); // Правильный вызов метода
-            imagePaths.add(path);
+        String tempDir = System.getProperty("java.io.tmpdir");
+
+        try {
+            Map<String, Path> filesMap = new HashMap<>();
+            for (MultipartFile file : images) {
+                Path tempFile = Paths.get(tempDir, file.getOriginalFilename());
+                Files.write(tempFile, file.getBytes());
+                filesMap.put(file.getOriginalFilename(), tempFile);
+            }
+
+            List<String> imageUrls = s3Service.uploadFiles(filesMap);
+            publishRequest.setImages(imageUrls);
+
+            for (Path tempFile : filesMap.values()) {
+                Files.deleteIfExists(tempFile);
+            }
+
+            if (paymentReceiptFile != null && !paymentReceiptFile.isEmpty()) {
+                Path tempFile = Paths.get(tempDir, paymentReceiptFile.getOriginalFilename());
+                Files.write(tempFile, paymentReceiptFile.getBytes());
+                Map<String, Path> receiptMap = Map.of(paymentReceiptFile.getOriginalFilename(), tempFile);
+                List<String> receiptUrls = s3Service.uploadFiles(receiptMap);
+                publishRequest.setPaymentReceiptFile(Optional.of(new File(receiptUrls.get(0))));
+                Files.deleteIfExists(tempFile);
+            } else {
+                publishRequest.setPaymentReceiptFile(Optional.empty());
+            }
+        } catch (Exception e) {
+            logger.error("Ошибка загрузки файлов в S3: {}", e.getMessage());
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        publishRequest.setImages(imagePaths);
+
         publishRequest.setPrice(price);
         publishRequest.setCategory(category);
         publishRequest.setSubcategory(subcategory);
         publishRequest.setBank(Optional.ofNullable(bank));
         publishRequest.setUserId(userId);
-        if (paymentReceiptFile != null && !paymentReceiptFile.isEmpty()) {
-            File tempFile = null;
-            try {
-                tempFile = File.createTempFile("paymentReceipt", ".tmp");
-                paymentReceiptFile.transferTo(tempFile); // Сохраняем файл во временное место
-
-                publishRequest.setPaymentReceiptFile(Optional.of(tempFile));
-            } catch (IOException e) {
-                logger.error("Ошибка при обработке файла: {}", e.getMessage());
-                return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-            } finally {
-                if (tempFile != null && tempFile.exists()) {
-                    tempFile.deleteOnExit();
-                }
-            }
-        } else {
-            publishRequest.setPaymentReceiptFile(Optional.empty());
-        }
 
         try {
-            PublishResponse response = publishService.createPublish(publishRequest);
+            PublishResponse response = publishService.createPublish(publishRequest, images.get(0)); // Используем первый файл изображения
             return new ResponseEntity<>(response, HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
             logger.error("Ошибка в аргументах: {}", e.getMessage());
@@ -101,32 +110,96 @@ public class PublishController {
             logger.error("Ошибка выполнения: {}", e.getMessage());
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
-
     }
 
-    private String saveFile(MultipartFile file) {
-        String directoryPath = "";
-
-        // Создайте директорию, если она не существует
-        File directory = new File(directoryPath);
-        if (!directory.exists()) {
-            directory.mkdirs(); // Создает папки, если их нет
-        }
-
-        // Генерируйте уникальное имя файла
-        String uniqueFileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
-
-        // Полный путь к сохранению файла
-        String fullPath = directoryPath + uniqueFileName;
-
-        try {
-            // Сохраните файл
-            file.transferTo(new File(fullPath));
-            return fullPath; // Верните полный путь для дальнейшего использования
-        } catch (IOException e) {
-            throw new RuntimeException("Ошибка при сохранении файла: " + e.getMessage());
-        }
-    }
+//    @PostMapping(value = "/create", consumes = "multipart/form-data")
+//    public ResponseEntity<PublishResponse> createPublish(
+//            @RequestParam("title") String title,
+//            @RequestParam("description") String description,
+//            @RequestParam("metro") Metro metro,
+//            @RequestParam("address") String address,
+//            @RequestParam("phoneNumber") String phoneNumber,
+//            @RequestParam("images") List<MultipartFile> images,
+//            @RequestParam("price") double price,
+//            @RequestParam("category") Category category,
+//            @RequestParam("subcategory") Subcategory subcategory,
+//            @RequestParam(value = "bank", required = false) String bank, // Опционально
+//            @RequestParam(value = "paymentReceiptFile", required = false) MultipartFile paymentReceiptFile, // Файл
+//            @RequestParam("userId") Long userId) {
+//
+//        PublishRequest publishRequest = new PublishRequest();
+//        publishRequest.setTitle(title);
+//        publishRequest.setDescription(description);
+//        publishRequest.setMetro(metro);
+//        publishRequest.setAddress(address);
+//        publishRequest.setPhoneNumber(phoneNumber);
+//
+//        List<String> imagePaths = new ArrayList<>();
+//        for (MultipartFile file : images) {
+//            String path = saveFile(file); // Правильный вызов метода
+//            imagePaths.add(path);
+//        }
+//        publishRequest.setImages(imagePaths);
+//        publishRequest.setPrice(price);
+//        publishRequest.setCategory(category);
+//        publishRequest.setSubcategory(subcategory);
+//        publishRequest.setBank(Optional.ofNullable(bank));
+//        publishRequest.setUserId(userId);
+//        if (paymentReceiptFile != null && !paymentReceiptFile.isEmpty()) {
+//            File tempFile = null;
+//            try {
+//                tempFile = File.createTempFile("paymentReceipt", ".tmp");
+//                paymentReceiptFile.transferTo(tempFile); // Сохраняем файл во временное место
+//
+//                publishRequest.setPaymentReceiptFile(Optional.of(tempFile));
+//            } catch (IOException e) {
+//                logger.error("Ошибка при обработке файла: {}", e.getMessage());
+//                return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+//            } finally {
+//                if (tempFile != null && tempFile.exists()) {
+//                    tempFile.deleteOnExit();
+//                }
+//            }
+//        } else {
+//            publishRequest.setPaymentReceiptFile(Optional.empty());
+//        }
+//
+//        try {
+//            PublishResponse response = publishService.createPublish(publishRequest);
+//            return new ResponseEntity<>(response, HttpStatus.CREATED);
+//        } catch (IllegalArgumentException e) {
+//            logger.error("Ошибка в аргументах: {}", e.getMessage());
+//            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+//        } catch (RuntimeException e) {
+//            logger.error("Ошибка выполнения: {}", e.getMessage());
+//            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
+//        }
+//
+//    }
+//
+//    private String saveFile(MultipartFile file) {
+//        String directoryPath = "";
+//
+//        // Создайте директорию, если она не существует
+//        File directory = new File(directoryPath);
+//        if (!directory.exists()) {
+//            directory.mkdirs(); // Создает папки, если их нет
+//        }
+//
+//        // Генерируйте уникальное имя файла
+//        String uniqueFileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
+//
+//        // Полный путь к сохранению файла
+//        String fullPath = directoryPath + uniqueFileName;
+//
+//        try {
+//            // Сохраните файл
+//            file.transferTo(new File(fullPath));
+//            return fullPath; // Верните полный путь для дальнейшего использования
+//        } catch (IOException e) {
+//            throw new RuntimeException("Ошибка при сохранении файла: " + e.getMessage());
+//        }
+//    }
 
     @Operation(summary = "Create a publication with details")
     @ApiResponse(responseCode = "201", description = "The publish with details  created successfully")
