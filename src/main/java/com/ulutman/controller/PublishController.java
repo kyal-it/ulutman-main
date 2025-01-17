@@ -8,6 +8,7 @@ import com.ulutman.repository.BankCardRepository;
 import com.ulutman.service.PublishService;
 import com.ulutman.service.S3Service;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -40,92 +41,42 @@ public class PublishController {
 
     @Operation(summary = "Create a publication")
     @ApiResponse(responseCode = "201", description = "The publish created successfully")
-//    @PostMapping(value = "/create", consumes = "multipart/form-data")
-//    public ResponseEntity<PublishResponse> createPublish(
-//            @RequestParam("title") String title,
-//            @RequestParam("description") String description,
-//            @RequestParam("metro") Metro metro,
-//            @RequestParam("address") String address,
-//            @RequestParam("phoneNumber") String phoneNumber,
-//            @RequestParam("images") List<MultipartFile> images,
-//            @RequestParam("price") double price,
-//            @RequestParam("category") Category category,
-//            @RequestParam("subcategory") Subcategory subcategory,
-//            @RequestParam(value = "bank", required = false) String bank, // Опционально
-//            @RequestParam(value = "paymentReceiptFile", required = false) MultipartFile paymentReceiptFile, // Файл
-//            @RequestParam("userId") Long userId) {
-//
-//        PublishRequest publishRequest = new PublishRequest();
-//        publishRequest.setTitle(title);
-//        publishRequest.setDescription(description);
-//        publishRequest.setMetro(metro);
-//        publishRequest.setAddress(address);
-//        publishRequest.setPhoneNumber(phoneNumber);
-//
-//        String tempDir = System.getProperty("java.io.tmpdir");
-//
-//        try {
-//            Map<String, Path> filesMap = new HashMap<>();
-//            for (MultipartFile file : images) {
-//                Path tempFile = Paths.get(tempDir, file.getOriginalFilename());
-//                Files.write(tempFile, file.getBytes());
-//                filesMap.put(file.getOriginalFilename(), tempFile);
-//            }
-//
-//            List<String> imageUrls = s3Service.uploadFiles(filesMap);
-//            publishRequest.setImages(imageUrls);
-//
-//            for (Path tempFile : filesMap.values()) {
-//                Files.deleteIfExists(tempFile);
-//            }
-//
-//            if (paymentReceiptFile != null && !paymentReceiptFile.isEmpty()) {
-//                Path tempFile = Paths.get(tempDir, paymentReceiptFile.getOriginalFilename());
-//                Files.write(tempFile, paymentReceiptFile.getBytes());
-//                Map<String, Path> receiptMap = Map.of(paymentReceiptFile.getOriginalFilename(), tempFile);
-//                List<String> receiptUrls = s3Service.uploadFiles(receiptMap);
-//                publishRequest.setPaymentReceiptFile(Optional.of(new File(receiptUrls.get(0))));
-//                Files.deleteIfExists(tempFile);
-//            } else {
-//                publishRequest.setPaymentReceiptFile(Optional.empty());
-//            }
-//        } catch (Exception e) {
-//            logger.error("Ошибка загрузки файлов в S3: {}", e.getMessage());
-//            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//
-//        publishRequest.setPrice(price);
-//        publishRequest.setCategory(category);
-//        publishRequest.setSubcategory(subcategory);
-//        publishRequest.setBank(Optional.ofNullable(bank));
-//        publishRequest.setUserId(userId);
-//
-//        try {
-//            PublishResponse response = publishService.createPublish(publishRequest, images.get(0)); // Используем первый файл изображения
-//            return new ResponseEntity<>(response, HttpStatus.CREATED);
-//        } catch (IllegalArgumentException e) {
-//            logger.error("Ошибка в аргументах: {}", e.getMessage());
-//            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
-//        } catch (RuntimeException e) {
-//            logger.error("Ошибка выполнения: {}", e.getMessage());
-//            return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
-//        }
-//    }
-
-
     @PostMapping(value = "/create", consumes = "multipart/form-data")
     public ResponseEntity<PublishResponse> createPublish(
+            @Parameter(description = "The title of the publication")
             @RequestParam("title") String title,
+
+            @Parameter(description = "The description of the publication")
             @RequestParam("description") String description,
+
+            @Parameter(description = "The metro area of the publication")
             @RequestParam("metro") Metro metro,
+
+            @Parameter(description = "The address of the publication")
             @RequestParam("address") String address,
+
+            @Parameter(description = "The phone number associated with the publication")
             @RequestParam("phoneNumber") String phoneNumber,
-            @RequestParam("images") List<MultipartFile> images,
+
+            @Parameter(description = "The list of images for the publication")
+            @RequestPart("images") List<MultipartFile> images, // Используем @RequestPart для файлов
+
+            @Parameter(description = "The price of the publication")
             @RequestParam("price") double price,
+
+            @Parameter(description = "The category of the publication")
             @RequestParam("category") Category category,
+
+            @Parameter(description = "The subcategory of the publication")
             @RequestParam("subcategory") Subcategory subcategory,
+
+            @Parameter(description = "The bank associated with the publication (optional)")
             @RequestParam(value = "bank", required = false) String bank, // Опционально
-            @RequestParam(value = "paymentReceiptFile", required = false) MultipartFile paymentReceiptFile, // Файл
+
+            @Parameter(description = "The payment receipt file (optional)")
+            @RequestPart(value = "paymentReceiptFile", required = false) MultipartFile paymentReceiptFile, // Используем @RequestPart для файла
+
+            @Parameter(description = "The user ID associated with the publication")
             @RequestParam("userId") Long userId) {
 
         PublishRequest publishRequest = new PublishRequest();
@@ -134,9 +85,11 @@ public class PublishController {
         publishRequest.setMetro(metro);
         publishRequest.setAddress(address);
         publishRequest.setPhoneNumber(phoneNumber);
+
         String tempDir = System.getProperty("java.io.tmpdir");
 
         try {
+            // Обработка изображений
             Map<String, Path> filesMap = new HashMap<>();
             for (MultipartFile file : images) {
                 Path tempFile = Paths.get(tempDir, file.getOriginalFilename());
@@ -151,6 +104,7 @@ public class PublishController {
                 Files.deleteIfExists(tempFile);
             }
 
+            // Обработка файла с квитанцией (если есть)
             if (paymentReceiptFile != null && !paymentReceiptFile.isEmpty()) {
                 Path tempFile = Paths.get(tempDir, paymentReceiptFile.getOriginalFilename());
                 Files.write(tempFile, paymentReceiptFile.getBytes());
@@ -183,6 +137,7 @@ public class PublishController {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
     }
+
 
 //        List<String> imagePaths = new ArrayList<>();
 //        for (MultipartFile file : images) {
