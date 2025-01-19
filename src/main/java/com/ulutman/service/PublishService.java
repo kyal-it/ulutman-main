@@ -50,31 +50,60 @@ public class PublishService {
     private final S3Service s3Service;
 
 
-    public PublishResponse createPublish(PublishRequest publishRequest, MultipartFile multipartFile) {
+
+
+    public PublishResponse createPublish(PublishRequest publishRequest) {
         if (publishRequest.getCategory() == null || publishRequest.getSubcategory() == null) {
             throw new IllegalArgumentException("Необходимо выбрать категорию и подкатегорию");
         }
+
 
         if (!Category.getAllCategories().contains(publishRequest.getCategory())) {
             throw new IllegalArgumentException("Неверная категория");
         }
 
+
         if (!publishRequest.getCategory().getSubcategories().contains(publishRequest.getSubcategory())) {
             throw new IllegalArgumentException("Неверная подкатегория для выбранной категории");
         }
-        List<String> imageUrls = publishRequest.getImages()
-                .stream()
-                .map(image -> image.startsWith("http") ? image : generateImageUrl(image))
-                .collect(Collectors.toList());
+//        List<String> imageUrls = publishRequest.getImages()
+//                .stream()
+//                .map(image -> image.startsWith("http") ? image : generateImageUrl(image))
+//                .collect(Collectors.toList());
+        // Подготовка файлов для загрузки на S3
+//        List<String> imageUrls = new ArrayList<>();
+//        if (publishRequest.getImages() != null && !publishRequest.getImages().isEmpty()) {
+//            // Создаём Map<String, Path> для передачи в S3Service
+//            Map<String, Path> filesToUpload = new HashMap<>();
+//            for (String imagePath : publishRequest.getImages()) {
+//                Path path = Path.of(imagePath); // Преобразуем строку в Path
+//                String fileName = path.getFileName().toString();
+//                filesToUpload.put(fileName, path);
+//            }
+//
+//            // Загружаем файлы на S3 и получаем URL-ы
+//            imageUrls = s3Service.uploadFiles(filesToUpload);
+//        }
+        List<String> imageUrls = publishRequest.getImages();
+        log.info("URL изображений: {}", imageUrls);
+
+
+        for (String url : imageUrls) {
+            if (!url.startsWith("http")) {
+                throw new IllegalArgumentException("Некорректный URL изображения: " + url);
+            }
+        }
         Publish publish = publishMapper.mapToEntity(publishRequest);
         publish.setCreatedAt(LocalDateTime.now());
         User user = userRepository.findById(publishRequest.getUserId())
                 .orElseThrow(() -> new RuntimeException("Пользователь не найден: " + publishRequest.getUserId()));
 
+
         publish.setUser(user);
         publish.setImages(imageUrls);
         publish.setPublishStatus(PublishStatus.ОДОБРЕН);
         publish.setCategoryStatus(CategoryStatus.АКТИВНО);
+
 
         if (publishRequest.getCategory() == Category.RENT || publishRequest.getCategory() == Category.HOTEL) {
             publish.setActive(false);
@@ -83,7 +112,6 @@ public class PublishService {
         }
 
 
-        // Проверяем, если данные корректные и создаем публикацию
         Publish savedPublish;
         try {
             savedPublish = publishRepository.save(publish);
@@ -91,50 +119,56 @@ public class PublishService {
             throw new IllegalArgumentException("Ошибка при сохранении публикации: " + e.getMessage());
         }
 
+
         if (publishRequest.getCategory() == Category.RENT || publishRequest.getCategory() == Category.HOTEL) {
             if (!publishRequest.getBank().isPresent()) {
                 throw new IllegalArgumentException("Необходимо выбрать банк для категории " + publishRequest.getCategory());
             }
 
+
             if (!publishRequest.getPaymentReceiptFile().isPresent()) {
                 throw new IllegalArgumentException("Необходимо предоставить чек оплаты для категории " + publishRequest.getCategory());
             }
+
 
             sendReceiptAsDocumentToTelegram(publishRequest.getPaymentReceiptFile().get(), savedPublish);
         } else {
             log.info("Bank and payment receipt are not required for category: {}", publishRequest.getCategory());
         }
 
+
         MyPublish myPublish = new MyPublish();
-        myPublish.setUserAccount(user.getUserAccount()); // Убедитесь, что у вас есть метод getUserAccount() в User
-        myPublish.setPublish(savedPublish); // Устанавливаем сохраненную публикацию
+        myPublish.setUserAccount(user.getUserAccount());
+        myPublish.setPublish(savedPublish);
+
 
         myPublishRepository.save(myPublish);
+
 
         // Логируем успешное создание
         log.info("Publication created successfully: {}", savedPublish);
 
+
         return publishMapper.mapToResponse(savedPublish);
     }
 
-    private String generateImageUrl(String imageName) {
-        String baseUrl = "https://example.com/";
-        return baseUrl + imageName;
-    }
 
     @Scheduled(fixedRate = 86400000)
     public void scheduleExpiredPublishesRemoval() {
         removeExpiredPublishes();
     }
 
+
     private void sendReceiptAsDocumentToTelegram(File receiptFile, Publish savedPublish) {
         if (!receiptFile.exists()) {
             throw new RuntimeException("Файл не найден: " + receiptFile.getAbsolutePath());
         }
 
+
         String userEmail = savedPublish.getUser().getEmail();
         String userPhoneNumber = savedPublish.getPhone();
         String nameBank = savedPublish.getBank();
+
 
         String message = String.format(
                 "Новый чек:" + "\n" +
@@ -150,6 +184,7 @@ public class PublishService {
         OkHttpClient client = new OkHttpClient();
         String url = String.format("https://api.telegram.org/bot%s/sendDocument", TELEGRAM_BOT_TOKEN);
 
+
         MultipartBody.Builder builder = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("chat_id", ADMIN_CHAT_ID)
@@ -157,18 +192,22 @@ public class PublishService {
                 .addFormDataPart("document", receiptFile.getName(),
                         RequestBody.create(receiptFile, MediaType.parse("application/pdf")));
 
+
         RequestBody requestBody = builder.build();
+
 
         Request request = new Request.Builder()
                 .url(url)
                 .post(requestBody)
                 .build();
 
+
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
                 e.printStackTrace();
             }
+
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
@@ -179,12 +218,15 @@ public class PublishService {
         });
     }
 
+
     @Transactional
     public void removeExpiredPublishes() {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime expirationTime = now.minusDays(30);// 30 дней назад
 
+
         List<Publish> expiredPublishes = publishRepository.findAllByCreatedAtBefore(expirationTime);
+
 
         for (Publish publish : expiredPublishes) {
             publishRepository.delete(publish);
@@ -198,33 +240,42 @@ public class PublishService {
                     " Команда Ulutman.ru");
         }
 
+
     }
 
+
     public PublishResponse createPublishDetails(PublishRequest publishRequest) {
+
 
         if (publishRequest.getCategory() == null || publishRequest.getSubcategory() == null) {
             throw new IllegalArgumentException("Необходимо выбрать категорию и подкатегорию");
         }
 
+
         if (!Category.getAllSubcategories(publishRequest.getCategory()).contains(publishRequest.getSubcategory())) {
             throw new IllegalArgumentException("Неверная подкатегория для выбранной категории");
         }
 
+
         if (!Category.getAllCategories().contains(publishRequest.getCategory())) {
             throw new IllegalArgumentException("Неверная категория");
         }
+
 
         Publish publish = publishMapper.mapToEntity(publishRequest);
         User user = userRepository.findById(publishRequest.getUserId())
                 .orElseThrow(() -> new RuntimeException("Пользователь не найден " + publishRequest.getUserId()));
         publish.setUser(user);
 
+
         if (publish.getId() == null) {
             publish.setCreateDate(LocalDate.now());
         }
 
+
         publish.setPublishStatus(PublishStatus.ОДОБРЕН);
         publish.setCategoryStatus(CategoryStatus.АКТИВНО);
+
 
         if (publishRequest.getCategory() == Category.REAL_ESTATE || publishRequest.getCategory() == Category.RENT) {
             if (publishRequest.getPropertyDetails() == null) {
@@ -234,16 +285,20 @@ public class PublishService {
             publish.setPropertyDetails(propertyDetails);
         }
 
+
         if (publishRequest.getConditions() == null) {
             throw new IllegalArgumentException("Необходимо заполнить данные о условиях (Conditions) для категории REAL_ESTATE или RENT.");
         }
         Conditions conditions = conditionsMapper.mapToEntity(publishRequest.getConditions());
         publish.setConditions(conditions);
 
+
         Publish savedPublish = publishRepository.save(publish);
+
 
         return publishMapper.mapToResponse(savedPublish);
     }
+
 
     public Integer getNumberOfPublications(Long userId) {
         return publishRepository.countPublicationsByUserId(userId);
