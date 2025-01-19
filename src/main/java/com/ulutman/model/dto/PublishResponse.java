@@ -66,4 +66,8 @@ public class PublishResponse {
 
     Long accountId;
 
+    private Long favoriteCount;
+
+
+
 }

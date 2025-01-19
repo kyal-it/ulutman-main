@@ -64,6 +64,7 @@ public class PublishMapper {
                 .propertyDetails(publish.getPropertyDetails())
                 .conditions(publish.getConditions())
                 .accountId(publish.getUser().getUserAccount().getId())
+                .favoriteCount(publish.getFavoriteCount())
                 .build();
     }
 

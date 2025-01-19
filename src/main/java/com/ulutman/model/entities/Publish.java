@@ -22,7 +22,6 @@ import java.util.Set;
 @Getter
 @Setter
 @NoArgsConstructor
-
 public class Publish {
 
     @Id
@@ -114,7 +113,11 @@ public class Publish {
     private LocalDateTime lastBoostedAt;
 
     private LocalDateTime nextBoostTime;
-    private String timeToNextBoost; // Добавляем поле для строки с временем до следующего бустинга
+
+    private String timeToNextBoost;
+
+    @Column(name = "favorite_count")
+    private Long favoriteCount = 0L;
 
     @ManyToOne(
             cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}
