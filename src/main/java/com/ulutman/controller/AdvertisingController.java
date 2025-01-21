@@ -1,5 +1,7 @@
 package com.ulutman.controller;
 
+
+import com.ulutman.model.dto.AdVersitingResponse;
 import com.ulutman.model.entities.AdVersiting;
 import com.ulutman.service.AdVersitingService;
 import io.jsonwebtoken.io.IOException;
@@ -13,8 +15,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+
 import java.security.Principal;
 import java.util.List;
+import java.util.stream.Collectors;
+
 
 @RestController
 @RequestMapping("/api/advertising")
@@ -22,11 +27,14 @@ import java.util.List;
 @SecurityRequirement(name = "Authorization")
 public class AdvertisingController {
 
+
     private final AdVersitingService adVersitingService;
+
 
     public AdvertisingController(AdVersitingService adVersitingService) {
         this.adVersitingService = adVersitingService;
     }
+
 
     @Operation(summary = "Create a Adversting")
     @ApiResponse(responseCode = "201", description = "successfully create a Adversting")
@@ -52,11 +60,27 @@ public class AdvertisingController {
         }
     }
 
+
     @Operation(summary = "returns all active posts")
     @ApiResponse(responseCode = "201", description = "successfully returns all active posts")
     @GetMapping
-    public ResponseEntity<List<AdVersiting>> getAllAds() {
+    public ResponseEntity<List<AdVersitingResponse>> getAllAds() {
         List<AdVersiting> ads = adVersitingService.getAllActiveAds();
-        return ResponseEntity.ok(ads);
+        List<AdVersitingResponse> responseList = ads.stream()
+                .map(ad -> AdVersitingResponse.builder()
+                        .id(ad.getId())
+                        .imageFile(ad.getImagePath())
+                        .active(ad.isActive())
+                        .paymentReceipt(ad.getPaymentReceipt())
+                        .bank(ad.getBank())
+                        .userId(ad.getUser().getId())
+                        .userGmail(ad.getUser().getEmail())
+                        .build())
+                .collect(Collectors.toList());
+
+
+        return ResponseEntity.ok(responseList);
     }
+
+
 }

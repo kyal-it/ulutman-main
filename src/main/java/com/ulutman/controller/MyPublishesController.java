@@ -1,11 +1,11 @@
 package com.ulutman.controller;
 
+
 import com.ulutman.exception.NotFoundException;
 import com.ulutman.exception.UnauthorizedException;
 import com.ulutman.model.dto.AdVersitingResponse;
 import com.ulutman.model.dto.PublishRequest;
 import com.ulutman.model.dto.PublishResponse;
-import com.ulutman.model.entities.AdVersiting;
 import com.ulutman.model.entities.User;
 import com.ulutman.service.AdVersitingService;
 import com.ulutman.service.MyPublishesService;
@@ -20,8 +20,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+
 import java.util.List;
 import java.util.Set;
+
 
 @RestController
 @RequiredArgsConstructor
@@ -32,32 +34,38 @@ public class MyPublishesController {
     private  final AdVersitingService adVersitingService;
     private final MyPublishesService myPublishesService;
 
+
     //Возвращает список активных публикаций пользователя
     @Operation(summary = "Get all active publications for a user")
     @ApiResponse(responseCode = "201", description = "successfully returned a list of active user publications")
-    @GetMapping("/{userId}")
-    public ResponseEntity<List<PublishResponse>> myPublishes(@PathVariable Long userId) {
-        List<PublishResponse> publishes = publishService.myActivePublishes(userId);
+    @GetMapping("/getAllMyPublishes")
+    public ResponseEntity<List<PublishResponse>> myPublishes(@AuthenticationPrincipal User user) {
+        List<PublishResponse> publishes = publishService.myActivePublishes(user.getId());
         return ResponseEntity.ok(publishes);
     }
 
-    //Возвращает список активных публикаций пользователя
-    @Operation(summary = "Get all active adversting for a user")
-    @ApiResponse(responseCode = "201", description = "successfully returned a list of active user publications")
-    @GetMapping("/ads/{userId}")
-    public ResponseEntity<List<AdVersitingResponse>> myAdverstings(@PathVariable Long userId) {
-        List<AdVersitingResponse> publishes = publishService.myActiveAdVerstings(userId);
-        return ResponseEntity.ok(publishes);
-    }
+
+
+
+//    //Возвращает список активных рекламы
+//    @Operation(summary = "Get all active adversting ")
+//    @ApiResponse(responseCode = "201", description = "successfully returned a list of active user publications")
+//    @GetMapping("/ads")
+//    public ResponseEntity<List<AdVersitingResponse>> myAdverstings() {
+//        List<AdVersitingResponse> publishes = publishService.myActiveAdVerstings();
+//        return ResponseEntity.ok(publishes);
+//    }
+
 
     //Возвращает список активных рекламы пользователя
     @Operation(summary = "Returns a list of the user's active advertisements")
     @ApiResponse(responseCode = "201", description = "successfully returns a list of the user's active advertisements")
     @GetMapping("/my-ads")
-    public List<AdVersiting> getMyAds(@AuthenticationPrincipal User user) {
+    public List<AdVersitingResponse> getMyAds(@AuthenticationPrincipal User user) {
         Long userId = user.getId();
-        return adVersitingService.getAllActiveAdsForUser(userId);
+        return publishService.getAllActiveAdsForUser(userId);
     }
+
 
     //Удаляет рекламы по id пользователя
     @Operation(summary = "Removes advertisements by user ID")
@@ -91,6 +99,7 @@ public class MyPublishesController {
 ////        return ResponseEntity.ok(activatedPublish);
 ////    }
 
+
     //Удаляет публикации пользователя
     @Operation(summary = "Deletes a user's publishes")
     @ApiResponse(responseCode = "201", description = "Posts successfully deleted")
@@ -108,6 +117,8 @@ public class MyPublishesController {
     }
 
 
+
+
     //Удаляет все публикации пользователя
     @Operation(summary = "Deletes all user posts")
     @ApiResponse(responseCode = "201", description = "successfully all publications were deleted")
@@ -116,6 +127,7 @@ public class MyPublishesController {
         publishService.deleteAllUserPublishes(userId);
         return ResponseEntity.ok("Все публикации успешно удалены");
     }
+
 
     //Возвращает список неактивных публикаций пользователя
     @Operation(summary = "Returns a list of inactive user posts")
@@ -126,6 +138,7 @@ public class MyPublishesController {
         return ResponseEntity.ok(inactivePublishes);
     }
 
+
     //Обновляет информацию о публикации
     @Operation(summary = "Edits publication information")
     @ApiResponse(responseCode = "201", description = "successfully edited information about the publication")
@@ -135,6 +148,7 @@ public class MyPublishesController {
         return ResponseEntity.ok(updatedPublish);
     }
 
+
     //Возвращает список отклоненных публикаций пользователя
     @Operation(summary = "Returns a list of user's rejected posts")
     @ApiResponse(responseCode = "201", description = "The list of rejected user publications was successfully restored")
@@ -143,6 +157,8 @@ public class MyPublishesController {
         List<PublishResponse> rejectedPublishes = publishService.getRejectedPublishes(userId);
         return ResponseEntity.ok(rejectedPublishes);
     }
+
+
 
 
     @Operation(summary = "returns to the client the number of favorites for a specific publication")
@@ -158,7 +174,7 @@ public class MyPublishesController {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
-//
+    //
 ////    // Поднять свои публикации на первый ряд в методе getAll
 ////    @Operation(summary = "Raise your publications to the front row")
 ////    @ApiResponse(responseCode = "201", description = "All your publications have successfully risen to the first row")
@@ -187,6 +203,7 @@ public class MyPublishesController {
             return ResponseEntity.internalServerError().build(); //или более специфичный ответ об ошибке
         }
     }
+
 
     @PutMapping("/boostAdversting/{adId}")
     public ResponseEntity<AdVersitingResponse> boostAdversting(@PathVariable Long adId, @RequestParam Long userId) {
