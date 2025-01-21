@@ -42,7 +42,8 @@ public class AdVersiting {
     private LocalDateTime lastBoostedAt;
 
     private LocalDateTime nextBoostTime;
-    private String timeToNextBoost; // Добавляем поле для строки с временем до следующего бустинга
+
+    private String timeToNextBoost;
 
 
     public AdVersiting(String imagePath, boolean active, String paymentReceipt, String bank, User user) {

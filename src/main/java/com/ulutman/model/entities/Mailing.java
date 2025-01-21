@@ -46,7 +46,7 @@ public class Mailing {
 
     LocalDate createDate;
 
-    @JsonBackReference // Обратная связь с User
+    @JsonBackReference
     @ManyToMany
     @JoinTable(
             name = "mailing_user",

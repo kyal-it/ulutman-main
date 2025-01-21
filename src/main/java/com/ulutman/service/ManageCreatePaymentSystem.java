@@ -22,11 +22,6 @@ public class ManageCreatePaymentSystem {
     final MailingService mailingService;
     final PublishMapper publishMapper;
 
-//    public List<Publish> getAllDeactivatedPublications() {
-//        log.info("Получение всех деактивированных публикаций");
-//        return publishRepository.findAllByActiveFalse();
-//    }
-
 
     public List<PublishResponse> findAllDeactivatedPublications() {
         List<Publish> publishes = publishRepository.findAllByActiveFalse();
@@ -54,6 +49,7 @@ public class ManageCreatePaymentSystem {
         );
         log.info("Публикация активирована и уведомление отправлено пользователю: {}", publication.getUser().getId());
     }
+
 
     public void deactivatePublication(Long publicationId) {
         log.info("Деактивация публикации с ID: {}", publicationId);

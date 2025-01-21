@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -46,20 +45,8 @@ public class MyPublishesService {
 
 
         return myActivePublish.stream()
-                .map(this::mapToResponseWithNextBoost) // Изменение: используем новый метод map
+                .map(this::mapToResponseWithNextBoost)
                 .collect(Collectors.toList());
-    }
-
-
-    public List<AdVersitingResponse> myActiveAdVerstings() {
-        List<AdVersiting> myActivePublish = adVersitingRepository.findAllActiveAdverting();
-
-
-        return myActivePublish.stream()
-                .map(this::mapToAdResponseWithNextBoost)
-                .collect(Collectors.toList());
-
-
     }
 
 
@@ -72,32 +59,6 @@ public class MyPublishesService {
                 .collect(Collectors.toList());
 
 
-    }
-
-
-
-
-    @Transactional
-    public PublishResponse deactivatePublish(Long userId, Long publishId) throws UnauthorizedException {
-        Publish publish = publishRepository.findById(publishId).orElseThrow(() -> new NotFoundException("Публикация не найдена"));
-        if (!publish.getUser().getId().equals(userId)) {
-            throw new UnauthorizedException("Недостаточно прав для деактивации этой публикации");
-        }
-        publish.setActive(false);
-        Publish deactivatedPublish = publishRepository.save(publish);
-        return publishMapper.mapToResponse(deactivatedPublish);
-    }
-
-
-    @Transactional
-    public PublishResponse activatePublish(Long userId, Long publishId) throws UnauthorizedException {
-        Publish publish = publishRepository.findById(publishId).orElseThrow(() -> new NotFoundException("Публикация не найдена"));
-        if (!publish.getUser().getId().equals(userId)) {
-            throw new UnauthorizedException("Недостаточно прав для активации этой публикации");
-        }
-        publish.setActive(true);
-        Publish activatedPublish = publishRepository.save(publish);
-        return publishMapper.mapToResponse(activatedPublish);
     }
 
 
@@ -117,11 +78,8 @@ public class MyPublishesService {
         myPublishRepository.deleteAllByPublishIds(publishIdsToDelete);
 
 
-
-
         publishRepository.deleteAll(userPublishes);
     }
-
 
 
 
@@ -190,18 +148,6 @@ public class MyPublishesService {
     }
 
 
-//    public List<PublishResponse> myActivePublications(Long userId) {
-//        List<Publish> myActivePublish = userRepository.getAllPublishByUserId(userId);
-//
-//        myActivePublish.forEach(this::boostIfNeeded);
-//
-//        return myActivePublish.stream()
-//                .map(publishMapper::mapToResponse)
-//                .collect(Collectors.toList());
-//    }
-
-
-    // новый метод
     public PublishResponse boostPublication(Long userId, Long publishId) {
         Publish publish = publishRepository.findByIdAndUserId(publishId, userId);
 
@@ -217,8 +163,6 @@ public class MyPublishesService {
 
         return mapToResponseWithNextBoost(publish);
     }
-
-
 
 
     public AdVersitingResponse boostAdversting(Long userId, Long adId) {
@@ -237,19 +181,6 @@ public class MyPublishesService {
     }
 
 
-
-
-//    public List<PublishResponse> myActivePublications(Long userId) {
-//        List<Publish> myActivePublish = userRepository.getAllPublishByUserId(userId);
-//
-//        myActivePublish.forEach(this::boostIfNeeded);
-//
-//        return myActivePublish.stream()
-//                .map(this::mapToResponseWithNextBoost) // Изменение: используем новый метод map
-//                .collect(Collectors.toList());
-//    }
-
-
     private void boostIfNeeded(Publish publish) {
         LocalDateTime now = LocalDateTime.now();
         if (publish.getLastBoostedAt() == null || ChronoUnit.HOURS.between(publish.getLastBoostedAt(), now) >= 24) {
@@ -257,16 +188,6 @@ public class MyPublishesService {
             publishRepository.save(publish);
         }
     }
-
-
-//    public List<AdVersiting> getAllActiveAds() {
-//        List<AdVersiting> activeAds = adVersitingRepository.findAllActiveAdverting();
-//
-//        activeAds.forEach(this::boostIfNeeded);
-//        return activeAds.stream()
-//                .sorted(Comparator.comparing(AdVersiting::getLastBoostedTime, Comparator.nullsFirst(Comparator.reverseOrder())))
-//                .toList();
-//    }
 
 
     private void boostIfNeeded(AdVersiting ad) {
@@ -311,7 +232,7 @@ public class MyPublishesService {
         } else if (minutes > 0) {
             timeString.append(minutes).append("мин");
         } else {
-            return "Сейчас"; // Или "" если нужно пустую строку
+            return "Сейчас";
         }
 
 
@@ -319,12 +240,10 @@ public class MyPublishesService {
     }
 
 
-
-
     private LocalDateTime calculateNextBoostTime(Publish publish) {
         LocalDateTime lastBoostedAt = publish.getLastBoostedAt();
         if (lastBoostedAt == null) {
-            return LocalDateTime.now().plusHours(24); // Первый буст через 24 часа
+            return LocalDateTime.now().plusHours(24);
         } else {
             LocalDateTime nextBoost = lastBoostedAt.plusHours(24);
             return nextBoost.isBefore(LocalDateTime.now()) ? LocalDateTime.now().plusHours(24) : nextBoost; //Если уже пора бустить - через 24 часа от СЕЙЧАС
@@ -335,7 +254,7 @@ public class MyPublishesService {
     private LocalDateTime calculateNextBoostTimeAdcersting(AdVersiting publish) {
         LocalDateTime lastBoostedAt = publish.getLastBoostedAt();
         if (lastBoostedAt == null) {
-            return LocalDateTime.now().plusHours(24); // Первый буст через 24 часа
+            return LocalDateTime.now().plusHours(24);
         } else {
             LocalDateTime nextBoost = lastBoostedAt.plusHours(24);
             return nextBoost.isBefore(LocalDateTime.now()) ? LocalDateTime.now().plusHours(24) : nextBoost; //Если уже пора бустить - через 24 часа от СЕЙЧАС

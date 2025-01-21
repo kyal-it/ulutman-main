@@ -27,7 +27,7 @@ public class AdVersitingResponse {
 
     LocalDateTime nextBoostTime;
 
-    String timeToNextBoost; // Добавляем поле для строки с временем до следующего бустинга
+    String timeToNextBoost;
 
     Long userId;
 

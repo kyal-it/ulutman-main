@@ -4,19 +4,14 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.ulutman.model.enums.*;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+
 
 @Entity
 @Table(name = "publishes")
@@ -45,9 +40,6 @@ public class Publish {
 
     @Enumerated(EnumType.STRING)
     private Subcategory subCategory;
-
-//    @Enumerated(EnumType.STRING)
-//    private Bank bank;
 
     @Enumerated(EnumType.STRING)
     private Metro metro;
@@ -93,11 +85,9 @@ public class Publish {
     private String bank;
 
     @ElementCollection
-    @CollectionTable(name = "publish_images")  // Отдельная таблица для хранения изображений
+    @CollectionTable(name = "publish_images")
     @Column(name = "image")
     private List<String> images;
-
-//    private String image;
 
     @Column(name = "create_date")
     private LocalDate createDate;
@@ -128,21 +118,21 @@ public class Publish {
     )
     private Payment payment;
 
-    @JsonManagedReference // Это поле будет ссылаться на Favorite
+    @JsonManagedReference
     @ManyToMany(cascade = CascadeType.ALL, mappedBy = "publishes")
     List<Favorite> favorites;
 
-    @JsonBackReference // Обратная связь с User
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id",nullable = false)
     private User user;
 
-    @JsonManagedReference // Это поле будет ссылаться на PropertyDetails
+    @JsonManagedReference
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "property_details_id",referencedColumnName = "id")
     private PropertyDetails propertyDetails;
 
-    @JsonManagedReference // Это поле будет ссылаться на Conditions
+    @JsonManagedReference
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "conditions_id",referencedColumnName = "id")
     private Conditions conditions;

@@ -27,12 +27,12 @@ public class UserAccount {
     @OneToMany(mappedBy = "userAccount", cascade = CascadeType.ALL)
     private List<Message> messages;
 
-    @JsonManagedReference // Это поле будет ссылаться на myPublishes
+    @JsonManagedReference
     @OneToMany(mappedBy = "userAccount", cascade = CascadeType.ALL)
-    private List<MyPublish> myPublishes; // Убедитесь, что это List<MyPublish>
+    private List<MyPublish> myPublishes;
 
-    @JsonBackReference // Обратная связь с User
+    @JsonBackReference
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_id", referencedColumnName = "id") // Указываем имя столбца для связи
-    private User user; // Это поле связывает UserAccount с User
+    @JoinColumn(name = "user_id", referencedColumnName = "id")
+    private User user;
 }

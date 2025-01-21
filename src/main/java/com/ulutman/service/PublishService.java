@@ -22,7 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
+
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -41,15 +41,11 @@ public class PublishService {
     private final PropertyDetailsMapper propertyDetailsMapper;
     private final ConditionsMapper conditionsMapper;
     private MailingService mailingService;
-//    private static final String TELEGRAM_BOT_TOKEN = "7967485487:AAGhVVsiOZ3V2ZFonfZqWXoxCpRpVL0D1nE";
-//    private static final String ADMIN_CHAT_ID = "1818193495";
+
 
     private static final String ADMIN_CHAT_ID = "6640338760";
     private static final String TELEGRAM_BOT_TOKEN = "7721979760:AAGc8x9AXc5auPzVZX8ajUQjJvXAgNpK6_g";
     private final MyPublishRepository myPublishRepository;
-    private final S3Service s3Service;
-
-
 
 
     public PublishResponse createPublish(PublishRequest publishRequest) {
@@ -66,24 +62,7 @@ public class PublishService {
         if (!publishRequest.getCategory().getSubcategories().contains(publishRequest.getSubcategory())) {
             throw new IllegalArgumentException("Неверная подкатегория для выбранной категории");
         }
-//        List<String> imageUrls = publishRequest.getImages()
-//                .stream()
-//                .map(image -> image.startsWith("http") ? image : generateImageUrl(image))
-//                .collect(Collectors.toList());
-        // Подготовка файлов для загрузки на S3
-//        List<String> imageUrls = new ArrayList<>();
-//        if (publishRequest.getImages() != null && !publishRequest.getImages().isEmpty()) {
-//            // Создаём Map<String, Path> для передачи в S3Service
-//            Map<String, Path> filesToUpload = new HashMap<>();
-//            for (String imagePath : publishRequest.getImages()) {
-//                Path path = Path.of(imagePath); // Преобразуем строку в Path
-//                String fileName = path.getFileName().toString();
-//                filesToUpload.put(fileName, path);
-//            }
-//
-//            // Загружаем файлы на S3 и получаем URL-ы
-//            imageUrls = s3Service.uploadFiles(filesToUpload);
-//        }
+
         List<String> imageUrls = publishRequest.getImages();
         log.info("URL изображений: {}", imageUrls);
 
@@ -98,7 +77,6 @@ public class PublishService {
         User user = userRepository.findById(publishRequest.getUserId())
                 .orElseThrow(() -> new RuntimeException("Пользователь не найден: " + publishRequest.getUserId()));
 
-
         publish.setUser(user);
         publish.setImages(imageUrls);
         publish.setPublishStatus(PublishStatus.ОДОБРЕН);
@@ -110,7 +88,6 @@ public class PublishService {
         } else {
             publish.setActive(true);
         }
-
 
         Publish savedPublish;
         try {
@@ -277,38 +254,6 @@ public class PublishService {
         return publishRepository.countPublicationsByUserId(userId);
     }
 
-//    public List<PublishResponse> getAll(Principal principal) {
-//        // Получаем текущего пользователя
-//        User user = userRepository.findByEmail(principal.getName())
-//                .orElseThrow(() -> new NotFoundException("User not found"));
-//
-//        // Получаем избранное для этого пользователя
-//        Favorite favorite = user.getFavorites();
-//        Set<Publish> favoritePublishes = (favorite != null) ? favorite.getPublishes() : new HashSet<>();
-//
-//        // Возвращаем все публикации, устанавливая detailFavorite в зависимости от того, добавлено ли в избранное
-//        return publishRepository.findAll().stream()
-//                .peek(publish -> {
-//                    // Если публикация в избранном, устанавливаем detailFavorite в true, иначе false
-//                    if (favoritePublishes.contains(publish)) {
-//                        publish.setDetailFavorite(true);
-//                    } else {
-//                        publish.setDetailFavorite(false);
-//                    }
-//                })
-//                .map(publishMapper::mapToResponse)
-//                .collect(Collectors.toList());
-//    }
-
-//    public List<PublishResponse> getAll() {
-//        return publishRepository.findAll().stream()
-//                .peek(publish -> publish.setDetailFavorite(false)) // Устанавливаем detailFavorite в false
-//                .map(publishMapper::mapToResponse)
-//                .collect(Collectors.toList());
-//    }
-
-//
-
 
     public PublishResponse findById(Long id) {
         Publish publish = publishRepository.findById(id)
@@ -322,7 +267,6 @@ public class PublishService {
         existingPublish.setDescription(publishRequest.getDescription());
         existingPublish.setMetro(publishRequest.getMetro());
         existingPublish.setAddress(publishRequest.getAddress());
-//        existingPublish.setImage(publishRequest.getImage());
         existingPublish.setCategory(publishRequest.getCategory());
         existingPublish.setSubCategory(publishRequest.getSubcategory());
         publishRepository.save(existingPublish);
@@ -346,13 +290,6 @@ public class PublishService {
                 .collect(Collectors.toList());
     }
 
-//    public List<PublishResponse> getAll() {
-//        return publishRepository.findAll().stream()
-//                .peek(publish -> publish.setDetailFavorite(false)) // Устанавливаем detailFavorite в false
-//                .filter(Publish::isActive)
-//                .map(publishMapper::mapToResponse)
-//                .collect(Collectors.toList());
-//    }
 
     @Transactional(readOnly = true)
     public List<PublishResponse> filterPublishes(

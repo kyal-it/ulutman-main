@@ -1,13 +1,11 @@
 package com.ulutman.model.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Set;
+
 
 @Entity
 @Table(name = "myPublishes")
@@ -20,8 +18,8 @@ public class MyPublish {
     )
     Long id;
 
-    @JsonBackReference // Обратная связь с userAccount
-    @ManyToOne // Изменено на ManyToOne
+    @JsonBackReference
+    @ManyToOne
     @JoinColumn(name = "user_account_id")
     private UserAccount userAccount;
 

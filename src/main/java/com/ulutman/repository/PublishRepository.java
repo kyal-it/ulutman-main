@@ -7,7 +7,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -16,7 +15,7 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Set;
+
 
 
 @Repository
@@ -26,112 +25,71 @@ public interface PublishRepository extends JpaRepository<Publish, Long> {
     @Query("SELECT p FROM Publish p WHERE p.user.id = :userId")
     List<Publish> findAllByUserId(@Param("userId") Long userId);
 
-
-    @Query("SELECT p FROM Publish p WHERE p.user.id = :userId")
-    List<Publish> findByUserId(@Param("userId") Long userId);
-
-
-    @Query("SELECT p FROM Publish p WHERE p.id IN (:publishIds) AND p.user.id = :userId")
-    List<Publish> findByIdInAndUserId(@Param("publishIds") Set<Long> publishIds, @Param("userId") Long userId);
-
-
     @Query("SELECT p FROM Publish p WHERE LOWER(p.title) LIKE LOWER(CONCAT( :title, '%'))")
     List<Publish> filterPublishesByTitle(@Param("title") String title);
-
 
     @Query("SELECT p FROM Publish p WHERE (:categories IS NULL OR p.category IN :categories)")
     List<Publish> filterPublishesByCategory(@Param("categories") List<Category> categories);
 
-
     @Query("SELECT p FROM Publish p WHERE p.publishStatus IN :publishStatuses")
     List<Publish> filterPublishesByStatus(@Param("publishStatuses") List<PublishStatus> publishStatuses);
-
 
     @Query("SELECT p FROM Publish p WHERE (:createDates IS NULL OR p.createDate IN :createDates)")
     List<Publish> filterPublishesByCreateDate(@Param("createDates") List<LocalDate> createDates);
 
-
-
-
     @Query("SELECT p FROM Publish p WHERE (:names IS NULL OR LOWER(p.user.name) LIKE LOWER(CONCAT(:names, '%')))")
     List<Publish> filterPublishesByUserName(@Param("names") String names);
-
-
-
 
     @Query("SELECT p FROM Publish p WHERE (:categoryStatus IS NULL OR p.categoryStatus IN :categoryStatus)")
     List<Publish> filterPublishesByCategoryStatus(@Param("categoryStatus") List<CategoryStatus> categoryStatus);
 
-
-
-
     @Query("SELECT COUNT(p) FROM Publish p WHERE p.user.id = :userId")
     Integer countPublicationsByUserId(@Param("userId") Long userId);
-
 
     @Query("SELECT p FROM Publish p WHERE p.user.id = :userId")
     List<Publish> filterPublishesByUser(@Param("userId") Long userId);
 
-
     @Query("SELECT COUNT(p) FROM Publish p WHERE p.user.id = :userId")
     long countByUser(@Param("userId") Long userId);
-
 
     @Query("SELECT publish FROM Publish publish WHERE publish.category=('WORK')")
     List<Publish> findByCategoryWork();
 
-
     @Query("SELECT  publish FROM Publish publish WHERE  publish.category = 'WORK' AND publish.subCategory= ?1")
     List<Publish> findBySubCategoryWORK(Subcategory subCategory);
-
 
     @Query("SELECT publish FROM Publish publish WHERE publish.category=('RENT')")
     List<Publish> findByCategoryRent();
 
-
     @Query("SELECT publish FROM Publish  publish WHERE publish.category = 'RENT' AND publish.subCategory= ?1")
     List<Publish> findBySubCategoryRent(Subcategory subCategory);
-
 
     @Query("SELECT publish FROM Publish publish WHERE publish.category=('SELL')")
     List<Publish> findByCategorySell();
 
-
     @Query("SELECT publish FROM Publish publish WHERE publish.category='SELL' AND publish.subCategory = ?1")
     List<Publish> findBySubCategorySell(Subcategory subCategory);
-
 
     @Query("SELECT publish FROM Publish publish WHERE publish.category=('HOTEL')")
     List<Publish> findByCategoryHotel();
 
-
     @Query("SELECT publish FROM Publish publish WHERE publish.category = 'HOTEL' AND  publish.subCategory =?1")
     List<Publish> findBySubCategoryHotel(Subcategory subCategory);
-
 
     @Query("SELECT publish FROM Publish publish WHERE publish.category =('AUTO')")
     List<Publish> findByCategoryServices();
 
-
     @Query("SELECT publish FROM Publish  publish WHERE publish.category = 'AUTO' AND publish.subCategory =?1")
     List<Publish> findBySubCategoryAUTO(Subcategory subCategory);
-
 
     @Query("SELECT publish FROM Publish  publish WHERE publish.category = 'SERVICES' AND publish.subCategory =?1")
     List<Publish> findBySubCategoryServices(Subcategory subCategory);
 
-
     @Query("SELECT publish FROM Publish publish WHERE publish.category=('REAL_ESTATE')")
     List<Publish> findByCategoryRealEstate();
 
-
     @Query("SELECT publish FROM Publish publish WHERE publish.category = 'REAL_ESTATE' AND publish.subCategory = ?1")
     List<Publish> findBySubCategoryREAL_ESTATE(Subcategory subCategory);
-
-
-    @Query("SELECT p FROM Publish p WHERE p.categoryStatus = :categoryStatus")
-    List<Publish> findByCategoryStatus(@Param("categoryStatus") CategoryStatus categoryStatus);
-
 
     @Query("SELECT p FROM Publish p WHERE (:categories IS NULL OR p.category IN :categories) " +
             "ORDER BY " +
@@ -142,9 +100,6 @@ public interface PublishRepository extends JpaRepository<Publish, Long> {
             @Param("categories") List<Category> categories,
             @Param("sortBy") String sortBy
     );
-
-
-
 
     @Query("SELECT p FROM Publish p " +
             "JOIN p.propertyDetails pd " +
@@ -173,56 +128,25 @@ public interface PublishRepository extends JpaRepository<Publish, Long> {
             @Param("transportDistance") Double transportDistance
     );
 
-
     @Query("SELECT p FROM Publish p WHERE p.createdAt < :expirationTime")
     List<Publish> findAllByCreatedAtBefore(@Param("expirationTime") LocalDateTime expirationTime);
 
-
-    @Query("SELECT p FROM Publish p WHERE p.category IN :categories AND p.title IN :titles AND p.metro IN :metros")
-    List<Publish> findFilteredPublishes(@Param("categories") List<Category> categories,
-                                        @Param("titles") List<String> titles,
-                                        @Param("metros") List<Metro> metros);
-
-
     List<Publish> findAll(Specification<Publish> specification);
-
-
-
 
     @Query("SELECT p FROM Publish p WHERE p.user.id = :userId AND p.active = false")
     List<Publish> findByUserIdAndActiveFalse(@Param("userId") Long userId);
 
-
     @Query("SELECT p FROM Publish p WHERE p.user.id = :userId AND p.publishStatus = :status")
     List<Publish> findByUserIdAndStatus(@Param("userId") Long userId, @Param("status") PublishStatus status);
-
 
     @Query("SELECT p FROM Publish p WHERE p.active = false")
     List<Publish> findAllByActiveFalse();
 
-
-//    @Query("SELECT new com.ulutman.model.entities.Publish(p.id, p.createdAt, p.title, p.description, p.price, p.category, p.subCategory, p.metro, p.address, p.phone, p.active) FROM Publish p WHERE p.active = false")
-//    List<Publish> findAllByActiveFalse();
-
-
-
-
     @Query("SELECT p FROM Publish p WHERE p.active = true ORDER BY p.lastBoostedAt DESC NULLS LAST")
     List<Publish> findAllActivePublishes();
 
-
-    @Modifying
-    @Query(value = "DELETE FROM publishes p USING my_publishes mp WHERE p.id = mp.publish_id AND p.id IN (:publishIds) AND p.user_id = :userId", nativeQuery = true)
-    int deletePublishesAndMyPublishes(Set<Long> publishIds, Long userId);
-
-
     @Query("SELECT p FROM Publish p WHERE p.id = :id AND p.user.id = :userId")
     Publish findByIdAndUserId(@Param("id") Long id, @Param("userId") Long userId);
-
-
-    @Query("SELECT p FROM Publish p WHERE p.user.id = :userId AND p.active = true") //Добавлен фильтр по isActive
-    List<Publish> getAllPublishByUserId(@Param("userId") Long userId);
-
 
     @Query("SELECT p FROM Publish p WHERE p.active = true AND p.user.id = :userId ORDER BY p.lastBoostedAt DESC NULLS LAST")
     List<Publish> findAllActivePublishesByUserId(Long userId);
