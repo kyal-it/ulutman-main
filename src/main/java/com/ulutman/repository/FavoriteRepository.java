@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-
 @Service
 @Repository
 public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
@@ -21,5 +20,4 @@ public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
     Long countByPublishId(@Param("publishId") Long publishId);
 
     Optional<Favorite> findByUser(User user);
-
 }

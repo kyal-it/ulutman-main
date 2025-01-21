@@ -15,6 +15,7 @@ import java.util.List;
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ManagePaymentAdversting {
+
     final MailingService mailingService;
     final AdVersitingRepository adVersitingRepository;
 

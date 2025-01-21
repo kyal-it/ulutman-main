@@ -119,7 +119,7 @@ public class ManageCategoryService {
             }
 
             if (filteredPublishes.isEmpty()) {
-                return Collections.emptyList();  // Если ничего не найдено по пользователям
+                return Collections.emptyList();
             }
         }
 

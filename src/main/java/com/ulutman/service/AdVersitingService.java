@@ -1,6 +1,5 @@
 package com.ulutman.service;
 
-
 import com.ulutman.model.entities.AdVersiting;
 import com.ulutman.model.entities.User;
 import com.ulutman.repository.AdVersitingRepository;
@@ -28,10 +27,8 @@ import okhttp3.*;
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
 
-
 @Service
 public class AdVersitingService {
-
 
     private final AdVersitingRepository adVersitingRepository;
     private final UserRepository userRepository;
@@ -42,14 +39,12 @@ public class AdVersitingService {
     @Autowired
     private S3Service s3Service;
 
-
     @Autowired
     public AdVersitingService(AdVersitingRepository adVersitingRepository, UserRepository userRepository, MailingService mailingService) throws IOException {
         this.adVersitingRepository = adVersitingRepository;
         this.userRepository = userRepository;
         this.mailingService = mailingService;
     }
-
 
     public void createAdvertising(MultipartFile imageFile, String bank, MultipartFile paymentReceiptFile, Principal principal) throws IOException, MessagingException {
         Optional<User> userOptional = userRepository.findByEmail(principal.getName());
@@ -80,23 +75,17 @@ public class AdVersitingService {
     public void saveAdvertisingToS3(MultipartFile imageFile, String bank, MultipartFile paymentReceiptFile, String userEmail) throws IOException, MessagingException {
         Optional<User> userOptional = userRepository.findByEmail(userEmail);
 
-
         if (!userOptional.isPresent()) {
             throw new RuntimeException("Пользователь с таким email не найден.");
         }
 
-
         User user = userOptional.get();
-
 
         Path tempImagePath = Files.createTempFile("temp-image-", imageFile.getOriginalFilename());
         Path tempReceiptPath = Files.createTempFile("temp-receipt-", paymentReceiptFile.getOriginalFilename());
 
-
-        // Сохраняем содержимое MultipartFile во временные файлы
         Files.write(tempImagePath, imageFile.getBytes());
         Files.write(tempReceiptPath, paymentReceiptFile.getBytes());
-
 
         try {
             Map<String, Path> filesToUpload = Map.of(
@@ -104,19 +93,15 @@ public class AdVersitingService {
                     "ads/receipts/" + user.getId() + "/" + paymentReceiptFile.getOriginalFilename(), tempReceiptPath
             );
 
-
             List<String> fileUrls = s3Service.uploadFiles(filesToUpload);
-
 
             String imageFilePath = fileUrls.get(0);
             String receiptFilePath = fileUrls.get(1);
-
 
             AdVersiting ad = new AdVersiting(imageFilePath, true, receiptFilePath, bank, user);
             ad.setCreatedAt(LocalDateTime.now());
             ad.setActive(false);
             adVersitingRepository.save(ad);
-
 
             File receiptFile = tempReceiptPath.toFile();
             sendReceiptAsDocumentToTelegram(receiptFile, bank, ad);
@@ -126,29 +111,21 @@ public class AdVersitingService {
         }
     }
 
-
     public void sendReceiptAsDocumentToTelegram(File receiptFile, String bankName, AdVersiting adVersiting) throws MessagingException {
         if (!receiptFile.exists() || !receiptFile.canRead()) {
             throw new RuntimeException("Файл не найден или недоступен для чтения: " + receiptFile.getAbsolutePath());
         }
 
-
         OkHttpClient client = new OkHttpClient();
 
-
-        MediaType mediaType = MediaType.parse("application/pdf"); // Измените на "image/png" или другой тип в зависимости от файла
-
+        MediaType mediaType = MediaType.parse("application/pdf");
 
         RequestBody fileBody = RequestBody.create(mediaType, receiptFile);
 
-
         String messageBody = "Новый чек: \n" +
-                "Имя карты: " + bankName + "\n" +
-                "Реклама ID: " + adVersiting.getId() + "\n" +
-                "Email пользователя: " + (adVersiting.getUser() != null ? adVersiting.getUser().getEmail() : "Не указан");
-
-
-
+                             "Имя карты: " + bankName + "\n" +
+                             "Реклама ID: " + adVersiting.getId() + "\n" +
+                             "Email пользователя: " + (adVersiting.getUser() != null ? adVersiting.getUser().getEmail() : "Не указан");
 
         MultipartBody.Builder builder = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
@@ -156,12 +133,10 @@ public class AdVersitingService {
                 .addFormDataPart("document", receiptFile.getName(), fileBody)
                 .addFormDataPart("caption", messageBody); // Добавляем текст сообщения как caption
 
-
         Request request = new Request.Builder()
                 .url(String.format("https://api.telegram.org/bot%s/sendDocument", TELEGRAM_BOT_TOKEN))
                 .post(builder.build())
                 .build();
-
 
         try (Response response = client.newCall(request).execute()) {
             String responseBody = response.body().string();
@@ -175,11 +150,9 @@ public class AdVersitingService {
         }
     }
 
-
     public List<AdVersiting> getAllActiveAds() {
         return adVersitingRepository.findAllActiveAdverting();
     }
-
 
     public boolean deleteAd(Long id, Long userId) {
         Optional<AdVersiting> ad = adVersitingRepository.findById(id);

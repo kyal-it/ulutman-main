@@ -24,7 +24,7 @@ public class UserResponse {
 
     Role role;
 
-    LocalDate  createDate;
+    LocalDate createDate;
 
     Status status;
 }

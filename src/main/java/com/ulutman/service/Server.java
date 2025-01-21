@@ -31,7 +31,6 @@ public class Server {
         }
     }
 
-    // Отправка сообщения конкретному клиенту по его имени
     public void sendMessageTo(String recipientName, String message) {
         ClientHandler client = clients.get(recipientName);
         if (client != null) {
@@ -44,12 +43,10 @@ public class Server {
         }
     }
 
-    // Добавление клиента в список
     public void addClient(ClientHandler clientHandler) {
         clients.put(clientHandler.getNamee(), clientHandler);
     }
 
-    // Удаление клиента из списка
     public void removeClient(ClientHandler clientHandler) {
         clients.remove(clientHandler.getNamee());
     }

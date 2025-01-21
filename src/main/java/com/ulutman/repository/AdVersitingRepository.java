@@ -1,8 +1,6 @@
 package com.ulutman.repository;
 
-
 import com.ulutman.model.entities.AdVersiting;
-import com.ulutman.model.entities.Publish;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -45,6 +43,4 @@ public interface AdVersitingRepository  extends JpaRepository<AdVersiting,Long> 
 
     @Query("SELECT ad FROM AdVersiting ad WHERE ad.active = true AND ad.user.id = :userId ORDER BY ad.lastBoostedTime DESC NULLS LAST")
     List<AdVersiting> findAllActiveAdvertingByUserId(Long userId);
-
-
 }

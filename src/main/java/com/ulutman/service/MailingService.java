@@ -1,7 +1,5 @@
 package com.ulutman.service;
 
-import com.ulutman.exception.MailSendingException;
-import com.ulutman.exception.PasswordsDoNotMatchException;
 import com.ulutman.mapper.MailingMapper;
 import com.ulutman.model.dto.MailingRequest;
 import com.ulutman.model.dto.MailingResponse;
@@ -12,14 +10,12 @@ import com.ulutman.repository.MailingRepository;
 import com.ulutman.repository.UserRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -35,7 +31,6 @@ public class MailingService {
     private final MailingMapper mailingMapper;
     private final JavaMailSender javaMailSender;
     private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
 
     public MailingResponse createMailing(MailingRequest mailingRequest) {
         Mailing mailing = mailingMapper.mapToEntity(mailingRequest);
@@ -51,7 +46,7 @@ public class MailingService {
         mailing.setRecipients(users);
 
         for (User user : users) {
-            user.getMailings().add(mailing); // Обновляем связь у пользователя
+            user.getMailings().add(mailing);
         }
         mailingRepository.save(mailing);
         userRepository.saveAll(users);
@@ -165,6 +160,5 @@ public class MailingService {
         helper.setText(body, true);
         javaMailSender.send(message);
     }
-
 }
 

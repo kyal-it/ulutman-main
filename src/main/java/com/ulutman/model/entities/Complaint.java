@@ -35,7 +35,7 @@ public class Complaint {
     @Column(name = "create_date")
     LocalDate createDate;
 
-    @JsonBackReference // Обратная связь с User
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     User user;

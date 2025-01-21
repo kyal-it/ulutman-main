@@ -45,7 +45,6 @@ public class AdVersiting {
 
     private String timeToNextBoost;
 
-
     public AdVersiting(String imagePath, boolean active, String paymentReceipt, String bank, User user) {
         this.imagePath = imagePath;
         this.active = active;
@@ -53,6 +52,4 @@ public class AdVersiting {
         this.bank = bank;
         this.user = user;
     }
-
-
 }

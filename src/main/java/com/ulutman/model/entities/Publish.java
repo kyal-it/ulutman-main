@@ -12,7 +12,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-
 @Entity
 @Table(name = "publishes")
 @Getter
@@ -139,5 +138,4 @@ public class Publish {
 
     @OneToMany(mappedBy = "publish", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<MyPublish> myPublishes;
-
 }

@@ -1,6 +1,5 @@
 package com.ulutman.controller;
 
-
 import com.ulutman.exception.NotFoundException;
 import com.ulutman.exception.UnauthorizedException;
 import com.ulutman.model.dto.AdVersitingResponse;
@@ -24,7 +23,6 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Set;
 
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/users/my-publishes")
@@ -34,7 +32,6 @@ public class MyPublishesController {
     private  final AdVersitingService adVersitingService;
     private final MyPublishesService myPublishesService;
 
-
     @Operation(summary = "Get all active publications for a user")
     @ApiResponse(responseCode = "201", description = "successfully returned a list of active user publications")
     @GetMapping("/getAllMyPublishes")
@@ -43,7 +40,6 @@ public class MyPublishesController {
         return ResponseEntity.ok(publishes);
     }
 
-
     @Operation(summary = "Returns a list of the user's active advertisements")
     @ApiResponse(responseCode = "201", description = "successfully returns a list of the user's active advertisements")
     @GetMapping("/my-ads")
@@ -51,7 +47,6 @@ public class MyPublishesController {
         Long userId = user.getId();
         return publishService.getAllActiveAdsForUser(userId);
     }
-
 
     @Operation(summary = "Removes advertisements by user ID")
     @ApiResponse(responseCode = "201", description = "successfully removes advertisements by user ID")
@@ -65,7 +60,6 @@ public class MyPublishesController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Вы не можете удалить это объявление");
         }
     }
-
 
     @Operation(summary = "Deletes a user's publishes")
     @ApiResponse(responseCode = "201", description = "Posts successfully deleted")
@@ -82,7 +76,6 @@ public class MyPublishesController {
         }
     }
 
-
     @Operation(summary = "Deletes all user posts")
     @ApiResponse(responseCode = "201", description = "successfully all publications were deleted")
     @DeleteMapping("/delete-all/{userId}")
@@ -90,7 +83,6 @@ public class MyPublishesController {
         publishService.deleteAllUserPublishes(userId);
         return ResponseEntity.ok("Все публикации успешно удалены");
     }
-
 
     @Operation(summary = "Returns a list of inactive user posts")
     @ApiResponse(responseCode = "201", description = "successfully returned a list of inactive user publications")
@@ -100,7 +92,6 @@ public class MyPublishesController {
         return ResponseEntity.ok(inactivePublishes);
     }
 
-
     @Operation(summary = "Edits publication information")
     @ApiResponse(responseCode = "201", description = "successfully edited information about the publication")
     @PutMapping("/update/{userId}/{publishId}")
@@ -109,7 +100,6 @@ public class MyPublishesController {
         return ResponseEntity.ok(updatedPublish);
     }
 
-
     @Operation(summary = "Returns a list of user's rejected posts")
     @ApiResponse(responseCode = "201", description = "The list of rejected user publications was successfully restored")
     @GetMapping("/rejected-publishes/{userId}")
@@ -117,7 +107,6 @@ public class MyPublishesController {
         List<PublishResponse> rejectedPublishes = publishService.getRejectedPublishes(userId);
         return ResponseEntity.ok(rejectedPublishes);
     }
-
 
     @Operation(summary = "returns to the client the number of favorites for a specific publication")
     @ApiResponse(responseCode = "201", description = "The number of favorites for a specific publication was successfully returned to the client")
@@ -133,7 +122,6 @@ public class MyPublishesController {
         }
     }
 
-
     @PutMapping("/boost/{publishId}")
     public ResponseEntity<PublishResponse> boostPublication(@PathVariable Long publishId, @RequestParam Long userId) {
         try {
@@ -145,7 +133,6 @@ public class MyPublishesController {
             return ResponseEntity.internalServerError().build(); //или более специфичный ответ об ошибке
         }
     }
-
 
     @PutMapping("/boostAdversting/{adId}")
     public ResponseEntity<AdVersitingResponse> boostAdversting(@PathVariable Long adId, @RequestParam Long userId) {

@@ -33,6 +33,4 @@ public class AuthWithGoogleResponse {
     LocalDate createDate;
 
     String token;
-
-
 }

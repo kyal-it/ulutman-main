@@ -1,6 +1,5 @@
 package com.ulutman.controller;
 
-import com.ulutman.exception.PasswordsDoNotMatchException;
 import com.ulutman.model.dto.MailingRequest;
 import com.ulutman.model.dto.MailingResponse;
 import com.ulutman.service.MailingService;
@@ -9,7 +8,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;

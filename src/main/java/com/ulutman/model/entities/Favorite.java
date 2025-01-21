@@ -29,7 +29,5 @@ public class Favorite {
     @JoinTable(name = "favorites_publishes",
             joinColumns = @JoinColumn(name = "favorite_id"),
             inverseJoinColumns = @JoinColumn(name = "publish_id"))
-    Set<Publish> publishes = new LinkedHashSet<>();
-
-
+    private Set<Publish> publishes = new LinkedHashSet<>();
 }

@@ -1,6 +1,5 @@
 package com.ulutman.service;
 
-
 import com.ulutman.exception.NotFoundException;
 import com.ulutman.exception.UnauthorizedException;
 import com.ulutman.mapper.AdVersitingMapper;
@@ -25,10 +24,10 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-
 @Service
 @RequiredArgsConstructor
 public class MyPublishesService {
+
     private final UserRepository userRepository;
     private final PublishMapper publishMapper;
     private final PublishRepository publishRepository;
@@ -37,18 +36,13 @@ public class MyPublishesService {
     private final MyPublishRepository myPublishRepository;
     private final AdVersitingMapper adVersitingMapper;
 
-
-
-
     public List<PublishResponse> myActivePublishes(Long userId) {
         List<Publish> myActivePublish = publishRepository.findAllActivePublishesByUserId(userId);
-
 
         return myActivePublish.stream()
                 .map(this::mapToResponseWithNextBoost)
                 .collect(Collectors.toList());
     }
-
 
     public List<AdVersitingResponse> getAllActiveAdsForUser(Long userId) {
         List<AdVersiting> myActivePublish = adVersitingRepository.findAllActiveAdvertingByUserId(userId);
@@ -57,10 +51,7 @@ public class MyPublishesService {
         return myActivePublish.stream()
                 .map(this::mapToAdResponseWithNextBoost)
                 .collect(Collectors.toList());
-
-
     }
-
 
     @Transactional
     public void deletePublishesByUser(Long userId, Set<Long> publishIds) {
@@ -74,14 +65,10 @@ public class MyPublishesService {
                 .map(Publish::getId)
                 .collect(Collectors.toList());
 
-
         myPublishRepository.deleteAllByPublishIds(publishIdsToDelete);
-
 
         publishRepository.deleteAll(userPublishes);
     }
-
-
 
     @Transactional
     public void deleteAllUserPublishes(Long userId) {
@@ -89,14 +76,12 @@ public class MyPublishesService {
         publishRepository.deleteAll(userPublishes);
     }
 
-
     public List<PublishResponse> getInactivePublishes(Long userId) {
         List<Publish> inactivePublishes = publishRepository.findByUserIdAndActiveFalse(userId);
         return inactivePublishes.stream()
                 .map(publishMapper::mapToResponse)
                 .collect(Collectors.toList());
     }
-
 
     public PublishResponse updatePublish(Long userId, Long publishId, PublishRequest publishRequest) throws UnauthorizedException, NotFoundException {
         Publish existingPublish = publishRepository.findById(publishId)
@@ -106,7 +91,6 @@ public class MyPublishesService {
         if (!existingPublish.getUser().getId().equals(userId)) {
             throw new UnauthorizedException("Недостаточно прав для редактирования этой публикации");
         }
-
 
         existingPublish.setTitle(publishRequest.getTitle());
         existingPublish.setDescription(publishRequest.getDescription());
@@ -120,62 +104,48 @@ public class MyPublishesService {
         return publishMapper.mapToResponse(updatedPublish);
     }
 
-
     public List<PublishResponse> getRejectedPublishes(Long userId) {
         List<Publish> rejectedPublishes = publishRepository.findByUserIdAndStatus(userId, PublishStatus.ОТКЛОНЕН);
-
 
         return rejectedPublishes.stream()
                 .map(publishMapper::mapToResponse)
                 .collect(Collectors.toList());
     }
 
-
     public Integer getFavoritesCount(Long userId, Long publishId) {
         Publish publish = publishRepository.findById(publishId)
                 .orElseThrow(() -> new NotFoundException("Публикация не найдена"));
-
 
         if (!publish.getUser().getId().equals(userId)) {
             throw new UnauthorizedException("Недостаточно прав для просмотра статистики этой публикации");
         }
 
-
         Long count = favoriteRepository.countByPublishId(publishId);
-
 
         return count.intValue();
     }
 
-
     public PublishResponse boostPublication(Long userId, Long publishId) {
         Publish publish = publishRepository.findByIdAndUserId(publishId, userId);
-
 
         if (publish == null) {
             throw new EntityNotFoundException("Publication not found");
         }
 
-
         boostIfNeeded(publish);
         publishRepository.save(publish);
-
 
         return mapToResponseWithNextBoost(publish);
     }
 
-
     public AdVersitingResponse boostAdversting(Long userId, Long adId) {
         AdVersiting ad = adVersitingRepository.findByIdAndUserId(adId, userId);
-
 
         if (ad == null) {
             throw new EntityNotFoundException("Advertisement not found");
         }
 
-
         boostIfNeeded(ad);
-
 
         return mapToAdResponseWithNextBoost(ad); // Новый метод для маппинга
     }
@@ -189,7 +159,6 @@ public class MyPublishesService {
         }
     }
 
-
     private void boostIfNeeded(AdVersiting ad) {
         LocalDateTime now = LocalDateTime.now();
         if (ad.getLastBoostedTime() == null || ChronoUnit.HOURS.between(ad.getLastBoostedTime(), now) >= 24) {
@@ -198,14 +167,12 @@ public class MyPublishesService {
         }
     }
 
-
     private PublishResponse mapToResponseWithNextBoost(Publish publish) {
         PublishResponse response = publishMapper.mapToResponse(publish);
         response.setNextBoostTime(calculateNextBoostTime(publish));
         response.setTimeToNextBoost(formatTimeToNextBoost(response.getNextBoostTime()));
         return response;
     }
-
 
     private AdVersitingResponse mapToAdResponseWithNextBoost(AdVersiting ad) {
         AdVersitingResponse adVersitingResponse = adVersitingMapper.mapToResponse(ad);
@@ -214,18 +181,14 @@ public class MyPublishesService {
         return adVersitingResponse;
     }
 
-
     private String formatTimeToNextBoost(LocalDateTime nextBoostTime) {
-        if (nextBoostTime == null) return ""; // Или другое значение по умолчанию
-
+        if (nextBoostTime == null) return "";
 
         Duration duration = Duration.between(LocalDateTime.now(), nextBoostTime);
         long hours = duration.toHours();
         long minutes = duration.toMinutesPart();
 
-
         StringBuilder timeString = new StringBuilder();
-
 
         if (hours > 0) {
             timeString.append(hours).append("ч ").append(minutes).append("мин");
@@ -235,10 +198,8 @@ public class MyPublishesService {
             return "Сейчас";
         }
 
-
         return   "можно поднимать через: " + timeString;
     }
-
 
     private LocalDateTime calculateNextBoostTime(Publish publish) {
         LocalDateTime lastBoostedAt = publish.getLastBoostedAt();
@@ -249,7 +210,6 @@ public class MyPublishesService {
             return nextBoost.isBefore(LocalDateTime.now()) ? LocalDateTime.now().plusHours(24) : nextBoost; //Если уже пора бустить - через 24 часа от СЕЙЧАС
         }
     }
-
 
     private LocalDateTime calculateNextBoostTimeAdcersting(AdVersiting publish) {
         LocalDateTime lastBoostedAt = publish.getLastBoostedAt();

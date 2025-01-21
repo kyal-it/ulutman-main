@@ -1,7 +1,6 @@
 package com.ulutman.repository;
 
 import com.ulutman.model.entities.Mailing;
-import com.ulutman.model.entities.User;
 import com.ulutman.model.enums.MailingStatus;
 import com.ulutman.model.enums.MailingType;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,7 +19,6 @@ public interface MailingRepository extends JpaRepository<Mailing, Long> {
                 (:titles IS NULL OR LOWER(mailing.title) LIKE LOWER(CONCAT('%', :titles, '%')))
             """)
     List<Mailing> mailingFilterByTitle(@Param("titles") String titles);
-
 
     @Query("""
             SELECT mailing FROM Mailing mailing WHERE

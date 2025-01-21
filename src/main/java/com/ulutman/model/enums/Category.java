@@ -78,6 +78,5 @@ public enum Category {
     public static List<Subcategory> getAllSubcategories(Category category) {
         return category.getSubcategories();
     }
-
 }
 

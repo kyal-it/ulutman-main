@@ -28,7 +28,6 @@ public class ManageCreatePaymentSystemController {
         }
     }
 
-
     @Operation(summary = "Create a activatePublication")
     @ApiResponse(responseCode = "201", description = "activatePublication created successfully")
     @PostMapping("/activate/{publicationId}")
@@ -36,7 +35,6 @@ public class ManageCreatePaymentSystemController {
         manageCreatePaymentSystem.activatePublication(publicationId);
         return ResponseEntity.ok("Публикация активирована успешно.");
     }
-
 
     @Operation(summary = "Create a deactivatePublication")
     @ApiResponse(responseCode = "201", description = "deactivatePublication created successfully")

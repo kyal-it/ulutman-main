@@ -2,7 +2,6 @@ package com.ulutman.controller;
 
 import com.ulutman.model.dto.ComplaintRequest;
 import com.ulutman.model.dto.ComplaintResponse;
-import com.ulutman.repository.ComplaintRepository;
 import com.ulutman.service.ComplaintService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

@@ -29,14 +29,6 @@ public class CategoryPopularityService {
         popularityRepository.save(popularity);
     }
 
-    public void incrementPublications(Category category) {
-        CategoryPopularity popularity = popularityRepository.findByCategory(category)
-                .orElse(new CategoryPopularity());
-        popularity.setCategory(category);
-        popularity.setPublications(popularity.getPublications() + 1);
-        popularityRepository.save(popularity);
-    }
-
     public Map<Category, Integer> getCategoryPopularity(boolean byViews) {
         Map<Category, Integer> popularityMap = new HashMap<>();
         List<CategoryPopularity> popularities = popularityRepository.findAll();

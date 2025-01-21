@@ -36,7 +36,6 @@ public class FavoriteService {
         Publish publish = publishRepository.findById(productId)
                 .orElseThrow(() -> new NotFoundException("Публикация не найдена"));
 
-        // Проверка, уже ли публикация в избранном
         Favorite favorites = favoriteRepository.getFavoritesByUserId(user.getId());
 
         if (favorites != null && favorites.getPublishes().contains(publish)) {
@@ -53,12 +52,10 @@ public class FavoriteService {
 
         publish.setFavoriteCount((publish.getFavoriteCount() == null ? 0L : publish.getFavoriteCount()) + 1);
 
-
         favoriteRepository.save(favorites);
 
         publish.setDetailFavorite(true);
         publishRepository.save(publish);
-
 
         log.info("Added to favorites");
         return favoriteMapper.mapToResponse(favorites, publish);
@@ -140,7 +137,6 @@ public class FavoriteService {
             throw new RuntimeException("Ваш список избранного пуст");
         }
     }
-
 
     public boolean isPublishInFavorites(Long productId, Principal principal) {
         User user = userRepository.findByEmail(principal.getName())

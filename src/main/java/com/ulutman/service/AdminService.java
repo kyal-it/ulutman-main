@@ -29,7 +29,6 @@ public class AdminService {
     private final UserRepository userRepository;
     private final AuthMapper authMapper;
 
-
     public AuthResponse saveAdmin(AuthRequest request) {
         User user = authMapper.mapToEntity(request);
         user.setCreateDate(LocalDate.now());
@@ -40,11 +39,10 @@ public class AdminService {
 
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setConfirmPassword(passwordEncoder.encode(request.getConfirmPassword()));
-        user.setRole(Role.ADMIN); // По умолчанию USER, если роль не указана
+        user.setRole(Role.ADMIN);
         Favorite basket = new Favorite();
         Set<Favorite> favorites = new HashSet<>();
         favorites.add(basket);
-
 
         user.setFavorites(favorites);
 

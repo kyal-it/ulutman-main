@@ -24,27 +24,27 @@ public class Mailing {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
-    String title;
-
-    @Enumerated(EnumType.STRING)
-    MailingType mailingType;
+    private String title;
 
     @Enumerated(EnumType.STRING)
-    MailingStatus mailingStatus;
+    private MailingType mailingType;
 
-    String message;
+    @Enumerated(EnumType.STRING)
+    private MailingStatus mailingStatus;
 
-    String image;
+    private String message;
+
+    private String image;
 
     @Column(name = "promotion_start_date")
-    LocalDate promotionStartDate;
+    private LocalDate promotionStartDate;
 
     @Column(name = "promotion_end_date")
-    LocalDate promotionEndDate;
+    private LocalDate promotionEndDate;
 
-    LocalDate createDate;
+    private LocalDate createDate;
 
     @JsonBackReference
     @ManyToMany

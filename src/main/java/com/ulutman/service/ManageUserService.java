@@ -110,7 +110,6 @@ public class ManageUserService {
 
         filteredUsers = filteredUsers.stream().distinct().collect(Collectors.toList());
 
-        // Если нет отфильтрованных пользователей, возвращаем пустой массив
         if (filteredUsers.isEmpty()) {
             return Collections.emptyList();
         }

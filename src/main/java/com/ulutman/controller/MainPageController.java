@@ -36,7 +36,6 @@ public class MainPageController {
         return mainPageService.findPublishByCategoryWork();
     }
 
-    //SubCategory = WORK
     @Operation(summary = "Get publishes by subCategory WORK")
     @ApiResponse(responseCode = "201", description = "return list of publishes by subCategory WORK")
     @GetMapping("/work/subcategory/{subCategory}")
@@ -51,7 +50,6 @@ public class MainPageController {
         return mainPageService.findPublishByCategoryRent();
     }
 
-    //SubCategory = RENT
     @Operation(summary = "Get publishes by subCategory RENT")
     @ApiResponse(responseCode = "201", description = "return list of publishes by subCategory RENT")
     @GetMapping("/rent/subcategory/{subCategory}")
@@ -66,7 +64,6 @@ public class MainPageController {
         return mainPageService.findPublishByCategorySell();
     }
 
-    //SubCategory = SELL
     @Operation(summary = "Get publishes by subCategory HOTEL")
     @ApiResponse(responseCode = "201", description = "return list of publishes by subCategory HOTEL")
     @GetMapping("/sell/subcategory/{subCategory}")
@@ -81,7 +78,6 @@ public class MainPageController {
         return mainPageService.findPublishByCategoryHotel();
     }
 
-    //SubCategory = SELL
     @Operation(summary = "Get publishes by subCategory SELL")
     @ApiResponse(responseCode = "201", description = "return list of publishes by subCategory SELL")
     @GetMapping("/hotel/subcategory/{subCategory}")
@@ -96,7 +92,6 @@ public class MainPageController {
         return mainPageService.findPublishByCategoryServices();
     }
 
-    //SubCategory = SERVICES
     @Operation(summary = "Get publishes by subCategory SERVICES")
     @ApiResponse(responseCode = "201", description = "return list of publishes by subCategory SERVICES")
     @GetMapping("/services/subcategory/{subCategory}")
@@ -104,7 +99,6 @@ public class MainPageController {
         return mainPageService.findPublishByCategoryServices(subCategory);
     }
 
-    //SubCategory = AUTO
     @Operation(summary = "Get publishes by subCategory AUTO")
     @ApiResponse(responseCode = "201", description = "return list of publishes by subCategory AUTO")
     @GetMapping("/auto/subcategory/{subCategory}")
@@ -119,7 +113,6 @@ public class MainPageController {
         return mainPageService.findPublishByCategoryRealEstate();
     }
 
-    //SubCategory = REAL_ESTATE
     @Operation(summary = "Get publishes by subCategory REAL_ESTATE")
     @ApiResponse(responseCode = "201", description = "return list of publishes by subCategory REAL_ESTATE")
     @GetMapping("/real-estate/subcategory/{subCategory}")

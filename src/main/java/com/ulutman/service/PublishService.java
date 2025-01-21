@@ -118,13 +118,9 @@ public class PublishService {
         myPublish.setUserAccount(user.getUserAccount());
         myPublish.setPublish(savedPublish);
 
-
         myPublishRepository.save(myPublish);
 
-
-        // Логируем успешное создание
         log.info("Publication created successfully: {}", savedPublish);
-
 
         return publishMapper.mapToResponse(savedPublish);
     }
@@ -168,7 +164,6 @@ public class PublishService {
         }
     }
 
-
     @Transactional
     public void removeExpiredPublishes() {
         LocalDateTime now = LocalDateTime.now();
@@ -176,7 +171,6 @@ public class PublishService {
 
 
         List<Publish> expiredPublishes = publishRepository.findAllByCreatedAtBefore(expirationTime);
-
 
         for (Publish publish : expiredPublishes) {
             publishRepository.delete(publish);
@@ -189,10 +183,7 @@ public class PublishService {
                     " С уважением," +
                     " Команда Ulutman.ru");
         }
-
-
     }
-
 
     public PublishResponse createPublishDetails(PublishRequest publishRequest) {
 
@@ -201,31 +192,25 @@ public class PublishService {
             throw new IllegalArgumentException("Необходимо выбрать категорию и подкатегорию");
         }
 
-
         if (!Category.getAllSubcategories(publishRequest.getCategory()).contains(publishRequest.getSubcategory())) {
             throw new IllegalArgumentException("Неверная подкатегория для выбранной категории");
         }
 
-
         if (!Category.getAllCategories().contains(publishRequest.getCategory())) {
             throw new IllegalArgumentException("Неверная категория");
         }
-
 
         Publish publish = publishMapper.mapToEntity(publishRequest);
         User user = userRepository.findById(publishRequest.getUserId())
                 .orElseThrow(() -> new RuntimeException("Пользователь не найден " + publishRequest.getUserId()));
         publish.setUser(user);
 
-
         if (publish.getId() == null) {
             publish.setCreateDate(LocalDate.now());
         }
 
-
         publish.setPublishStatus(PublishStatus.ОДОБРЕН);
         publish.setCategoryStatus(CategoryStatus.АКТИВНО);
-
 
         if (publishRequest.getCategory() == Category.REAL_ESTATE || publishRequest.getCategory() == Category.RENT) {
             if (publishRequest.getPropertyDetails() == null) {
@@ -235,25 +220,20 @@ public class PublishService {
             publish.setPropertyDetails(propertyDetails);
         }
 
-
         if (publishRequest.getConditions() == null) {
             throw new IllegalArgumentException("Необходимо заполнить данные о условиях (Conditions) для категории REAL_ESTATE или RENT.");
         }
         Conditions conditions = conditionsMapper.mapToEntity(publishRequest.getConditions());
         publish.setConditions(conditions);
 
-
         Publish savedPublish = publishRepository.save(publish);
-
 
         return publishMapper.mapToResponse(savedPublish);
     }
 
-
     public Integer getNumberOfPublications(Long userId) {
         return publishRepository.countPublicationsByUserId(userId);
     }
-
 
     public PublishResponse findById(Long id) {
         Publish publish = publishRepository.findById(id)
@@ -289,7 +269,6 @@ public class PublishService {
                 })
                 .collect(Collectors.toList());
     }
-
 
     @Transactional(readOnly = true)
     public List<PublishResponse> filterPublishes(

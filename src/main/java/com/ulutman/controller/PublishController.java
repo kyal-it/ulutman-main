@@ -19,8 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -33,6 +31,7 @@ import java.util.*;
 @Tag(name = "Publish")
 @SecurityRequirement(name = "Authorization")
 public class PublishController {
+
     private final PublishService publishService;
     private final BankCardRepository bankCardRepository;
     private static final Logger logger = (Logger) LoggerFactory.getLogger(PublishController.class);
@@ -66,7 +65,6 @@ public class PublishController {
 
         String tempDir = System.getProperty("java.io.tmpdir");
 
-
         try {
             Map<String, Path> filesMap = new HashMap<>();
             for (MultipartFile file : images) {
@@ -75,7 +73,6 @@ public class PublishController {
                 filesMap.put(file.getOriginalFilename(), tempFile);
             }
 
-
             List<String> imageUrls = s3Service.uploadFiles(filesMap);
             publishRequest.setImages(imageUrls);
 
@@ -83,7 +80,6 @@ public class PublishController {
             for (Path tempFile : filesMap.values()) {
                 Files.deleteIfExists(tempFile);
             }
-
 
             if (paymentReceiptFile != null && !paymentReceiptFile.isEmpty()) {
                 publishRequest.setPaymentReceiptFile(Optional.of((MultipartFile) paymentReceiptFile)); // <- Используем исходный MultipartFile
@@ -95,13 +91,11 @@ public class PublishController {
             return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
-
         publishRequest.setPrice(price);
         publishRequest.setCategory(category);
         publishRequest.setSubcategory(subcategory);
         publishRequest.setBank(Optional.ofNullable(bank));
         publishRequest.setUserId(userId);
-
 
         try {
             PublishResponse response = publishService.createPublish(publishRequest); // Используем первый файл изображения
@@ -114,7 +108,6 @@ public class PublishController {
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
     }
-
 
     @Operation(summary = "Create a publication with details")
     @ApiResponse(responseCode = "201", description = "The publish with details  created successfully")
@@ -131,13 +124,11 @@ public class PublishController {
         }
     }
 
-
     @GetMapping("/getAll")
     public ResponseEntity<List<PublishResponse>> getAllPublishes() {
         List<PublishResponse> publishes = publishService.getAll();
         return ResponseEntity.ok(publishes);
     }
-
 
     @Operation(summary = "Get a publication by id")
     @ApiResponse(responseCode = "201", description = "Publication found")
@@ -145,7 +136,6 @@ public class PublishController {
     public PublishResponse findById(@PathVariable Long id) {
         return this.publishService.findById(id);
     }
-
 
     @Operation(summary = "Update a publication by id")
     @ApiResponse(responseCode = "201", description = "Updated  the publication  by id successfully")
@@ -155,7 +145,6 @@ public class PublishController {
         return ResponseEntity.ok(updatedPublish);
     }
 
-
     @Operation(summary = "Delete a publication by id")
     @ApiResponse(responseCode = "201", description = "Deleted the publication  by id successfully")
     @DeleteMapping(("/delete/{id}"))
@@ -163,7 +152,6 @@ public class PublishController {
         this.publishService.deletePublish(id);
         return "Delete publish with id:" + id + " successfully delete";
     }
-
 
     @Operation(summary = "Filter publishes by criteria")
     @ApiResponse(responseCode = "201", description = "Publishes successfully filtered")
@@ -187,7 +175,6 @@ public class PublishController {
                 transportType, walkingDistance, transportDistance
         );
     }
-
 
     @Operation(summary = "Reset filters publications")
     @ApiResponse(responseCode = "201", description = "Publishes filters successfully reset")

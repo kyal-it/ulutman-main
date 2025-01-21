@@ -11,6 +11,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class TelegramUser {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

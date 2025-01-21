@@ -54,6 +54,7 @@ public class AuthService {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new IllegalArgumentException("Пользователь с таким email уже существует");
         }
+
         User user = authMapper.mapToEntity(request);
         user.setCreateDate(LocalDate.now());
         log.info("Пользователь успешно создан!");
@@ -76,7 +77,6 @@ public class AuthService {
 
         basket.setUser(user);
 
-
         UserAccount userAccount = new UserAccount();
         user.setUserAccount(userAccount);
         userAccount.setEmail(user.getUsername());
@@ -87,7 +87,6 @@ public class AuthService {
 
         return authMapper.mapToResponseWithToken(jwt, user);
     }
-
 
     public AuthResponse save(AuthRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -102,13 +101,12 @@ public class AuthService {
         }
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setConfirmPassword(passwordEncoder.encode(request.getConfirmPassword()));
-        user.setRole(request.getRole() != null ? request.getRole() : Role.USER); // По умолчанию USER, если роль не указана
+        user.setRole(request.getRole() != null ? request.getRole() : Role.USER);
         user.setStatus(Status.АКТИВНЫЙ);
 
         Favorite basket = new Favorite();
         Set<Favorite> favorites = new HashSet<>();
         favorites.add(basket);
-
 
         user.setFavorites(favorites);
 
@@ -132,7 +130,6 @@ public class AuthService {
         return loginMapper.mapToResponse(jwt, user);
     }
 
-    // Метод для аутентификации через Google и регистрации пользователя
     public AuthWithGoogleResponse registerUserWithGoogle(String token) {
         FirebaseToken firebaseToken;
         try {
@@ -156,19 +153,16 @@ public class AuthService {
                 newUser.setName(fullName);
             }
             newUser.setEmail(email);
-//            newUser.setPhoneNumber("+996700000000"); // Укажите номер телефона
             newUser.setPassword(passwordEncoder.encode(firebaseToken.getEmail()));
             newUser.setRole(Role.USER);
             return userRepository.save(newUser);
         });
 
-        // Генерируем токен для пользователя
         Map<String, Object> claims = new HashMap<>();
         claims.put("role", user.getRole().name());
         String userAccountToken = jwtUtil.createToken(claims, user.getEmail());
 
         log.info("Аутентификация через Google завершена успешно, токен: {}", userAccountToken);
-
 
         return AuthWithGoogleResponse.builder()
                 .userId(user.getId().toString())
@@ -198,7 +192,6 @@ public class AuthService {
         }
     }
 
-
     public ResponseEntity<String> resetPassword(String email, int pinCode, String newPassword, String confirmPassword)
             throws EntityNotFoundException, PasswordsDoNotMatchException {
         if (!newPassword.equals(confirmPassword)) {
@@ -215,24 +208,6 @@ public class AuthService {
         }
         return new ResponseEntity<>("Неверный PIN-код", HttpStatus.UNAUTHORIZED);
     }
-
-//    public String resetPassword(String email, int pinCode, String newPassword, String confirmPassword)
-//            throws EntityNotFoundException, PasswordsDoNotMatchException {
-//        if (!newPassword.equals(confirmPassword)) {
-//            throw new PasswordsDoNotMatchException("Пароли не совпадают");
-//        } else {
-//            User user = userRepository.findByEmail(email)
-//                    .orElseThrow(() -> new EntityNotFoundException("Пользователь не найден"));
-//            if (user.getEmail().equals(email)) {
-//                if (pinCode == user.getPinCode()) {
-//                    user.setPassword(passwordEncoder.encode(newPassword));
-//                    userRepository.save(user);
-//                    return "Сброс пароля прошел успешно";
-//                }
-//            }
-//            return "Неверный PIN-код";
-//        }
-//    }
 
     private int generatePinCode() {
         Random random = new Random();

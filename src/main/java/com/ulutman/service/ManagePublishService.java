@@ -3,7 +3,6 @@ package com.ulutman.service;
 import com.ulutman.exception.NotFoundException;
 import com.ulutman.mapper.PublishMapper;
 import com.ulutman.model.dto.PublishDetailsResponse;
-import com.ulutman.model.dto.PublishResponse;
 import com.ulutman.model.entities.Publish;
 import com.ulutman.model.entities.User;
 import com.ulutman.model.enums.Category;
@@ -33,8 +32,6 @@ public class ManagePublishService {
     private final PublishRepository publishRepository;
     private final UserRepository userRepository;
     private final MailingService mailingService;
-
-
 
     public List<PublishDetailsResponse> getAllPublish() {
         return publishRepository.findAll().stream().map(publishMapper::mapToDetailsResponse).collect(Collectors.toList());
@@ -105,13 +102,12 @@ public class ManagePublishService {
 
         filteredPublishes = filteredPublishes.stream().distinct().collect(Collectors.toList());
 
-        // Если нет отфильтрованных публикаций, возвращаем пустой массив
         if (filteredPublishes.isEmpty()) {
             return Collections.emptyList();
         }
 
         return filteredPublishes.stream()
-                .map(publishMapper::mapToDetailsResponse) // Используем маппер
+                .map(publishMapper::mapToDetailsResponse)
                 .collect(Collectors.toList());
     }
 

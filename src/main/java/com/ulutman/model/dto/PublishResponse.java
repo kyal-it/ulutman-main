@@ -11,7 +11,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-
 @Getter
 @Setter
 @Builder
@@ -32,8 +31,6 @@ public class PublishResponse {
 
     List<String> images;
 
-//    String image;
-
     double price;
 
     Category category;
@@ -41,8 +38,6 @@ public class PublishResponse {
     Integer numberOfPublications;
 
     Subcategory subcategory;
-
-    //Bank bank;
 
     PublishStatus publishStatus;
 
@@ -61,13 +56,11 @@ public class PublishResponse {
 
     Conditions conditions;
 
-    private LocalDateTime nextBoostTime;
-    private String timeToNextBoost; // Добавляем поле для строки с временем до следующего бустинга
+    LocalDateTime nextBoostTime;
+
+    String timeToNextBoost;
 
     Long accountId;
 
-    private Long favoriteCount;
-
-
-
+    Long favoriteCount;
 }

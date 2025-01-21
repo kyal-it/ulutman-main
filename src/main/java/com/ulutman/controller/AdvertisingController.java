@@ -1,6 +1,5 @@
 package com.ulutman.controller;
 
-
 import com.ulutman.model.dto.AdVersitingResponse;
 import com.ulutman.model.entities.AdVersiting;
 import com.ulutman.service.AdVersitingService;
@@ -19,7 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
-
 
 @RestController
 @RequestMapping("/api/advertising")
@@ -60,7 +58,6 @@ public class AdvertisingController {
         }
     }
 
-
     @Operation(summary = "returns all active posts")
     @ApiResponse(responseCode = "201", description = "successfully returns all active posts")
     @GetMapping
@@ -81,6 +78,4 @@ public class AdvertisingController {
 
         return ResponseEntity.ok(responseList);
     }
-
-
 }

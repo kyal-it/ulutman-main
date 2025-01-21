@@ -83,7 +83,7 @@ public class PropertyDetails {
 
     private Integer floor;
 
-    @JsonBackReference // Обратная связь с publish
+    @JsonBackReference
     @OneToOne(mappedBy = "propertyDetails", fetch = FetchType.LAZY)
     private Publish publish;
 }

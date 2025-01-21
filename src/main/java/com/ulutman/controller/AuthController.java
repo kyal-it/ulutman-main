@@ -14,7 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/auth")
@@ -48,7 +47,6 @@ public class AuthController {
         return authService.login(request);
     }
 
-    // Метод для аутентификации и регистрации через Google
     @PostMapping("/google-login")
     public ResponseEntity<AuthWithGoogleResponse> googleLogin(@RequestParam String token) {
         AuthWithGoogleResponse authResponse = authService.registerUserWithGoogle(token);
@@ -61,14 +59,6 @@ public class AuthController {
     public void sendPasswordResetCode(@RequestParam String email) throws EntityNotFoundException {
         authService.sendPasswordResetCode(email);
     }
-//    @Operation(summary = "Reset password")
-//    @ApiResponse(responseCode = "201", description = "Reset password  successfully")
-//    @PostMapping("/resetPassword")
-//    public String resetPassword( @RequestParam String email, @RequestParam int pinCode,
-//                                 @RequestParam String newPassword, @RequestParam String confirmPassword)
-//            throws EntityNotFoundException, PasswordsDoNotMatchException {
-//        return authService.resetPassword(email, pinCode, newPassword, confirmPassword);
-//    }
 
     @Operation(summary = "Reset password")
     @ApiResponse(responseCode = "201", description = "Reset password  successfully")
