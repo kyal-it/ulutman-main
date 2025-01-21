@@ -87,12 +87,7 @@ public class PublishController {
 
 
             if (paymentReceiptFile != null && !paymentReceiptFile.isEmpty()) {
-                Path tempFile = Paths.get(tempDir, paymentReceiptFile.getOriginalFilename());
-                Files.write(tempFile, paymentReceiptFile.getBytes());
-                Map<String, Path> receiptMap = Map.of(paymentReceiptFile.getOriginalFilename(), tempFile);
-                List<String> receiptUrls = s3Service.uploadFiles(receiptMap);
-                publishRequest.setPaymentReceiptFile(Optional.of(new File(receiptUrls.get(0))));
-                Files.deleteIfExists(tempFile);
+                publishRequest.setPaymentReceiptFile(Optional.of((MultipartFile) paymentReceiptFile)); // <- Используем исходный MultipartFile
             } else {
                 publishRequest.setPaymentReceiptFile(Optional.empty());
             }

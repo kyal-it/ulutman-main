@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +30,7 @@ public class PublishMapper {
         publish.setSubCategory(publishRequest.getSubcategory());
 //        publish.setBank(publishRequest.getBank());
         publishRequest.getBank().ifPresent(publish::setBank);
-        publishRequest.getPaymentReceiptFile().ifPresent(publish::setPaymentReceipt);
+        publishRequest.getPaymentReceiptFile().ifPresent(paymentReceiptUrl -> publish.setPaymentReceiptUrl(String.valueOf(paymentReceiptUrl)));
         publish.setPublishStatus(publishRequest.getPublishStatus());
         publish.setCategory(publishRequest.getCategory());
         publish.setCreateDate(LocalDate.now());

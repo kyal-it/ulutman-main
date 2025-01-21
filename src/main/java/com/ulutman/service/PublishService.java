@@ -121,17 +121,17 @@ public class PublishService {
 
 
         if (publishRequest.getCategory() == Category.RENT || publishRequest.getCategory() == Category.HOTEL) {
-            if (!publishRequest.getBank().isPresent()) {
-                throw new IllegalArgumentException("Необходимо выбрать банк для категории " + publishRequest.getCategory());
+            String bankName = publishRequest.getBank()
+                    .orElseThrow(() -> new IllegalArgumentException("Необходимо выбрать банк для категории " + publishRequest.getCategory()));
+            MultipartFile receiptFile = (MultipartFile) publishRequest.getPaymentReceiptFile()
+                    .orElseThrow(() -> new IllegalArgumentException("Необходимо предоставить чек оплаты для категории " + publishRequest.getCategory()));
+
+            try {
+                sendReceiptAsDocumentToTelegram(receiptFile, bankName, savedPublish); // Передаем MultipartFile напрямую
+            } catch (IOException e) {
+                log.error("Ошибка при отправке чека в Telegram: {}", e.getMessage(), e);
+                throw new RuntimeException("Ошибка при отправке чека", e);
             }
-
-
-            if (!publishRequest.getPaymentReceiptFile().isPresent()) {
-                throw new IllegalArgumentException("Необходимо предоставить чек оплаты для категории " + publishRequest.getCategory());
-            }
-
-
-            sendReceiptAsDocumentToTelegram(publishRequest.getPaymentReceiptFile().get(), savedPublish);
         } else {
             log.info("Bank and payment receipt are not required for category: {}", publishRequest.getCategory());
         }
@@ -158,64 +158,37 @@ public class PublishService {
         removeExpiredPublishes();
     }
 
-
-    private void sendReceiptAsDocumentToTelegram(File receiptFile, Publish savedPublish) {
-        if (!receiptFile.exists()) {
-            throw new RuntimeException("Файл не найден: " + receiptFile.getAbsolutePath());
-        }
-
-
+    private void sendReceiptAsDocumentToTelegram(MultipartFile receiptFile, String bankName, Publish savedPublish) throws IOException {
         String userEmail = savedPublish.getUser().getEmail();
         String userPhoneNumber = savedPublish.getPhone();
-        String nameBank = savedPublish.getBank();
-
 
         String message = String.format(
-                "Новый чек:" + "\n" +
-                "Имя карты: %s" + "\n" +
-                "Публикация ID: %s" + "\n" +
-                "Email пользователя: %s" + "\n" +
-                "Номер телефона: %s" + "\n",
-                nameBank,
-                savedPublish.getId(),
-                userEmail != null ? userEmail : "Не указан",
-                userPhoneNumber != null ? userPhoneNumber : "Не указан"
+                "Новый чек:\nИмя карты: %s\nПубликация ID: %s\nEmail пользователя: %s\nНомер телефона: %s",
+                bankName, savedPublish.getId(), userEmail != null ? userEmail : "Не указан", userPhoneNumber != null ? userPhoneNumber : "Не указан"
         );
+
         OkHttpClient client = new OkHttpClient();
         String url = String.format("https://api.telegram.org/bot%s/sendDocument", TELEGRAM_BOT_TOKEN);
-
 
         MultipartBody.Builder builder = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("chat_id", ADMIN_CHAT_ID)
                 .addFormDataPart("caption", message)
-                .addFormDataPart("document", receiptFile.getName(),
-                        RequestBody.create(receiptFile, MediaType.parse("application/pdf")));
-
+                .addFormDataPart("document", receiptFile.getOriginalFilename(),
+                        RequestBody.create(receiptFile.getBytes(), MediaType.parse(receiptFile.getContentType()))); // Используем
 
         RequestBody requestBody = builder.build();
-
 
         Request request = new Request.Builder()
                 .url(url)
                 .post(requestBody)
                 .build();
 
-
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                e.printStackTrace();
+        try (Response response = client.newCall(request).execute()) { // try-with-resources для автоматического закрытия ответа
+            if (!response.isSuccessful()) {
+                throw new IOException("Unexpected code " + response);
             }
-
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (!response.isSuccessful()) {
-                    throw new IOException("Unexpected code " + response);
-                }
-            }
-        });
+        }
     }
 
 

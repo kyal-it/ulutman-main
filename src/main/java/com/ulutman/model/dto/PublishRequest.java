@@ -39,8 +39,7 @@ public class PublishRequest {
 
     Optional<String> bank = Optional.empty(); // Выбор банка
 
-    Optional<File> paymentReceiptFile = Optional.empty(); // Чек оплаты
-
+    private Optional<MultipartFile> paymentReceiptFile;
 
     PublishStatus publishStatus;
 

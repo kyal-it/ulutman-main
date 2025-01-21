@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.time.LocalDate;
@@ -53,7 +54,7 @@ public class Publish {
 
     private String address;
 
-    public Publish(Long id, LocalDateTime createdAt, String title, String description, double price, Category category, Subcategory subCategory, Metro metro, String address, String phone, boolean active, String chatId, File paymentReceipt, String bank, List<String> images, LocalDate createDate, PublishStatus publishStatus, boolean detailFavorite, CategoryStatus categoryStatus, LocalDateTime lastBoostedAt, Payment payment, List<Favorite> favorites, User user, PropertyDetails propertyDetails, Conditions conditions) {
+    public Publish(Long id, LocalDateTime createdAt, String title, String description, double price, Category category, Subcategory subCategory, Metro metro, String address, String phone, boolean active, String chatId, String paymentReceiptUrl, String bank, List<String> images, LocalDate createDate, PublishStatus publishStatus, boolean detailFavorite, CategoryStatus categoryStatus, LocalDateTime lastBoostedAt, Payment payment, List<Favorite> favorites, User user, PropertyDetails propertyDetails, Conditions conditions) {
         this.id = id;
         this.createdAt = createdAt;
         this.title = title;
@@ -66,7 +67,7 @@ public class Publish {
         this.phone = phone;
         this.active = active;
         this.chatId = chatId;
-        this.paymentReceipt = paymentReceipt;
+        this.paymentReceiptUrl = paymentReceiptUrl;
         this.bank = bank;
         this.images = images;
         this.createDate = createDate;
@@ -87,7 +88,7 @@ public class Publish {
 
     private String chatId;
 
-    private File paymentReceipt;
+    private String paymentReceiptUrl;
 
     private String bank;
 
