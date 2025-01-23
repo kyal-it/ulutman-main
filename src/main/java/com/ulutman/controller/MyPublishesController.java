@@ -10,6 +10,7 @@ import com.ulutman.service.AdVersitingService;
 import com.ulutman.service.MyPublishesService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.Valid;
@@ -27,6 +28,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 @RequestMapping("/api/users/my-publishes")
 @Tag(name = "my-publishes")
+@SecurityRequirement(name = "Authorization")
 public class MyPublishesController {
     private final MyPublishesService publishService;
     private  final AdVersitingService adVersitingService;
