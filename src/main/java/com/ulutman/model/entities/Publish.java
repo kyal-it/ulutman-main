@@ -43,6 +43,8 @@ public class Publish {
     @Enumerated(EnumType.STRING)
     private Metro metro;
 
+    private String metroStation; // Новое поле для форматированного названия
+
     private String address;
 
     public Publish(Long id, LocalDateTime createdAt, String title, String description, double price, Category category, Subcategory subCategory, Metro metro, String address, String phone, boolean active, String chatId, String paymentReceiptUrl, String bank, List<String> images, LocalDate createDate, PublishStatus publishStatus, boolean detailFavorite, CategoryStatus categoryStatus, LocalDateTime lastBoostedAt, Payment payment, List<Favorite> favorites, User user, PropertyDetails propertyDetails, Conditions conditions) {

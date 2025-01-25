@@ -23,7 +23,7 @@ public class PublishResponse {
 
     String description;
 
-    Metro metro;
+    String metroStation;
 
     String address;
 
@@ -63,4 +63,5 @@ public class PublishResponse {
     Long accountId;
 
     Long favoriteCount;
+
 }

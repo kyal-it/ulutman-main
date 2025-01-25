@@ -32,6 +32,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.ulutman.model.enums.Metro.formatMetroName;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -80,7 +82,10 @@ public class PublishService {
         publish.setCreatedAt(LocalDateTime.now());
         User user = userRepository.findById(publishRequest.getUserId())
                 .orElseThrow(() -> new RuntimeException("Пользователь не найден: " + publishRequest.getUserId()));
-
+        if (publish.getMetro() != null) { // Проверка на null
+            String metroName = formatMetroName(publish.getMetro());
+            publish.setMetroStation(metroName); // Предполагается, что у вас есть поле String metroStation в сущности Publish
+        }
         publish.setUser(user);
         publish.setImages(imageUrls);
         publish.setPublishStatus(PublishStatus.ОДОБРЕН);
@@ -129,6 +134,18 @@ public class PublishService {
         return publishMapper.mapToResponse(savedPublish);
     }
 
+    public static String formatMetroName(Metro metro) {
+        String name = metro.name();
+        StringBuilder formattedName = new StringBuilder();
+        for (int i = 0; i < name.length(); i++) {
+            char c = name.charAt(i);
+            if (i > 0 && Character.isUpperCase(c)) {
+                formattedName.append(" ");
+            }
+            formattedName.append(c);
+        }
+        return formattedName.toString();
+    }
 
     @Scheduled(fixedRate = 86400000)
     public void scheduleExpiredPublishesRemoval() {

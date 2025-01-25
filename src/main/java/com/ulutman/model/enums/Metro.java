@@ -281,6 +281,19 @@ public enum Metro {
 
                 return this.name().replaceAll("([А-Я])", " $1").trim();
         }
+
+        public static String formatMetroName(Metro metro) {
+                String name = metro.name();
+                StringBuilder formattedName = new StringBuilder();
+                for (int i = 0; i < name.length(); i++) {
+                        char c = name.charAt(i);
+                        if (i > 0 && Character.isUpperCase(c)) {
+                                formattedName.append(" ");
+                        }
+                        formattedName.append(c);
+                }
+                return formattedName.toString();
+        }
     }
 
 

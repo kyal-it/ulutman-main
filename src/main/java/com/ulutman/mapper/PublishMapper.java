@@ -46,7 +46,6 @@ public class PublishMapper {
                 .id(publish.getId())
                 .title(publish.getTitle())
                 .description(publish.getDescription())
-                .metro(publish.getMetro())
                 .category(publish.getCategory())
                 .subcategory(publish.getSubCategory())
                 .address(publish.getAddress())
@@ -66,6 +65,7 @@ public class PublishMapper {
                 .conditions(publish.getConditions())
                 .accountId(publish.getUser().getUserAccount().getId())
                 .favoriteCount(publish.getFavoriteCount())
+                .metroStation(publish.getMetroStation())
                 .build();
     }
 
