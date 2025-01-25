@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.Principal;
 import java.util.*;
 
 @RestController
@@ -125,8 +126,8 @@ public class PublishController {
     }
 
     @GetMapping("/getAll")
-    public ResponseEntity<List<PublishResponse>> getAllPublishes() {
-        List<PublishResponse> publishes = publishService.getAll();
+    public ResponseEntity<List<PublishResponse>> getAllPublishes(Principal principal) {
+        List<PublishResponse> publishes = publishService.getAll(principal);
         return ResponseEntity.ok(publishes);
     }
 
@@ -179,7 +180,8 @@ public class PublishController {
     @Operation(summary = "Reset filters publications")
     @ApiResponse(responseCode = "201", description = "Publishes filters successfully reset")
     @GetMapping("/resetFilter")
-    public List<PublishResponse> resetFilter() {
-        return publishService.getAll();
+    public List<PublishResponse> resetFilter(Principal principal) {
+        return publishService.getAll(principal);
     }
+
 }

@@ -1,5 +1,6 @@
 package com.ulutman.service;
 
+import com.ulutman.exception.NotFoundException;
 import com.ulutman.mapper.ConditionsMapper;
 import com.ulutman.mapper.PropertyDetailsMapper;
 import com.ulutman.mapper.PublishMapper;
@@ -7,6 +8,7 @@ import com.ulutman.model.dto.PublishRequest;
 import com.ulutman.model.dto.PublishResponse;
 import com.ulutman.model.entities.*;
 import com.ulutman.model.enums.*;
+import com.ulutman.repository.FavoriteRepository;
 import com.ulutman.repository.MyPublishRepository;
 import com.ulutman.repository.PublishRepository;
 import com.ulutman.repository.UserRepository;
@@ -24,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 
 import java.io.IOException;
+import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -41,6 +44,7 @@ public class PublishService {
     private final PropertyDetailsMapper propertyDetailsMapper;
     private final ConditionsMapper conditionsMapper;
     private MailingService mailingService;
+    private final FavoriteRepository favoriteRepository;
 
 
     private static final String ADMIN_CHAT_ID = "6640338760";
@@ -260,15 +264,33 @@ public class PublishService {
         this.publishRepository.deleteById(productId);
     }
 
-    public List<PublishResponse> getAll() {
-        return publishRepository.findAllActivePublishes().stream()
+    public List<PublishResponse> getAll(Principal principal) {
+        List<Publish> publishes = publishRepository.findAllActivePublishes();
+
+        // Проверяем, есть ли текущий пользователь
+        boolean userIsLoggedIn = principal != null;
+        Long userId = userIsLoggedIn ? userRepository.findByEmail(principal.getName())
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден")).getId() : null;
+
+        return publishes.stream()
                 .map(publish -> {
                     PublishResponse publishResponse = publishMapper.mapToResponse(publish);
-                    publishResponse.setDetailFavorite(publish.isDetailFavorite()); // Просто копируем значение из сущности
+
+                    if (userIsLoggedIn) {
+                        // Если пользователь зарегистрирован, проверяем, есть ли публикация в избранном
+                        Favorite favorites = favoriteRepository.getFavoritesByUserId(userId);
+                        boolean isFavorite = favorites != null && favorites.getPublishes().contains(publish);
+                        publishResponse.setDetailFavorite(isFavorite); // Устанавливаем значение в зависимости от наличия
+                    } else {
+                        // Если пользователь не зарегистрирован, устанавливаем detailFavorite в false
+                        publishResponse.setDetailFavorite(false);
+                    }
+
                     return publishResponse;
                 })
                 .collect(Collectors.toList());
     }
+
 
     @Transactional(readOnly = true)
     public List<PublishResponse> filterPublishes(

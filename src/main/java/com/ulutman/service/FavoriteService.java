@@ -38,28 +38,29 @@ public class FavoriteService {
 
         Favorite favorites = favoriteRepository.getFavoritesByUserId(user.getId());
 
+        // Проверяем, есть ли публикация в избранном
         if (favorites != null && favorites.getPublishes().contains(publish)) {
             throw new IncorrectCodeException("Уже в избранном");
         }
 
+        // Если избранного нет, создаем новое
         if (favorites == null) {
             favorites = new Favorite();
             favorites.setUser(user);
             favorites.setPublishes(new HashSet<>());
         }
 
+        // Добавляем публикацию в избранное
         favorites.getPublishes().add(publish);
-
         publish.setFavoriteCount((publish.getFavoriteCount() == null ? 0L : publish.getFavoriteCount()) + 1);
 
         favoriteRepository.save(favorites);
-
-        publish.setDetailFavorite(true);
         publishRepository.save(publish);
 
         log.info("Added to favorites");
         return favoriteMapper.mapToResponse(favorites, publish);
     }
+
 
 
     public FavoriteResponseList getAllFavorites(Principal principal) {

@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -141,11 +142,12 @@ public class MainPageController {
     }
 
     @Operation(summary = "Reset filters publications")
-    @ApiResponse(responseCode = "201", description = "Publishes filters successfully reset")
+    @ApiResponse(responseCode = "200", description = "Publishes filters successfully reset")
     @GetMapping("/resetFilter")
-    public List<PublishResponse> resetFilter() {
-        return publishService.getAll();
+    public List<PublishResponse> resetFilter(Principal principal) {
+        return publishService.getAll(principal);
     }
+
 
     @Operation(summary = "Get all metro ")
     @ApiResponse(responseCode = "201", description = "Returned all metro by id successfully")
