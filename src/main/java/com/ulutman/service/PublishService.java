@@ -106,7 +106,7 @@ public class PublishService {
         }
 
 
-        if (publishRequest.getCategory() == Category.RENT || publishRequest.getCategory() == Category.HOTEL) {
+        if (publishRequest.getCategory() == Category.RENT || publishRequest.getCategory() == Category.HOTEL || publishRequest.getCategory() == Category.REAL_ESTATE) {
             String bankName = publishRequest.getBank()
                     .orElseThrow(() -> new IllegalArgumentException("Необходимо выбрать банк для категории " + publishRequest.getCategory()));
             MultipartFile receiptFile = (MultipartFile) publishRequest.getPaymentReceiptFile()
