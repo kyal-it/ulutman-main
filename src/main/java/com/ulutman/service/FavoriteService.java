@@ -3,8 +3,10 @@ package com.ulutman.service;
 import com.ulutman.exception.IncorrectCodeException;
 import com.ulutman.exception.NotFoundException;
 import com.ulutman.mapper.FavoriteMapper;
+import com.ulutman.mapper.PublishMapper;
 import com.ulutman.model.dto.FavoriteResponse;
 import com.ulutman.model.dto.FavoriteResponseList;
+import com.ulutman.model.dto.PublishResponse;
 import com.ulutman.model.entities.Favorite;
 import com.ulutman.model.entities.Publish;
 import com.ulutman.model.entities.User;
@@ -27,6 +29,7 @@ public class FavoriteService {
     private final UserRepository userRepository;
     private final PublishRepository publishRepository;
     private final FavoriteMapper favoriteMapper;
+    private final PublishMapper publishMapper;
 
 
     public FavoriteResponse addToFavorites(Long productId, Principal principal) {
@@ -72,17 +75,20 @@ public class FavoriteService {
         FavoriteResponseList favoriteResponseList = new FavoriteResponseList();
         favoriteResponseList.setId(user.getId());
 
+        List<PublishResponse> publishResponseList = new ArrayList<>();
+
         if (favorites != null && favorites.getPublishes() != null) {
-
-            Set<Publish> products = favorites.getPublishes();
-
-            favoriteResponseList.setPublishResponseList(favoriteMapper.mapListToResponseList(new ArrayList<>(products)));
-        } else {
-            favoriteResponseList.setPublishResponseList(new ArrayList<>());
+            for (Publish publish : favorites.getPublishes()) {
+                PublishResponse publishResponse = publishMapper.mapToResponse(publish);
+                publishResponse.setDetailFavorite(true); // Публикация в избранном
+                publishResponseList.add(publishResponse);
+            }
         }
 
+        favoriteResponseList.setPublishResponseList(publishResponseList);
         return favoriteResponseList;
     }
+
 
 
     public void deleteFromFavorites(Long productId, Principal principal) {
