@@ -56,6 +56,7 @@ public class FavoriteService {
         // Добавляем публикацию в избранное
         favorites.getPublishes().add(publish);
         publish.setFavoriteCount((publish.getFavoriteCount() == null ? 0L : publish.getFavoriteCount()) + 1);
+        publish.setDetailFavorite(true);
 
         favoriteRepository.save(favorites);
         publishRepository.save(publish);

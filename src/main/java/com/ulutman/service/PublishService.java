@@ -256,11 +256,33 @@ public class PublishService {
         return publishRepository.countPublicationsByUserId(userId);
     }
 
-    public PublishResponse findById(Long id) {
+    public PublishResponse findById(Long id, Principal principal) {
         Publish publish = publishRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Публикация по идентификатору " + id + " не найдена"));
+
+
+        if (principal != null) {
+            User user = userRepository.findByEmail(principal.getName())
+                    .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+
+
+            Favorite favorites = favoriteRepository.getFavoritesByUserId(user.getId());
+            if (favorites != null && favorites.getPublishes().contains(publish)) {
+                publish.setDetailFavorite(true);
+            } else {
+                publish.setDetailFavorite(false);
+            }
+        }
+
+
         return publishMapper.mapToResponse(publish);
     }
+
+//    public PublishResponse findById(Long id) {
+//        Publish publish = publishRepository.findById(id)
+//                .orElseThrow(() -> new EntityNotFoundException("Публикация по идентификатору " + id + " не найдена"));
+//        return publishMapper.mapToResponse(publish);
+//    }
 
     public PublishResponse updatePublish(Long id, PublishRequest publishRequest) {
         Publish existingPublish = publishRepository.findById(id)
