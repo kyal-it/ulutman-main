@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/user-accounts")
 @Tag(name = "Profile")
 @SecurityRequirement(name = "Authorization")
+@CrossOrigin(origins = "https://backend.ulutman.com")
 public class UserAccountController {
 
     private final ProfileService userAccountService;

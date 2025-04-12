@@ -23,6 +23,7 @@ import java.util.List;
 @RequestMapping("/api/manage/mailing")
 @Tag(name = "Manage Mailing")
 @SecurityRequirement(name = "Authorization")
+@CrossOrigin(origins = "https://backend.ulutman.com")
 public class ManageMailingController {
 
     private final ManageMailingService manageMailingService;

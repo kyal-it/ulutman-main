@@ -9,10 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Locale;
 
@@ -21,6 +18,7 @@ import java.util.Locale;
 @Tag(name = "Multi-lingual")
 @RequiredArgsConstructor
 @Slf4j
+@CrossOrigin(origins = "https://backend.ulutman.com")
 public class WelcomeController {
 
     private final MessageSource messageSource;

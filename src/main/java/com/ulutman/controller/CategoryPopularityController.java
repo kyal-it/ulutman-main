@@ -17,6 +17,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Tag(name = "Category popularity")
 @SecurityRequirement(name = "Authorization")
+@CrossOrigin(origins = "https://backend.ulutman.com")
 public class CategoryPopularityController {
 
     private final CategoryPopularityService popularityService;
