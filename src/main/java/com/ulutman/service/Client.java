@@ -1,4 +1,5 @@
 package com.ulutman.service;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -22,24 +23,20 @@ public class Client {
             System.out.print("Введите ваше имя: ");
             name = scanner.nextLine();
 
-            // Отправляем имя на сервер
             sendMessage(name);
 
-            // Ждем подтверждение от сервера
             String confirmation = is.readUTF();
             if (confirmation.equals("#принято")) {
                 System.out.println("Имя принято");
             }
-            // Получаем имя партнера
+
             String partnerName = is.readUTF();
             System.out.println("Имя вашего партнера: " + partnerName);
 
-            // Цикл отправки и получения сообщений
             while (true) {
                 System.out.print("Клиент " + name + ": ");
                 String message = scanner.nextLine();
 
-                // Отправляем сообщение партнеру
                 sendMessage(message);
 
                 if (message.equalsIgnoreCase("/exit")) {
@@ -63,7 +60,6 @@ public class Client {
         }
     }
 
-    // Метод для отправки сообщений
     private void sendMessage(String message) throws IOException {
         os.writeUTF(message);
         os.flush();
@@ -91,24 +87,20 @@ public class Client {
                 System.out.print("Введите ваше имя: ");
                 name = scanner.nextLine();
 
-                // Отправляем имя на сервер
                 sendMessage(name);
 
-                // Ждем подтверждение от сервера
                 String confirmation = is.readUTF();
                 if (confirmation.equals("#принято")) {
                     System.out.println("Имя принято");
                 }
-                // Получаем имя партнера
+
                 String partnerName = is.readUTF();
                 System.out.println("Имя вашего партнера: " + partnerName);
 
-                // Цикл отправки и получения сообщений
                 while (true) {
                     System.out.print("Клиент " + name + ": ");
                     String message = scanner.nextLine();
 
-                    // Отправляем сообщение партнеру
                     sendMessage(message);
 
                     if (message.equalsIgnoreCase("/exit")) {
@@ -132,7 +124,6 @@ public class Client {
             }
         }
 
-        // Метод для отправки сообщений
         private void sendMessage(String message) throws IOException {
             os.writeUTF(message);
             os.flush();

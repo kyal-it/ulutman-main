@@ -11,7 +11,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-
 @Getter
 @Setter
 @Builder
@@ -24,15 +23,13 @@ public class PublishResponse {
 
     String description;
 
-    Metro metro;
+    String metroStation;
 
     String address;
 
     String phoneNumber;
 
     List<String> images;
-
-//    String image;
 
     double price;
 
@@ -41,8 +38,6 @@ public class PublishResponse {
     Integer numberOfPublications;
 
     Subcategory subcategory;
-
-    //Bank bank;
 
     PublishStatus publishStatus;
 
@@ -61,7 +56,12 @@ public class PublishResponse {
 
     Conditions conditions;
 
-    private LocalDateTime nextBoostTime;
-    private String timeToNextBoost; // Добавляем поле для строки с временем до следующего бустинга
+    LocalDateTime nextBoostTime;
+
+    String timeToNextBoost;
+
+    Long accountId;
+
+    Long favoriteCount;
 
 }

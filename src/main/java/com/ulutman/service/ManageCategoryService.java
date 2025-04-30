@@ -42,22 +42,17 @@ public class ManageCategoryService {
     public List<AuthResponse> getAllUsersWithPublishes() {
         List<User> users = userRepository.findAll();
 
-
         return users.stream()
-                .filter(user -> !publishRepository.findAllByUserId(user.getId()).isEmpty()) // Фильтруем пользователей с публикациями
+                .filter(user -> !publishRepository.findAllByUserId(user.getId()).isEmpty())
                 .map(user -> {
                     List<PublishResponse> publishes = publishRepository.findAllByUserId(user.getId())
                             .stream()
                             .map(publishMapper::mapToResponse)
                             .collect(Collectors.toList());
 
-
                     AuthResponse authResponse = authMapper.mapToResponse(user);
-
-
                     authResponse.setPublishes(publishes);
                     authResponse.setNumberOfPublications(publishes.size()); // Устанавливаем количество публикаций
-
 
                     return authResponse;
                 })
@@ -124,7 +119,7 @@ public class ManageCategoryService {
             }
 
             if (filteredPublishes.isEmpty()) {
-                return Collections.emptyList();  // Если ничего не найдено по пользователям
+                return Collections.emptyList();
             }
         }
 

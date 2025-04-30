@@ -22,6 +22,7 @@ import java.util.Map;
 @RequestMapping("/api/S3")
 @Tag(name = "Amazon S3")
 @SecurityRequirement(name = "Authorization")
+@CrossOrigin(origins = "https://backend.ulutman.com")
 @RequiredArgsConstructor
 public class S3Controller {
 
@@ -52,32 +53,10 @@ public class S3Controller {
             }
         }
 
-        // Загружаем файлы на S3
         List<String> fileUrls = s3Service.uploadFiles(filesToUpload);
 
         return ResponseEntity.ok(fileUrls);
     }
 }
 
-//    @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-//    public ResponseEntity<String> uploadFile(@RequestPart("file") MultipartFile file) {
-//        String fileName = file.getOriginalFilename();
-//        if (fileName == null || file.isEmpty()) {
-//            return ResponseEntity.badRequest().body("Файл не найден");
-//        }
-//
-//        try {
-//            Path filePath = Paths.get(System.getProperty("java.io.tmpdir"), fileName);
-//            Files.write(filePath, file.getBytes());
-//
-//            // Загружаем файл в S3 и получаем URL
-//            String fileUrl = s3Service.uploadFile(fileName, filePath);
-//            return ResponseEntity.ok(fileUrl);
-//        } catch (IOException e) {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-//                    .body("Ошибка при загрузке файла: " + e.getMessage());
-//        } catch (java.io.IOException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
 

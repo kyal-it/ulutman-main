@@ -2,7 +2,6 @@ package com.ulutman.controller;
 
 import com.ulutman.model.dto.CommentRequest;
 import com.ulutman.model.dto.CommentResponse;
-import com.ulutman.model.entities.Comment;
 import com.ulutman.service.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -12,13 +11,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/users/comments")
 @Tag(name = "Comment")
 @SecurityRequirement(name = "Authorization")
+@CrossOrigin(origins = "https://backend.ulutman.com")
 public class CommentController {
 
     private final CommentService commentService;

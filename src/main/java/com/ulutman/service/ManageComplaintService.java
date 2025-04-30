@@ -43,14 +43,12 @@ public class ManageComplaintService {
         if (complaint.getComplaintStatus() != newStatus) {
             complaint.setComplaintStatus(newStatus);
 
-            // Если статус отклонен, удаляем жалобу и отправляем уведомление
             if (newStatus == ComplaintStatus.ОТКЛОНЕН) {
-                String userEmail = complaint.getUser().getEmail(); // Получаем email пользователя
+                String userEmail = complaint.getUser().getEmail();
                 String complaintDetails = complaint.getComplaintContent();
 
                 complaintRepository.delete(complaint);
 
-                // Отправляем уведомление о отклонении
                 try {
                     mailingService.sendComplaintRejectionNotification(userEmail, complaintDetails);
                 } catch (MessagingException e) {
@@ -107,7 +105,6 @@ public class ManageComplaintService {
                     .collect(Collectors.toList());
         }
 
-        // Если после фильтрации нет подходящих жалоб, возвращаем пустой массив
         if (filteredComplaints.isEmpty()) {
             return Collections.emptyList();
         }
@@ -115,10 +112,10 @@ public class ManageComplaintService {
         return filteredComplaints.stream()
                 .map(complaint -> {
                     User user = complaint.getUser();
-                    String userNameResult = user != null ? user.getName() : "Неизвестно"; // Проверяем наличие пользователя
+                    String userNameResult = user != null ? user.getName() : "Неизвестно";
 
                     ComplaintResponse response = complaintMapper.mapToResponse(complaint);
-                    response.setUserName(userNameResult); // Устанавливаем имя пользователя в ответе
+                    response.setUserName(userNameResult);
                     return response;
                 })
                 .collect(Collectors.toList());

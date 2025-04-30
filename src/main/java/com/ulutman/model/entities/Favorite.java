@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -21,21 +20,14 @@ public class Favorite {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne // Many favorites to one User
+    @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
-    // @JsonBackReference // Обратная связь с userAccount
-    // @OneToOne(cascade = CascadeType.ALL)
-    // @JoinColumn(name = "user_account_id")
-    // private UserAccount userAccount;
-
-    @JsonBackReference // Обратная связь с Publish
+    @JsonBackReference
     @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinTable(name = "favorites_publishes",
             joinColumns = @JoinColumn(name = "favorite_id"),
             inverseJoinColumns = @JoinColumn(name = "publish_id"))
-    Set<Publish> publishes = new LinkedHashSet<>();
-
-
+    private Set<Publish> publishes = new LinkedHashSet<>();
 }

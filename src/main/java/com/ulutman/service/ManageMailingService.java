@@ -74,7 +74,6 @@ public class ManageMailingService {
         return response;
     }
 
-
     public MailingResponse updateMailingStatus(Long id, MailingStatus newStatus) {
         Mailing mailing = mailingRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Mailing not found"));

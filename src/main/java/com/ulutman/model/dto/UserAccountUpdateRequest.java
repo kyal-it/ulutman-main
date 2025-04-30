@@ -13,9 +13,5 @@ public class UserAccountUpdateRequest {
 
     private String email;
 
-    private String lastName;
-
-    private String phoneNumber;
-
     private String name;
 }

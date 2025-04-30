@@ -20,13 +20,6 @@ public class GlobalExceptionHandler {
 
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
-//
-//    @ExceptionHandler(IllegalArgumentException.class)
-//    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex) {
-//        return ResponseEntity
-//                .status(HttpStatus.BAD_REQUEST)
-//                .body(ex.getMessage());
-//    }
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<String> handleRuntimeException(RuntimeException ex) {
@@ -35,7 +28,6 @@ public class GlobalExceptionHandler {
                 .body("Произошла ошибка: " + ex.getMessage());
     }
 
-    // Обработчик кастомного исключения
     @ExceptionHandler(IncorrectCodeException.class)
     public ResponseEntity<String> handleIncorrectCodeException(IncorrectCodeException ex) {
         log.warn("Caught IncorrectCodeException: {}", ex.getMessage());
@@ -43,5 +35,4 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.CONFLICT)  // Статус 409 - Conflict
                 .body(ex.getMessage());
     }
-
 }

@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,20 +23,14 @@ public class PublishMapper {
         publish.setMetro(publishRequest.getMetro());
         publish.setAddress(publishRequest.getAddress());
         publish.setPhone(publishRequest.getPhoneNumber());
-        List<String> imagePaths = new ArrayList<>();
-        for (MultipartFile image : publishRequest.getImages()) {
-            // Здесь вы можете реализовать логику сохранения изображения и получения его пути
-            String imagePath = saveImage(image); // Метод для сохранения изображения
-            imagePaths.add(imagePath);
-        }
-        publish.setImages(imagePaths);
+        publish.setImages(publishRequest.getImages());
 //        publish.setImage(publishRequest.getImage());
         publish.setPrice(publishRequest.getPrice());
         publish.setCategory(publishRequest.getCategory());
         publish.setSubCategory(publishRequest.getSubcategory());
 //        publish.setBank(publishRequest.getBank());
         publishRequest.getBank().ifPresent(publish::setBank);
-        publishRequest.getPaymentReceiptFile().ifPresent(publish::setPaymentReceipt);
+        publishRequest.getPaymentReceiptFile().ifPresent(paymentReceiptUrl -> publish.setPaymentReceiptUrl(String.valueOf(paymentReceiptUrl)));
         publish.setPublishStatus(publishRequest.getPublishStatus());
         publish.setCategory(publishRequest.getCategory());
         publish.setCreateDate(LocalDate.now());
@@ -51,7 +46,6 @@ public class PublishMapper {
                 .id(publish.getId())
                 .title(publish.getTitle())
                 .description(publish.getDescription())
-                .metro(publish.getMetro())
                 .category(publish.getCategory())
                 .subcategory(publish.getSubCategory())
                 .address(publish.getAddress())
@@ -69,6 +63,9 @@ public class PublishMapper {
                 .active(publish.isActive())
                 .propertyDetails(publish.getPropertyDetails())
                 .conditions(publish.getConditions())
+                .accountId(publish.getUser().getUserAccount().getId())
+                .favoriteCount(publish.getFavoriteCount())
+                .metroStation(publish.getMetroStation())
                 .build();
     }
 

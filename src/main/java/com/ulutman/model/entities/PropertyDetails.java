@@ -18,56 +18,55 @@ public class PropertyDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Double totalArea; // Общая площадь
+    private Double totalArea;
 
-    private Double livingArea; // Жилая площадь
+    private Double livingArea;
 
-    private Double ceilingHeight; // Высота потолков
+    private Double ceilingHeight;
 
-    private String layout; // Планировка
+    private String layout;
 
-    private String bathroomType; // Санузел
+    private String bathroomType;
 
-    private Boolean hasBalcony; // Балкон/Лоджия
+    private Boolean hasBalcony;
 
-    private String viewFromWindow; // Вид из окна
+    private String viewFromWindow;
 
-    private Integer yearOfConstruction; // Год постройки
+    private Integer yearOfConstruction;
 
-    private Boolean hasGarbageChute; // Мусоропровод
+    private Boolean hasGarbageChute;
 
-    private Integer numberOfElevators; // Количество лифтов
+    private Integer numberOfElevators;
 
-    private String buildingType; // Тип дома
+    private String buildingType;
 
-    private String overlappingType; // Тип перекрвтия
+    private String overlappingType;
 
-    private Boolean hasParking; // Парковка
+    private Boolean hasParking;
 
-    private Integer entrances; // Подъезды
+    private Integer entrances;
 
-    private String heatingType; // Отопление
+    private String heatingType;
 
-    private Boolean isEmergency; // Аварийность
+    private Boolean isEmergency;
 
-    //Дополнительные поля про "в квартире есть"
-    private Boolean hasRefrigerator; // Холодильник
+    private Boolean hasRefrigerator;
 
-    private Boolean hasWashingMachine; // Стиральная машина
+    private Boolean hasWashingMachine;
 
-    private Boolean hasTelevision; // Телевизор
+    private Boolean hasTelevision;
 
-    private Boolean hasShower; // Душевая кабина
+    private Boolean hasShower;
 
-    private Boolean hasFurnitureInRooms; // Мебель в комнатах
+    private Boolean hasFurnitureInRooms;
 
-    private Boolean hasDishWasher; // Посудомоечная
+    private Boolean hasDishWasher;
 
-    private Boolean hasAirConditioner; // Кондиционер
+    private Boolean hasAirConditioner;
 
-    private Boolean hasInternet; // Интернет
+    private Boolean hasInternet;
 
-    private Boolean hasKitchenFurniture;  // Мебель на кухне
+    private Boolean hasKitchenFurniture;
 
     @Enumerated(EnumType.STRING)
     private TransportType transportType;
@@ -84,7 +83,7 @@ public class PropertyDetails {
 
     private Integer floor;
 
-    @JsonBackReference // Обратная связь с publish
+    @JsonBackReference
     @OneToOne(mappedBy = "propertyDetails", fetch = FetchType.LAZY)
     private Publish publish;
 }

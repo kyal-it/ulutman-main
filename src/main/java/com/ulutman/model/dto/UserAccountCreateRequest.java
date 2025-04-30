@@ -14,9 +14,5 @@ public class UserAccountCreateRequest {
 
     private String username;
 
-    private String lastName;
-
-    private String phoneNumber;
-
     private String emailAddress;
 }

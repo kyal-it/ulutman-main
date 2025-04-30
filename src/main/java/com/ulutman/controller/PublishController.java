@@ -3,10 +3,10 @@ package com.ulutman.controller;
 import ch.qos.logback.classic.Logger;
 import com.ulutman.model.dto.PublishRequest;
 import com.ulutman.model.dto.PublishResponse;
-import com.ulutman.model.entities.BankCard;
 import com.ulutman.model.enums.*;
 import com.ulutman.repository.BankCardRepository;
 import com.ulutman.service.PublishService;
+import com.ulutman.service.S3Service;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -19,10 +19,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.List;
-import java.util.Optional;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.security.Principal;
+import java.util.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -30,11 +31,13 @@ import java.util.Optional;
 @RequestMapping("/api/publishes")
 @Tag(name = "Publish")
 @SecurityRequirement(name = "Authorization")
+@CrossOrigin(origins = "https://backend.ulutman.com")
 public class PublishController {
+
     private final PublishService publishService;
     private final BankCardRepository bankCardRepository;
     private static final Logger logger = (Logger) LoggerFactory.getLogger(PublishController.class);
-
+    private final S3Service s3Service;
 
     @Operation(summary = "Create a publication")
     @ApiResponse(responseCode = "201", description = "The publish created successfully")
@@ -53,41 +56,51 @@ public class PublishController {
             @RequestParam(value = "paymentReceiptFile", required = false) MultipartFile paymentReceiptFile, // Файл
             @RequestParam("userId") Long userId) {
 
+
         PublishRequest publishRequest = new PublishRequest();
         publishRequest.setTitle(title);
         publishRequest.setDescription(description);
         publishRequest.setMetro(metro);
         publishRequest.setAddress(address);
         publishRequest.setPhoneNumber(phoneNumber);
-        publishRequest.setImages(images);
+
+
+        String tempDir = System.getProperty("java.io.tmpdir");
+
+        try {
+            Map<String, Path> filesMap = new HashMap<>();
+            for (MultipartFile file : images) {
+                Path tempFile = Paths.get(tempDir, file.getOriginalFilename());
+                Files.write(tempFile, file.getBytes());
+                filesMap.put(file.getOriginalFilename(), tempFile);
+            }
+
+            List<String> imageUrls = s3Service.uploadFiles(filesMap);
+            publishRequest.setImages(imageUrls);
+
+
+            for (Path tempFile : filesMap.values()) {
+                Files.deleteIfExists(tempFile);
+            }
+
+            if (paymentReceiptFile != null && !paymentReceiptFile.isEmpty()) {
+                publishRequest.setPaymentReceiptFile(Optional.of((MultipartFile) paymentReceiptFile)); // <- Используем исходный MultipartFile
+            } else {
+                publishRequest.setPaymentReceiptFile(Optional.empty());
+            }
+        } catch (Exception e) {
+            logger.error("Ошибка загрузки файлов в S3: {}", e.getMessage());
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
         publishRequest.setPrice(price);
         publishRequest.setCategory(category);
         publishRequest.setSubcategory(subcategory);
         publishRequest.setBank(Optional.ofNullable(bank));
         publishRequest.setUserId(userId);
 
-
-        if (paymentReceiptFile != null && !paymentReceiptFile.isEmpty()) {
-            File tempFile = null;
-            try {
-                tempFile = File.createTempFile("paymentReceipt", ".tmp");
-                paymentReceiptFile.transferTo(tempFile); // Сохраняем файл во временное место
-
-                publishRequest.setPaymentReceiptFile(Optional.of(tempFile));
-            } catch (IOException e) {
-                logger.error("Ошибка при обработке файла: {}", e.getMessage());
-                return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
-            } finally {
-                if (tempFile != null && tempFile.exists()) {
-                    tempFile.deleteOnExit();
-                }
-            }
-        } else {
-            publishRequest.setPaymentReceiptFile(Optional.empty());
-        }
-
         try {
-            PublishResponse response = publishService.createPublish(publishRequest);
+            PublishResponse response = publishService.createPublish(publishRequest); // Используем первый файл изображения
             return new ResponseEntity<>(response, HttpStatus.CREATED);
         } catch (IllegalArgumentException e) {
             logger.error("Ошибка в аргументах: {}", e.getMessage());
@@ -96,7 +109,6 @@ public class PublishController {
             logger.error("Ошибка выполнения: {}", e.getMessage());
             return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
         }
-
     }
 
     @Operation(summary = "Create a publication with details")
@@ -114,34 +126,25 @@ public class PublishController {
         }
     }
 
-//    @Operation(summary = "Get all publications")
-//    @ApiResponse(responseCode = "201", description = "Return list of publishes")
-//    @GetMapping("/getAll")
-//    public ResponseEntity<List<PublishResponse>> getAllPublishes(Principal principal) {
-//        // Вызов сервиса для получения всех публикаций с учётом избранных для текущего пользователя
-//        List<PublishResponse> publishes = publishService.getAll(principal);
-//
-//        // Возвращаем результат в виде HTTP-ответа
-//        return new ResponseEntity<>(publishes, HttpStatus.OK);
-//    }
-//    public ResponseEntity<List<PublishResponse>> getAllPublishes() {
-//        List<PublishResponse> publishes = publishService.getAll();
-//        return ResponseEntity.ok()
-//                .contentType(MediaType.APPLICATION_JSON)
-//                .body(publishes);
-//    }
     @GetMapping("/getAll")
-    public ResponseEntity<List<PublishResponse>> getAllPublishes() {
-        List<PublishResponse> publishes = publishService.getAll();
+    public ResponseEntity<List<PublishResponse>> getAllPublishes(Principal principal) {
+        List<PublishResponse> publishes = publishService.getAll(principal);
         return ResponseEntity.ok(publishes);
     }
 
     @Operation(summary = "Get a publication by id")
-    @ApiResponse(responseCode = "201", description = "Publication found")
+    @ApiResponse(responseCode = "200", description = "Publication found")
     @GetMapping("find/{id}")
-    public PublishResponse findById(@PathVariable Long id) {
-        return this.publishService.findById(id);
+    public PublishResponse findById(@PathVariable Long id, Principal principal) {
+        return publishService.findById(id, principal);
     }
+
+//    @Operation(summary = "Get a publication by id")
+//    @ApiResponse(responseCode = "201", description = "Publication found")
+//    @GetMapping("find/{id}")
+//    public PublishResponse findById(@PathVariable Long id) {
+//        return this.publishService.findById(id);
+//    }
 
     @Operation(summary = "Update a publication by id")
     @ApiResponse(responseCode = "201", description = "Updated  the publication  by id successfully")
@@ -185,7 +188,8 @@ public class PublishController {
     @Operation(summary = "Reset filters publications")
     @ApiResponse(responseCode = "201", description = "Publishes filters successfully reset")
     @GetMapping("/resetFilter")
-    public List<PublishResponse> resetFilter() {
-        return publishService.getAll();
+    public List<PublishResponse> resetFilter(Principal principal) {
+        return publishService.getAll(principal);
     }
+
 }

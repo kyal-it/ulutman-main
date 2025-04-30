@@ -30,7 +30,4 @@ public class Payment {
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_id")
     private User user;
-
-//    @OneToMany(mappedBy = "payment", cascade = CascadeType.ALL, orphanRemoval = true)
-//    private List<Publish> publishes;
 }

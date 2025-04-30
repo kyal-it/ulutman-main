@@ -24,6 +24,7 @@ import java.util.List;
 @RequestMapping("/api/manage/category")
 @Tag(name = "Manage Category")
 @SecurityRequirement(name = "Authorization")
+@CrossOrigin(origins = "https://backend.ulutman.com")
 public class ManageCategoryController {
 
     private final ManageCategoryService manageCategoryService;
@@ -41,12 +42,6 @@ public class ManageCategoryController {
     @GetMapping("/with-publishes")
     public ResponseEntity<List<AuthResponse>> getAllUsersWithPublishes() {
         List<AuthResponse> users = manageCategoryService.getAllUsersWithPublishes();
-
-
-        if (users.isEmpty()) {
-            return ResponseEntity.noContent().build();
-        }
-
 
         return ResponseEntity.ok(users);
     }
@@ -77,7 +72,6 @@ public class ManageCategoryController {
 
         return ResponseEntity.ok(filteredPublishes);
     }
-
 
     @Operation(summary = "Reset filters categories")
     @ApiResponse(responseCode = "201", description = "Category filters successfully reset")

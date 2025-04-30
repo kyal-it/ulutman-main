@@ -49,7 +49,7 @@ public class SecurityConfig {
                                         "/api/manage/moderator",
                                         "/api/manage/publishes",
                                         "/api/manage/mailing",
-                                        "api/payment/**",
+                                        "/api/manage/adversting/**",
                                         "/api/mailing",
                                         "/api/manage/category",
                                         "/api/bank-cards/**").hasAuthority("ADMIN")
@@ -65,8 +65,6 @@ public class SecurityConfig {
                                         "/api/users/messages",
                                         "/api/users/comments",
                                         "/api/users/complaints",
-                                        "/api/mailing/sendPasswordResetCode",
-                                        "/api/mailing/resetPassword",
                                         "/api/S3/upload",
                                         "/api/favorites/check",
                                         "/api/user-accounts/{userId}",

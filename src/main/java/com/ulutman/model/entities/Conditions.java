@@ -19,23 +19,23 @@ public class Conditions {
 
     private Double pricePerMonth;
 
-    private String utilitiesIncluded; // ЖКХ
+    private String utilitiesIncluded;
 
-    private Double deposit; // Залог
+    private Double deposit;
 
-    private String commission; // Комиссия
+    private String commission;
 
-    private String prepayment; // Предоплата
+    private String prepayment;
 
-    private String leaseTerm; // Срок аренды
+    private String leaseTerm;
 
     private boolean showPhoneNumber;
 
     private String realtor;
 
-    private Double realtorRating; // Рейтинг риэлтора
+    private Double realtorRating;
 
-    @JsonBackReference // Обратная связь с publish
+    @JsonBackReference
     @OneToOne(mappedBy = "conditions",fetch = FetchType.LAZY)
     private Publish publish;
 }

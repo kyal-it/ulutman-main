@@ -69,21 +69,19 @@ public class ManageModeratorService {
 
                 commentRepository.delete(comment);
 
-                // Отправляем уведомление о отклонении
                 try {
                     mailingService.sendCommentRejectionNotification(userEmail, commentContent);
                 } catch (MessagingException e) {
                     log.error("Ошибка при отправке уведомления об отклонении комментария с id {} на email: {}", id, e.getMessage());
                 }
             } else {
-                // Если статус не ОТКЛОНЕН, сохраняем изменения
+
                 commentRepository.save(comment);
             }
         }
 
         return commentMapper.mapToFilterResponse(comment);
     }
-
 
     public List<FilteredCommentResponse> filterComments(
             List<LocalDate> createDates,

@@ -25,7 +25,6 @@ public class PublishSpecification {
                 return criteriaBuilder.conjunction();
             }
 
-            // Создаем предикаты для каждого из переданных titles
             List<Predicate> predicates = titles.stream()
                     .map(title -> criteriaBuilder.like(
                             criteriaBuilder.lower(root.get("title")),
@@ -33,7 +32,6 @@ public class PublishSpecification {
                     ))
                     .collect(Collectors.toList());
 
-            // Объединяем предикаты с помощью OR
             return criteriaBuilder.or(predicates.toArray(new Predicate[0]));
         };
     }
@@ -45,6 +43,5 @@ public class PublishSpecification {
             }
             return root.get("metro").in(metros);
         };
-
     }
 }

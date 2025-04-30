@@ -15,6 +15,7 @@ import java.util.List;
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ManagePaymentAdversting {
+
     final MailingService mailingService;
     final AdVersitingRepository adVersitingRepository;
 
@@ -34,7 +35,7 @@ public class ManagePaymentAdversting {
                 publication.getUser().getEmail(),
                 "Ваша реклама активирована!",
                 "Мы рады сообщить вам, что ваша реклама по id; " + publication.getId() + " успешно активирована на сайте ULUTMAN.ru \n" +
-                "Если у вас есть вопросы, пишите на: ulutman@gmail.comnn \n" +
+                "Если у вас есть вопросы, пишите на: ulutmanmoscow@gmail.com \n" +
                 "С уважением, " +
                 "Команда ULUTMAN"
         );

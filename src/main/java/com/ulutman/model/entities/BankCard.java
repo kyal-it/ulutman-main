@@ -12,13 +12,13 @@ import lombok.experimental.FieldDefaults;
 @Getter
 @Setter
 @NoArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class BankCard {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
-    String bankName;
+    private String bankName;
 
-    String cardNumber;
+    private String cardNumber;
 }

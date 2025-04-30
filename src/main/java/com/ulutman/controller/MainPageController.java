@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -23,6 +24,7 @@ import java.util.Map;
 @RequestMapping("/api/main-page")
 @Tag(name = "Main - Page")
 @SecurityRequirement(name = "Authorization")
+@CrossOrigin(origins = "https://backend.ulutman.com")
 public class MainPageController {
 
     private final MainPageService mainPageService;
@@ -36,7 +38,6 @@ public class MainPageController {
         return mainPageService.findPublishByCategoryWork();
     }
 
-    //SubCategory = WORK
     @Operation(summary = "Get publishes by subCategory WORK")
     @ApiResponse(responseCode = "201", description = "return list of publishes by subCategory WORK")
     @GetMapping("/work/subcategory/{subCategory}")
@@ -51,7 +52,6 @@ public class MainPageController {
         return mainPageService.findPublishByCategoryRent();
     }
 
-    //SubCategory = RENT
     @Operation(summary = "Get publishes by subCategory RENT")
     @ApiResponse(responseCode = "201", description = "return list of publishes by subCategory RENT")
     @GetMapping("/rent/subcategory/{subCategory}")
@@ -66,7 +66,6 @@ public class MainPageController {
         return mainPageService.findPublishByCategorySell();
     }
 
-    //SubCategory = SELL
     @Operation(summary = "Get publishes by subCategory HOTEL")
     @ApiResponse(responseCode = "201", description = "return list of publishes by subCategory HOTEL")
     @GetMapping("/sell/subcategory/{subCategory}")
@@ -81,7 +80,6 @@ public class MainPageController {
         return mainPageService.findPublishByCategoryHotel();
     }
 
-    //SubCategory = SELL
     @Operation(summary = "Get publishes by subCategory SELL")
     @ApiResponse(responseCode = "201", description = "return list of publishes by subCategory SELL")
     @GetMapping("/hotel/subcategory/{subCategory}")
@@ -96,7 +94,6 @@ public class MainPageController {
         return mainPageService.findPublishByCategoryServices();
     }
 
-    //SubCategory = SERVICES
     @Operation(summary = "Get publishes by subCategory SERVICES")
     @ApiResponse(responseCode = "201", description = "return list of publishes by subCategory SERVICES")
     @GetMapping("/services/subcategory/{subCategory}")
@@ -104,7 +101,6 @@ public class MainPageController {
         return mainPageService.findPublishByCategoryServices(subCategory);
     }
 
-    //SubCategory = AUTO
     @Operation(summary = "Get publishes by subCategory AUTO")
     @ApiResponse(responseCode = "201", description = "return list of publishes by subCategory AUTO")
     @GetMapping("/auto/subcategory/{subCategory}")
@@ -119,7 +115,6 @@ public class MainPageController {
         return mainPageService.findPublishByCategoryRealEstate();
     }
 
-    //SubCategory = REAL_ESTATE
     @Operation(summary = "Get publishes by subCategory REAL_ESTATE")
     @ApiResponse(responseCode = "201", description = "return list of publishes by subCategory REAL_ESTATE")
     @GetMapping("/real-estate/subcategory/{subCategory}")
@@ -148,11 +143,12 @@ public class MainPageController {
     }
 
     @Operation(summary = "Reset filters publications")
-    @ApiResponse(responseCode = "201", description = "Publishes filters successfully reset")
+    @ApiResponse(responseCode = "200", description = "Publishes filters successfully reset")
     @GetMapping("/resetFilter")
-    public List<PublishResponse> resetFilter() {
-        return publishService.getAll();
+    public List<PublishResponse> resetFilter(Principal principal) {
+        return publishService.getAll(principal);
     }
+
 
     @Operation(summary = "Get all metro ")
     @ApiResponse(responseCode = "201", description = "Returned all metro by id successfully")

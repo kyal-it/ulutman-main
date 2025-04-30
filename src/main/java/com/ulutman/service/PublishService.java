@@ -1,5 +1,6 @@
 package com.ulutman.service;
 
+import com.ulutman.exception.NotFoundException;
 import com.ulutman.mapper.ConditionsMapper;
 import com.ulutman.mapper.PropertyDetailsMapper;
 import com.ulutman.mapper.PublishMapper;
@@ -7,6 +8,7 @@ import com.ulutman.model.dto.PublishRequest;
 import com.ulutman.model.dto.PublishResponse;
 import com.ulutman.model.entities.*;
 import com.ulutman.model.enums.*;
+import com.ulutman.repository.FavoriteRepository;
 import com.ulutman.repository.MyPublishRepository;
 import com.ulutman.repository.PublishRepository;
 import com.ulutman.repository.UserRepository;
@@ -20,13 +22,17 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
+
 import java.io.IOException;
+import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import static com.ulutman.model.enums.Metro.formatMetroName;
 
 @Service
 @RequiredArgsConstructor
@@ -40,8 +46,11 @@ public class PublishService {
     private final PropertyDetailsMapper propertyDetailsMapper;
     private final ConditionsMapper conditionsMapper;
     private MailingService mailingService;
-    private static final String TELEGRAM_BOT_TOKEN = "7967485487:AAGhVVsiOZ3V2ZFonfZqWXoxCpRpVL0D1nE";
-    private static final String ADMIN_CHAT_ID = "1818193495";
+    private final FavoriteRepository favoriteRepository;
+
+
+    private static final String ADMIN_CHAT_ID = "6640338760";
+    private static final String TELEGRAM_BOT_TOKEN = "7721979760:AAGc8x9AXc5auPzVZX8ajUQjJvXAgNpK6_g";
     private final MyPublishRepository myPublishRepository;
 
 
@@ -50,22 +59,38 @@ public class PublishService {
             throw new IllegalArgumentException("Необходимо выбрать категорию и подкатегорию");
         }
 
+
         if (!Category.getAllCategories().contains(publishRequest.getCategory())) {
             throw new IllegalArgumentException("Неверная категория");
         }
+
 
         if (!publishRequest.getCategory().getSubcategories().contains(publishRequest.getSubcategory())) {
             throw new IllegalArgumentException("Неверная подкатегория для выбранной категории");
         }
 
+        List<String> imageUrls = publishRequest.getImages();
+        log.info("URL изображений: {}", imageUrls);
+
+
+        for (String url : imageUrls) {
+            if (!url.startsWith("http")) {
+                throw new IllegalArgumentException("Некорректный URL изображения: " + url);
+            }
+        }
         Publish publish = publishMapper.mapToEntity(publishRequest);
         publish.setCreatedAt(LocalDateTime.now());
         User user = userRepository.findById(publishRequest.getUserId())
                 .orElseThrow(() -> new RuntimeException("Пользователь не найден: " + publishRequest.getUserId()));
-
+        if (publish.getMetro() != null) { // Проверка на null
+            String metroName = formatMetroName(publish.getMetro());
+            publish.setMetroStation(metroName); // Предполагается, что у вас есть поле String metroStation в сущности Publish
+        }
         publish.setUser(user);
+        publish.setImages(imageUrls);
         publish.setPublishStatus(PublishStatus.ОДОБРЕН);
         publish.setCategoryStatus(CategoryStatus.АКТИВНО);
+
 
         if (publishRequest.getCategory() == Category.RENT || publishRequest.getCategory() == Category.HOTEL) {
             publish.setActive(false);
@@ -73,8 +98,6 @@ public class PublishService {
             publish.setActive(true);
         }
 
-
-        // Проверяем, если данные корректные и создаем публикацию
         Publish savedPublish;
         try {
             savedPublish = publishRepository.save(publish);
@@ -82,30 +105,46 @@ public class PublishService {
             throw new IllegalArgumentException("Ошибка при сохранении публикации: " + e.getMessage());
         }
 
-        if (publishRequest.getCategory() == Category.RENT || publishRequest.getCategory() == Category.HOTEL) {
-            if (!publishRequest.getBank().isPresent()) {
-                throw new IllegalArgumentException("Необходимо выбрать банк для категории " + publishRequest.getCategory());
-            }
 
-            if (!publishRequest.getPaymentReceiptFile().isPresent()) {
-                throw new IllegalArgumentException("Необходимо предоставить чек оплаты для категории " + publishRequest.getCategory());
-            }
+        if (publishRequest.getCategory() == Category.RENT || publishRequest.getCategory() == Category.HOTEL || publishRequest.getCategory() == Category.REAL_ESTATE) {
+            String bankName = publishRequest.getBank()
+                    .orElseThrow(() -> new IllegalArgumentException("Необходимо выбрать банк для категории " + publishRequest.getCategory()));
+            MultipartFile receiptFile = (MultipartFile) publishRequest.getPaymentReceiptFile()
+                    .orElseThrow(() -> new IllegalArgumentException("Необходимо предоставить чек оплаты для категории " + publishRequest.getCategory()));
 
-            sendReceiptAsDocumentToTelegram(publishRequest.getPaymentReceiptFile().get(), savedPublish);
+            try {
+                sendReceiptAsDocumentToTelegram(receiptFile, bankName, savedPublish); // Передаем MultipartFile напрямую
+            } catch (IOException e) {
+                log.error("Ошибка при отправке чека в Telegram: {}", e.getMessage(), e);
+                throw new RuntimeException("Ошибка при отправке чека", e);
+            }
         } else {
             log.info("Bank and payment receipt are not required for category: {}", publishRequest.getCategory());
         }
 
+
         MyPublish myPublish = new MyPublish();
-        myPublish.setUserAccount(user.getUserAccount()); // Убедитесь, что у вас есть метод getUserAccount() в User
-        myPublish.setPublish(savedPublish); // Устанавливаем сохраненную публикацию
+        myPublish.setUserAccount(user.getUserAccount());
+        myPublish.setPublish(savedPublish);
 
         myPublishRepository.save(myPublish);
 
-        // Логируем успешное создание
         log.info("Publication created successfully: {}", savedPublish);
 
         return publishMapper.mapToResponse(savedPublish);
+    }
+
+    public static String formatMetroName(Metro metro) {
+        String name = metro.name();
+        StringBuilder formattedName = new StringBuilder();
+        for (int i = 0; i < name.length(); i++) {
+            char c = name.charAt(i);
+            if (i > 0 && Character.isUpperCase(c)) {
+                formattedName.append(" ");
+            }
+            formattedName.append(c);
+        }
+        return formattedName.toString();
     }
 
     @Scheduled(fixedRate = 86400000)
@@ -113,26 +152,15 @@ public class PublishService {
         removeExpiredPublishes();
     }
 
-    private void sendReceiptAsDocumentToTelegram(File receiptFile, Publish savedPublish) {
-        if (!receiptFile.exists()) {
-            throw new RuntimeException("Файл не найден: " + receiptFile.getAbsolutePath());
-        }
-
+    private void sendReceiptAsDocumentToTelegram(MultipartFile receiptFile, String bankName, Publish savedPublish) throws IOException {
         String userEmail = savedPublish.getUser().getEmail();
         String userPhoneNumber = savedPublish.getPhone();
-        String nameBank = savedPublish.getBank();
 
         String message = String.format(
-                "Новый чек:" + "\n" +
-                "Имя карты: %s" + "\n" +
-                "Публикация ID: %s" + "\n" +
-                "Email пользователя: %s" + "\n" +
-                "Номер телефона: %s" + "\n",
-                nameBank,
-                savedPublish.getId(),
-                userEmail != null ? userEmail : "Не указан",
-                userPhoneNumber != null ? userPhoneNumber : "Не указан"
+                "Новый чек:\nИмя карты: %s\nПубликация ID: %s\nEmail пользователя: %s\nНомер телефона: %s",
+                bankName, savedPublish.getId(), userEmail != null ? userEmail : "Не указан", userPhoneNumber != null ? userPhoneNumber : "Не указан"
         );
+
         OkHttpClient client = new OkHttpClient();
         String url = String.format("https://api.telegram.org/bot%s/sendDocument", TELEGRAM_BOT_TOKEN);
 
@@ -140,8 +168,8 @@ public class PublishService {
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("chat_id", ADMIN_CHAT_ID)
                 .addFormDataPart("caption", message)
-                .addFormDataPart("document", receiptFile.getName(),
-                        RequestBody.create(receiptFile, MediaType.parse("application/pdf")));
+                .addFormDataPart("document", receiptFile.getOriginalFilename(),
+                        RequestBody.create(receiptFile.getBytes(), MediaType.parse(receiptFile.getContentType()))); // Используем
 
         RequestBody requestBody = builder.build();
 
@@ -150,25 +178,18 @@ public class PublishService {
                 .post(requestBody)
                 .build();
 
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                e.printStackTrace();
+        try (Response response = client.newCall(request).execute()) { // try-with-resources для автоматического закрытия ответа
+            if (!response.isSuccessful()) {
+                throw new IOException("Unexpected code " + response);
             }
-
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-                if (!response.isSuccessful()) {
-                    throw new IOException("Unexpected code " + response);
-                }
-            }
-        });
+        }
     }
 
     @Transactional
     public void removeExpiredPublishes() {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime expirationTime = now.minusDays(30);// 30 дней назад
+
 
         List<Publish> expiredPublishes = publishRepository.findAllByCreatedAtBefore(expirationTime);
 
@@ -186,12 +207,12 @@ public class PublishService {
     }
 
     public PublishResponse createPublishDetails(PublishRequest publishRequest) {
-        // Проверка на наличие категории и подкатегории
+
+
         if (publishRequest.getCategory() == null || publishRequest.getSubcategory() == null) {
             throw new IllegalArgumentException("Необходимо выбрать категорию и подкатегорию");
         }
 
-        // Проверка корректности категории и подкатегории
         if (!Category.getAllSubcategories(publishRequest.getCategory()).contains(publishRequest.getSubcategory())) {
             throw new IllegalArgumentException("Неверная подкатегория для выбранной категории");
         }
@@ -200,7 +221,6 @@ public class PublishService {
             throw new IllegalArgumentException("Неверная категория");
         }
 
-        // Создание публикации
         Publish publish = publishMapper.mapToEntity(publishRequest);
         User user = userRepository.findById(publishRequest.getUserId())
                 .orElseThrow(() -> new RuntimeException("Пользователь не найден " + publishRequest.getUserId()));
@@ -213,7 +233,6 @@ public class PublishService {
         publish.setPublishStatus(PublishStatus.ОДОБРЕН);
         publish.setCategoryStatus(CategoryStatus.АКТИВНО);
 
-        // Проверка необходимости PropertyDetails для категории
         if (publishRequest.getCategory() == Category.REAL_ESTATE || publishRequest.getCategory() == Category.RENT) {
             if (publishRequest.getPropertyDetails() == null) {
                 throw new IllegalArgumentException("Необходимо заполнить данные о недвижимости (PropertyDetails) для категории REAL_ESTATE или RENT.");
@@ -222,7 +241,6 @@ public class PublishService {
             publish.setPropertyDetails(propertyDetails);
         }
 
-        // Проверка на наличие условий
         if (publishRequest.getConditions() == null) {
             throw new IllegalArgumentException("Необходимо заполнить данные о условиях (Conditions) для категории REAL_ESTATE или RENT.");
         }
@@ -238,44 +256,33 @@ public class PublishService {
         return publishRepository.countPublicationsByUserId(userId);
     }
 
-//    public List<PublishResponse> getAll(Principal principal) {
-//        // Получаем текущего пользователя
-//        User user = userRepository.findByEmail(principal.getName())
-//                .orElseThrow(() -> new NotFoundException("User not found"));
-//
-//        // Получаем избранное для этого пользователя
-//        Favorite favorite = user.getFavorites();
-//        Set<Publish> favoritePublishes = (favorite != null) ? favorite.getPublishes() : new HashSet<>();
-//
-//        // Возвращаем все публикации, устанавливая detailFavorite в зависимости от того, добавлено ли в избранное
-//        return publishRepository.findAll().stream()
-//                .peek(publish -> {
-//                    // Если публикация в избранном, устанавливаем detailFavorite в true, иначе false
-//                    if (favoritePublishes.contains(publish)) {
-//                        publish.setDetailFavorite(true);
-//                    } else {
-//                        publish.setDetailFavorite(false);
-//                    }
-//                })
-//                .map(publishMapper::mapToResponse)
-//                .collect(Collectors.toList());
-//    }
-
-//    public List<PublishResponse> getAll() {
-//        return publishRepository.findAll().stream()
-//                .peek(publish -> publish.setDetailFavorite(false)) // Устанавливаем detailFavorite в false
-//                .map(publishMapper::mapToResponse)
-//                .collect(Collectors.toList());
-//    }
-
-//
-
-
-    public PublishResponse findById(Long id) {
+    public PublishResponse findById(Long id, Principal principal) {
         Publish publish = publishRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Публикация по идентификатору " + id + " не найдена"));
+
+
+        if (principal != null) {
+            User user = userRepository.findByEmail(principal.getName())
+                    .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+
+
+            Favorite favorites = favoriteRepository.getFavoritesByUserId(user.getId());
+            if (favorites != null && favorites.getPublishes().contains(publish)) {
+                publish.setDetailFavorite(true);
+            } else {
+                publish.setDetailFavorite(false);
+            }
+        }
+
+
         return publishMapper.mapToResponse(publish);
     }
+
+//    public PublishResponse findById(Long id) {
+//        Publish publish = publishRepository.findById(id)
+//                .orElseThrow(() -> new EntityNotFoundException("Публикация по идентификатору " + id + " не найдена"));
+//        return publishMapper.mapToResponse(publish);
+//    }
 
     public PublishResponse updatePublish(Long id, PublishRequest publishRequest) {
         Publish existingPublish = publishRepository.findById(id)
@@ -283,7 +290,6 @@ public class PublishService {
         existingPublish.setDescription(publishRequest.getDescription());
         existingPublish.setMetro(publishRequest.getMetro());
         existingPublish.setAddress(publishRequest.getAddress());
-//        existingPublish.setImage(publishRequest.getImage());
         existingPublish.setCategory(publishRequest.getCategory());
         existingPublish.setSubCategory(publishRequest.getSubcategory());
         publishRepository.save(existingPublish);
@@ -297,23 +303,33 @@ public class PublishService {
         this.publishRepository.deleteById(productId);
     }
 
-    public List<PublishResponse> getAll() {
-        return publishRepository.findAllActivePublishes().stream()
+    public List<PublishResponse> getAll(Principal principal) {
+        List<Publish> publishes = publishRepository.findAllActivePublishes();
+
+        // Проверяем, есть ли текущий пользователь
+        boolean userIsLoggedIn = principal != null;
+        Long userId = userIsLoggedIn ? userRepository.findByEmail(principal.getName())
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден")).getId() : null;
+
+        return publishes.stream()
                 .map(publish -> {
                     PublishResponse publishResponse = publishMapper.mapToResponse(publish);
-                    publishResponse.setDetailFavorite(publish.isDetailFavorite()); // Просто копируем значение из сущности
+
+                    if (userIsLoggedIn) {
+                        // Если пользователь зарегистрирован, проверяем, есть ли публикация в избранном
+                        Favorite favorites = favoriteRepository.getFavoritesByUserId(userId);
+                        boolean isFavorite = favorites != null && favorites.getPublishes().contains(publish);
+                        publishResponse.setDetailFavorite(isFavorite); // Устанавливаем значение в зависимости от наличия
+                    } else {
+                        // Если пользователь не зарегистрирован, устанавливаем detailFavorite в false
+                        publishResponse.setDetailFavorite(false);
+                    }
+
                     return publishResponse;
                 })
                 .collect(Collectors.toList());
     }
 
-//    public List<PublishResponse> getAll() {
-//        return publishRepository.findAll().stream()
-//                .peek(publish -> publish.setDetailFavorite(false)) // Устанавливаем detailFavorite в false
-//                .filter(Publish::isActive)
-//                .map(publishMapper::mapToResponse)
-//                .collect(Collectors.toList());
-//    }
 
     @Transactional(readOnly = true)
     public List<PublishResponse> filterPublishes(

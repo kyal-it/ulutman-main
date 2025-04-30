@@ -11,7 +11,7 @@ public class ClientHandler extends Thread {
     private DataInputStream is;
     private DataOutputStream os;
     private String name;
-    private String partnerName; // Имя партнера по чату
+    private String partnerName;
 
     public ClientHandler(Socket clientSocket, Server server) {
         this.clientSocket = clientSocket;
@@ -39,19 +39,14 @@ public class ClientHandler extends Thread {
     @Override
     public void run() {
         try {
-            // Получаем имя клиента
             name = is.readUTF();
-            // Отправляем подтверждение получения имени
             sendMessage("#принято");
             System.out.println(name + " присоединился к чату");
 
-            // Получаем имя партнера
             partnerName = is.readUTF();
 
-            // Отправляем имя партнера клиенту НЕМЕДЛЕННО
             sendMessage(partnerName);
 
-            // Цикл отправки и получения сообщений
             while (true) {
                 String message = is.readUTF();
                 System.out.println(name + ": " + message);

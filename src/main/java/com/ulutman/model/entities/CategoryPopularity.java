@@ -19,12 +19,12 @@ public class CategoryPopularity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
     @Enumerated(EnumType.STRING)
-    Category category;
+    private Category category;
 
-    int views;
+    private int views;
 
-    int publications;
+    private int publications;
 }

@@ -18,15 +18,10 @@ import java.util.stream.Collectors;
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class ManageCreatePaymentSystem {
+
     final PublishRepository publishRepository;
     final MailingService mailingService;
     final PublishMapper publishMapper;
-
-//    public List<Publish> getAllDeactivatedPublications() {
-//        log.info("Получение всех деактивированных публикаций");
-//        return publishRepository.findAllByActiveFalse();
-//    }
-
 
     public List<PublishResponse> findAllDeactivatedPublications() {
         List<Publish> publishes = publishRepository.findAllByActiveFalse();
@@ -35,7 +30,6 @@ public class ManageCreatePaymentSystem {
                 .map(publish -> publishMapper.mapToResponse(publish))
                 .collect(Collectors.toList());
     }
-
 
     public void activatePublication(Long publicationId) {
         log.info("Активация публикации с ID: {}", publicationId);

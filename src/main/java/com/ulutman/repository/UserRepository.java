@@ -19,18 +19,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("SELECT user FROM User user WHERE user.email=:email")
     Optional<User> findByEmail(@Param("email") String email);
 
-//    @Query("""
-//            SELECT user FROM User user WHERE
-//            (:names IS NULL OR LOWER(user.name) LIKE LOWER(CONCAT(:names, '%')))
-//            """)
-//    List<User> findByUserName(@Param("names") String names);
     @Query("""
         SELECT user FROM User user WHERE
         (:names IS NULL OR LOWER(user.name) LIKE LOWER(CONCAT(:names, '%')))
         OR (LOWER(user.name) LIKE LOWER(CONCAT(CONCAT(:names, '%'), '%')))
         """)
     List<User> findByUserName(@Param("names") String names);
-
 
     @Query("SELECT u FROM User u WHERE (:roles IS NULL OR u.role IN :roles)")
     List<User> findByRole(@Param("roles") List<Role> role);
@@ -46,4 +40,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query("select app from Publish app join app.user user where user.id = :id")
     List<Publish> getAllPublishByUserId(@Param("id") Long id);
+
+    @Query("SELECT CASE WHEN COUNT(u) > 0 THEN TRUE ELSE FALSE END FROM User u WHERE u.email = :email")
+    boolean existsByEmail(@Param("email") String email);
 }

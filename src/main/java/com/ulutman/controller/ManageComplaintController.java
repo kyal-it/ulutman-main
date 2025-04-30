@@ -22,6 +22,7 @@ import java.util.List;
 @RequestMapping("/api/manage/complaints")
 @Tag(name = "Manage Complaint")
 @SecurityRequirement(name = "Authorization")
+@CrossOrigin(origins = "https://backend.ulutman.com")
 public class ManageComplaintController {
 
     private final ManageComplaintService complaintService;

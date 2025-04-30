@@ -26,26 +26,26 @@ public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
-    String googleId;
+    private String googleId;
 
-    String name;
+    private String name;
 
-    String lastName;
+    private String lastName;
 
     @Column(unique = true)
-    String email;
+    private String email;
 
-    String picture;
+    private String picture;
 
-    String locale;
+    private String locale;
 
-    String password;
+    private String password;
 
-    String confirmPassword;
+    private String confirmPassword;
     @Transient
-    int numberOfPublications;
+    private int numberOfPublications;
 
     @Enumerated(EnumType.STRING)
     Role role;
@@ -61,19 +61,19 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Payment> payments;
 
-    @JsonManagedReference // Это поле будет ссылаться на UserAccount
+    @JsonManagedReference
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private UserAccount userAccount;
 
-    @JsonManagedReference // Это поле будет ссылаться на Publish
+    @JsonManagedReference
     @OneToMany(mappedBy = "user", cascade = CascadeType.PERSIST,fetch = FetchType.EAGER, orphanRemoval = true)
     private List<Publish> publishes = new ArrayList<>();
 
-    @JsonManagedReference // Это поле будет ссылаться на Complaint
+    @JsonManagedReference
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Complaint> complaints;
 
-    @JsonManagedReference // Это поле будет ссылаться на Comment
+    @JsonManagedReference
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Comment> comments;
 
@@ -83,7 +83,7 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<Favorite> favorites = new HashSet<>();
 
-    @JsonManagedReference // Это поле будет ссылаться на Mailing
+    @JsonManagedReference
     @ManyToMany(mappedBy = "recipients")
     private List<Mailing> mailings = new ArrayList<>();
 

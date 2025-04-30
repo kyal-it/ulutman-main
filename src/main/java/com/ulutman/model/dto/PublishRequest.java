@@ -1,12 +1,10 @@
 package com.ulutman.model.dto;
 
-import com.ulutman.model.entities.BankCard;
 import com.ulutman.model.enums.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,9 +25,7 @@ public class PublishRequest {
 
     String phoneNumber;
 
-    private List<MultipartFile> images;
-
-//    String image;
+    List<String> images;
 
     double price;
 
@@ -39,8 +35,7 @@ public class PublishRequest {
 
     Optional<String> bank = Optional.empty(); // Выбор банка
 
-    Optional<File> paymentReceiptFile = Optional.empty(); // Чек оплаты
-
+    Optional<MultipartFile> paymentReceiptFile;
 
     PublishStatus publishStatus;
 

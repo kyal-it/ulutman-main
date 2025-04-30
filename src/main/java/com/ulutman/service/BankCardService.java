@@ -50,13 +50,12 @@ public class BankCardService {
     public List<BankCardDTO> getAllBankCards() {
         List<BankCard> bankCards = bankCardRepository.findAll();
 
-        // Преобразование в DTO
         List<BankCardDTO> bankCardDTOs = bankCards.stream()
                 .map(card -> new BankCardDTO(card.getBankName(),card.getBankName()))
                 .collect(Collectors.toList());
 
         log.info("Retrieved all bank cards, count: {}", bankCardDTOs.size());
-        return bankCardDTOs; // Возвращаем список DTO без идентификаторов
+        return bankCardDTOs;
     }
 
     public BankCard getBankCardById(Long id) {

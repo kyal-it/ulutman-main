@@ -16,23 +16,22 @@ import java.time.LocalDate;
 @Getter
 @Setter
 @NoArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Comment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
-    String content;
+    private String content;
 
     @Enumerated(EnumType.STRING)
-    ModeratorStatus moderatorStatus;
+    private ModeratorStatus moderatorStatus;
 
     @Column(name = "create_date")
-    LocalDate createDate;
+    private LocalDate createDate;
 
-    @JsonBackReference // Обратная связь с User
-    @ManyToOne // Обратная связь с User
+    @JsonBackReference
+    @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    User user;
+    private User user;
 }

@@ -18,6 +18,7 @@ import java.security.Principal;
 @RequestMapping("/api")
 @Tag(name = "Favorite")
 @SecurityRequirement(name = "Authorization")
+@CrossOrigin(origins = "https://backend.ulutman.com")
 public class FavoriteController {
 
     private final FavoriteService favoriteService;

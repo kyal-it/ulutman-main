@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "messages")
@@ -15,21 +14,22 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 public class Message {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
-    String content;
+    private String content;
 
     @Enumerated(EnumType.STRING)
-    ModeratorStatus moderatorStatus;
+    private ModeratorStatus moderatorStatus;
 
     @Column(name = "create_date")
-    LocalDate createDate;
+    private LocalDate createDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
-    User user;
+    private User user;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "user_account_id")

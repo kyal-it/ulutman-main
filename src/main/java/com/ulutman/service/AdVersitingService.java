@@ -5,20 +5,23 @@ import com.ulutman.model.entities.User;
 import com.ulutman.repository.AdVersitingRepository;
 import com.ulutman.repository.UserRepository;
 import jakarta.mail.MessagingException;
-import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+
 
 import okhttp3.*;
 import okhttp3.MediaType;
@@ -29,11 +32,12 @@ public class AdVersitingService {
 
     private final AdVersitingRepository adVersitingRepository;
     private final UserRepository userRepository;
-    private static final String TELEGRAM_BOT_TOKEN = "7967485487:AAGhVVsiOZ3V2ZFonfZqWXoxCpRpVL0D1nE";
-    private static final String ADMIN_CHAT_ID = "1818193495";
+    private static final String ADMIN_CHAT_ID = "6640338760";
+    private static final String TELEGRAM_BOT_TOKEN = "7721979760:AAGc8x9AXc5auPzVZX8ajUQjJvXAgNpK6_g";
     private final MailingService mailingService;
 
-    String baseDirectoryPath = System.getProperty("user.dir") + File.separator + "ads";
+    @Autowired
+    private S3Service s3Service;
 
     @Autowired
     public AdVersitingService(AdVersitingRepository adVersitingRepository, UserRepository userRepository, MailingService mailingService) throws IOException {
@@ -45,33 +49,30 @@ public class AdVersitingService {
     public void createAdvertising(MultipartFile imageFile, String bank, MultipartFile paymentReceiptFile, Principal principal) throws IOException, MessagingException {
         Optional<User> userOptional = userRepository.findByEmail(principal.getName());
 
+
         if (!userOptional.isPresent()) {
             throw new IllegalArgumentException("Пользователь не найден.");
         }
         User user = userOptional.get();
 
-        if (imageFile.isEmpty()) {
-            throw new IllegalArgumentException("Файл изображения не может быть пустым.");
+
+        if (imageFile.isEmpty() || paymentReceiptFile.isEmpty()) {
+            throw new IllegalArgumentException("Файлы изображения и квитанции не могут быть пустыми.");
         }
+
 
         BufferedImage img = ImageIO.read(imageFile.getInputStream());
         if (img == null) {
             throw new IllegalArgumentException("Не удалось прочитать изображение.");
         }
 
-       // int width = img.getWidth();
-        // int height = img.getHeight();
 
-      //  if ((width == 285 && height == 407) || (width == 564 && height == 246)) {
-            saveAdvertising(imageFile, bank, paymentReceiptFile, user.getEmail());
-            System.out.println("Реклама создана с изображением: " + imageFile.getOriginalFilename());
-      //  } else {
-        //    throw new IllegalArgumentException("Размер изображения должен быть 285x407 или 564x246.");
-       // }
+        saveAdvertisingToS3(imageFile, bank, paymentReceiptFile, user.getEmail());
+        System.out.println("Реклама создана с изображением: " + imageFile.getOriginalFilename());
     }
 
 
-    public void saveAdvertising(MultipartFile imageFile, String bank, MultipartFile paymentReceiptFile, String userEmail) throws IOException, MessagingException {
+    public void saveAdvertisingToS3(MultipartFile imageFile, String bank, MultipartFile paymentReceiptFile, String userEmail) throws IOException, MessagingException {
         Optional<User> userOptional = userRepository.findByEmail(userEmail);
 
         if (!userOptional.isPresent()) {
@@ -79,56 +80,34 @@ public class AdVersitingService {
         }
 
         User user = userOptional.get();
-        String userDirectoryPath = baseDirectoryPath + File.separator + user.getId();
-        File userDirectory = new File(userDirectoryPath);
 
-        if (!userDirectory.exists()) {
-            boolean created = userDirectory.mkdirs();
-            if (!created) {
-                throw new IOException("Не удалось создать директорию: " + userDirectoryPath);
-            }
-        }
+        Path tempImagePath = Files.createTempFile("temp-image-", imageFile.getOriginalFilename());
+        Path tempReceiptPath = Files.createTempFile("temp-receipt-", paymentReceiptFile.getOriginalFilename());
 
-        File savedImageFile = new File(userDirectory, imageFile.getOriginalFilename());
-        imageFile.transferTo(savedImageFile);
+        Files.write(tempImagePath, imageFile.getBytes());
+        Files.write(tempReceiptPath, paymentReceiptFile.getBytes());
 
-        File savedReceiptFile = new File(userDirectory, paymentReceiptFile.getOriginalFilename());
-        paymentReceiptFile.transferTo(savedReceiptFile);
+        try {
+            Map<String, Path> filesToUpload = Map.of(
+                    "ads/images/" + user.getId() + "/" + imageFile.getOriginalFilename(), tempImagePath,
+                    "ads/receipts/" + user.getId() + "/" + paymentReceiptFile.getOriginalFilename(), tempReceiptPath
+            );
 
-        AdVersiting ad = new AdVersiting(savedImageFile.getAbsolutePath(), true, savedReceiptFile.getAbsolutePath(), bank, user);
-        ad.setCreatedAt(LocalDateTime.now());
-        ad.setActive(false);
-        adVersitingRepository.save(ad);
+            List<String> fileUrls = s3Service.uploadFiles(filesToUpload);
 
+            String imageFilePath = fileUrls.get(0);
+            String receiptFilePath = fileUrls.get(1);
 
-        if (savedReceiptFile.exists()) {
-            sendReceiptAsDocumentToTelegram(savedReceiptFile, bank, ad);
-        }
-    }
+            AdVersiting ad = new AdVersiting(imageFilePath, true, receiptFilePath, bank, user);
+            ad.setCreatedAt(LocalDateTime.now());
+            ad.setActive(false);
+            adVersitingRepository.save(ad);
 
-    @Scheduled(fixedRate = 86400000)
-    public void scheduleExpiredPublishesRemoval() {
-        removeExpiredPublishes();
-    }
-
-    @Transactional
-    public void removeExpiredPublishes() {
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime expirationTime = now.minusDays(30);
-
-        List<AdVersiting> expiredPublishes = adVersitingRepository.findAllByCreatedAtBefore(expirationTime);
-
-        for (AdVersiting publish : expiredPublishes) {
-            mailingService.sendMailing1(
-                    publish.getUser().getEmail(),
-                    "Уведомление о завершении срока действия \n",
-                    "Привет, на связи отдел договоров Ulutman.ru! \n" +
-                    "Срок действия вашего рекламы по id: " + publish.getId() + " подошел к концу. \n" +
-                    " Оно больше не будет отображаться на Ulutman.ru. \n" +
-                    " С уважением," +
-                    " Команда Ulutman.ru \n");
-
-            adVersitingRepository.delete(publish);
+            File receiptFile = tempReceiptPath.toFile();
+            sendReceiptAsDocumentToTelegram(receiptFile, bank, ad);
+        } finally {
+            Files.deleteIfExists(tempImagePath);
+            Files.deleteIfExists(tempReceiptPath);
         }
     }
 
@@ -139,7 +118,7 @@ public class AdVersitingService {
 
         OkHttpClient client = new OkHttpClient();
 
-        MediaType mediaType = MediaType.parse("application/pdf"); // Измените на "image/png" или другой тип в зависимости от файла
+        MediaType mediaType = MediaType.parse("application/pdf");
 
         RequestBody fileBody = RequestBody.create(mediaType, receiptFile);
 
@@ -147,7 +126,6 @@ public class AdVersitingService {
                              "Имя карты: " + bankName + "\n" +
                              "Реклама ID: " + adVersiting.getId() + "\n" +
                              "Email пользователя: " + (adVersiting.getUser() != null ? adVersiting.getUser().getEmail() : "Не указан");
-
 
         MultipartBody.Builder builder = new MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
@@ -172,25 +150,10 @@ public class AdVersitingService {
         }
     }
 
-
     public List<AdVersiting> getAllActiveAds() {
-        return adVersitingRepository.findAllActiveAdvertisements();
+        return adVersitingRepository.findAllActiveAdverting();
     }
 
-    public boolean deleteAd(Long id) {
-        Optional<AdVersiting> ad = adVersitingRepository.findById(id);
-        if (ad.isPresent()) {
-            adVersitingRepository.delete(ad.get());
-            return true;
-        }
-        return false;
-    }
-
-    public List<AdVersiting> getAllActiveAdsForUser(Long userId) {
-        return adVersitingRepository.findAllActiveAdvertisementsByUserId(userId);
-    }
-
-    // Метод для удаления объявления конкретного пользователя
     public boolean deleteAd(Long id, Long userId) {
         Optional<AdVersiting> ad = adVersitingRepository.findById(id);
         if (ad.isPresent() && ad.get().getUser().getId().equals(userId)) {

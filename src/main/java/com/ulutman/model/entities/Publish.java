@@ -4,25 +4,19 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.ulutman.model.enums.*;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.web.bind.annotation.ModelAttribute;
 
-import java.io.File;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "publishes")
 @Getter
 @Setter
 @NoArgsConstructor
-
 public class Publish {
 
     @Id
@@ -46,15 +40,14 @@ public class Publish {
     @Enumerated(EnumType.STRING)
     private Subcategory subCategory;
 
-//    @Enumerated(EnumType.STRING)
-//    private Bank bank;
-
     @Enumerated(EnumType.STRING)
     private Metro metro;
 
+    private String metroStation; // Новое поле для форматированного названия
+
     private String address;
 
-    public Publish(Long id, LocalDateTime createdAt, String title, String description, double price, Category category, Subcategory subCategory, Metro metro, String address, String phone, boolean active, String chatId, File paymentReceipt, String bank, List<String> images, LocalDate createDate, PublishStatus publishStatus, boolean detailFavorite, CategoryStatus categoryStatus, LocalDateTime lastBoostedAt, Payment payment, List<Favorite> favorites, User user, PropertyDetails propertyDetails, Conditions conditions) {
+    public Publish(Long id, LocalDateTime createdAt, String title, String description, double price, Category category, Subcategory subCategory, Metro metro, String address, String phone, boolean active, String chatId, String paymentReceiptUrl, String bank, List<String> images, LocalDate createDate, PublishStatus publishStatus, boolean detailFavorite, CategoryStatus categoryStatus, LocalDateTime lastBoostedAt, Payment payment, List<Favorite> favorites, User user, PropertyDetails propertyDetails, Conditions conditions) {
         this.id = id;
         this.createdAt = createdAt;
         this.title = title;
@@ -67,7 +60,7 @@ public class Publish {
         this.phone = phone;
         this.active = active;
         this.chatId = chatId;
-        this.paymentReceipt = paymentReceipt;
+        this.paymentReceiptUrl = paymentReceiptUrl;
         this.bank = bank;
         this.images = images;
         this.createDate = createDate;
@@ -88,16 +81,14 @@ public class Publish {
 
     private String chatId;
 
-    private File paymentReceipt;
+    private String paymentReceiptUrl;
 
     private String bank;
 
     @ElementCollection
-    @CollectionTable(name = "publish_images")  // Отдельная таблица для хранения изображений
+    @CollectionTable(name = "publish_images")
     @Column(name = "image")
     private List<String> images;
-
-//    private String image;
 
     @Column(name = "create_date")
     private LocalDate createDate;
@@ -114,7 +105,11 @@ public class Publish {
     private LocalDateTime lastBoostedAt;
 
     private LocalDateTime nextBoostTime;
-    private String timeToNextBoost; // Добавляем поле для строки с временем до следующего бустинга
+
+    private String timeToNextBoost;
+
+    @Column(name = "favorite_count")
+    private Long favoriteCount = 0L;
 
     @ManyToOne(
             cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}
@@ -124,26 +119,25 @@ public class Publish {
     )
     private Payment payment;
 
-    @JsonManagedReference // Это поле будет ссылаться на Favorite
+    @JsonManagedReference
     @ManyToMany(cascade = CascadeType.ALL, mappedBy = "publishes")
     List<Favorite> favorites;
 
-    @JsonBackReference // Обратная связь с User
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id",nullable = false)
     private User user;
 
-    @JsonManagedReference // Это поле будет ссылаться на PropertyDetails
+    @JsonManagedReference
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "property_details_id",referencedColumnName = "id")
     private PropertyDetails propertyDetails;
 
-    @JsonManagedReference // Это поле будет ссылаться на Conditions
+    @JsonManagedReference
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "conditions_id",referencedColumnName = "id")
     private Conditions conditions;
 
     @OneToMany(mappedBy = "publish", cascade = CascadeType.REMOVE, orphanRemoval = true)
     private List<MyPublish> myPublishes;
-
 }

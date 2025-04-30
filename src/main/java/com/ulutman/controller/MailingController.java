@@ -1,6 +1,5 @@
 package com.ulutman.controller;
 
-import com.ulutman.exception.PasswordsDoNotMatchException;
 import com.ulutman.model.dto.MailingRequest;
 import com.ulutman.model.dto.MailingResponse;
 import com.ulutman.service.MailingService;
@@ -9,7 +8,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -22,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @Tag(name = "Mailing")
 @SecurityRequirement(name = "Authorization")
+@CrossOrigin(origins = "https://backend.ulutman.com")
 public class MailingController {
 
     private final MailingService mailingService;
@@ -47,18 +46,4 @@ public class MailingController {
         }
     }
 
-    @Operation(summary = "Send pinCode")
-    @ApiResponse(responseCode = "201", description = "Mailing sent pinCode  successfully")
-    @GetMapping("/sendPasswordResetCode")
-    public void sendPasswordResetCode(@RequestParam String email) throws EntityNotFoundException {
-        mailingService.sendPasswordResetCode(email);
-    }
-    @Operation(summary = "Reset password")
-    @ApiResponse(responseCode = "201", description = "Reset password  successfully")
-    @PostMapping("/resetPassword")
-    public String resetPassword( @RequestParam String email, @RequestParam int pinCode,
-                                 @RequestParam String newPassword, @RequestParam String confirmPassword)
-            throws EntityNotFoundException, PasswordsDoNotMatchException {
-        return mailingService.resetPassword(email, pinCode, newPassword, confirmPassword);
-    }
 }
