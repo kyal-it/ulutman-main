@@ -22,6 +22,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 
+import java.util.List;
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -34,11 +36,18 @@ public class SecurityConfig {
     SecurityFilterChain securityFilterChain(HttpSecurity http, AuthService authService) throws Exception {
         http.cors(cors -> {
                     cors.configurationSource(request -> {
-                        var corsConfiguration = new CorsConfiguration();
-                        corsConfiguration.addAllowedOrigin("*");
-                        corsConfiguration.addAllowedMethod("*");
-                        corsConfiguration.addAllowedHeader("*");
-                        return corsConfiguration;
+                        CorsConfiguration config = new CorsConfiguration();
+                        config.setAllowedOrigins(List.of("https://backend.ulutman.com"));
+                        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+                        config.setAllowedHeaders(List.of("*"));
+                        config.setExposedHeaders(List.of("Authorization"));
+                        config.setAllowCredentials(true);
+//                        var corsConfiguration = new CorsConfiguration();
+//                        corsConfiguration.addAllowedOrigin("*");
+//                        corsConfiguration.addAllowedMethod("*");
+//                        corsConfiguration.addAllowedHeader("*");
+//                        return corsConfiguration;
+                        return config;
                     });
                 }).csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authorizeHttpRequests) ->
