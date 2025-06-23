@@ -2,36 +2,91 @@ version: "3.9"
 services:
   backend:
     image: '#image'
-    container_name: ulutman1
+    container_name: ulutman
     restart: always
     ports:
-      - "80:80"
+      - "80:443"
       - "443:443"
     environment:
       SPRING_PROFILES_ACTIVE: main
       SERVER_PORT: 443
-      POSTGRES_DB: jdbc:postgresql://database:5432/postgres
+      POSTGRES_DB: jdbc:postgresql://database:5432/ulutman
       POSTGRES_USER: ulutmanuser
       POSTGRES_PASSWORD: ulutman2024
       FULLCHAINPEM: /certs/live/backend.ulutman.com/fullchain.pem
       PRIVKEYPEM: /certs/live/backend.ulutman.com/privkey.pem
+      SPRING_SSL_KEY-STORE: /certs/live/backend.ulutman.com/keystore.p12
+      SPRING_SSL_KEY-STORE-PASSWORD: ulutman
+      SPRING_SSL_KEY-STORE-TYPE: PKCS12
     volumes:
       - certs:/certs
   database:
-    image: postgres:15
+    image: postgres:16.0
     restart: always
-    container_name: database
+    container_name: ulutman-db
+    networks:
+      - ulutman
+    expose:
+      - "5432"
     ports:
       - "5432:5432"
     environment:
       POSTGRES_USER: ulutmanuser
       POSTGRES_PASSWORD: ulutman2024
+      POSTGRES_DB: ulutman
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - db_data_ulutman:/var/lib/postgresql/data
+    command: -p 5432
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ulutmanuser -d ulutman"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  ulutman:
+    driver: bridge
+
 volumes:
   db_data:
   certs:
     external: true
+
+
+#version: "3.9"
+#services:
+#  backend:
+#    image: '#image'
+#    container_name: ulutman1
+#    restart: always
+#    ports:
+#      - "80:80"
+#      - "443:443"
+#    environment:
+#      SPRING_PROFILES_ACTIVE: main
+#      SERVER_PORT: 443
+#      POSTGRES_DB: jdbc:postgresql://database:5432/postgres
+#      POSTGRES_USER: ulutmanuser
+#      POSTGRES_PASSWORD: ulutman2024
+#      FULLCHAINPEM: /certs/live/backend.ulutman.com/fullchain.pem
+#      PRIVKEYPEM: /certs/live/backend.ulutman.com/privkey.pem
+#    volumes:
+#      - certs:/certs
+#  database:
+#    image: postgres:15
+#    restart: always
+#    container_name: database
+#    ports:
+#      - "5432:5432"
+#    environment:
+#      POSTGRES_USER: ulutmanuser
+#      POSTGRES_PASSWORD: ulutman2024
+#    volumes:
+#      - db_data:/var/lib/postgresql/data
+#volumes:
+#  db_data:
+#  certs:
+#    external: true
 
 #version: "3.9"
 #services:
