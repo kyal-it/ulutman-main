@@ -15,9 +15,10 @@ services:
       POSTGRES_PASSWORD: ulutman2024
       FULLCHAINPEM: /certs/live/backend.ulutman.com/fullchain.pem
       PRIVKEYPEM: /certs/live/backend.ulutman.com/privkey.pem
-      SPRING_SSL_KEY-STORE: /certs/live/backend.ulutman.com/keystore.p12
-      SPRING_SSL_KEY-STORE-PASSWORD: ulutman
-      SPRING_SSL_KEY-STORE-TYPE: PKCS12
+      SPRING_SSL_KEY_STORE: /certs/live/backend.ulutman.com/keystore.p12
+      SPRING_SSL_KEY_STORE_PASSWORD: ulutman
+      SPRING_SSL_KEY_STORE_TYPE: PKCS12
+#      SERVER_SSL_BUNDLE_TRUSTSTORE_GENERATE: false
     volumes:
       - certs:/certs
   database:
@@ -33,7 +34,6 @@ services:
     environment:
       POSTGRES_USER: ulutmanuser
       POSTGRES_PASSWORD: ulutman2024
-      POSTGRES_DB: ulutman
     volumes:
       - db_data:/var/lib/postgresql/data
     command: -p 5432
