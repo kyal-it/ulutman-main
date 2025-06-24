@@ -37,6 +37,7 @@ services:
     environment:
       POSTGRES_USER: ulutmanuser
       POSTGRES_PASSWORD: ulutman2024
+
     volumes:
       - db_data:/var/lib/postgresql/data
     networks:
