@@ -10,7 +10,7 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: main
       SERVER_PORT: 8081
-      POSTGRES_DB: jdbc:postgresql://ulutman-db:5432/postgres
+      POSTGRES_DB: postgres
       POSTGRES_USER: ulutmanuser
       POSTGRES_PASSWORD: ulutman2024
     networks:
@@ -32,7 +32,7 @@ services:
 
   database:
     image: postgres:16.0
-    container_name: ulutman-db
+    container_name: ulutman_db
     restart: always
     environment:
       POSTGRES_USER: ulutmanuser
