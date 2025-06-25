@@ -18,6 +18,7 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
 import java.util.Collections;
+import java.util.Set;
 
 @Configuration
 @SecurityScheme(name = "Authorization",
@@ -41,6 +42,8 @@ public class SwaggerConfig {
     @Bean
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
+                .host("backend.ulutman.com")
+                .protocols(Set.of("https"))
                 .select()
                 .apis(RequestHandlerSelectors.basePackage(CONTROLLER_PACKAGE))
                 .paths(PathSelectors.any())
