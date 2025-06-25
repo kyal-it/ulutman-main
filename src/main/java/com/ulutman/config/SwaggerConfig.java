@@ -3,6 +3,7 @@ package com.ulutman.config;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import org.springframework.web.filter.ForwardedHeaderFilter;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.builders.ApiInfoBuilder;
@@ -75,6 +76,11 @@ public class SwaggerConfig {
         return SecurityContext.builder()
                 .securityReferences(defaultAuth())
                 .build();
+    }
+
+    @Bean
+    public ForwardedHeaderFilter forwardedHeaderFilter() {
+        return new ForwardedHeaderFilter();
     }
 }
 
