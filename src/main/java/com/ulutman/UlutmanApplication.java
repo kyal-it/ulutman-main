@@ -11,11 +11,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 @EnableScheduling
 public class UlutmanApplication {
 
+
 	public static void main(String[] args) {
+
 		SpringApplication.run(UlutmanApplication.class, args);
+		System.out.println("test");
 	}
 	@GetMapping
 	public String greetings(){
 		return "index";
+
 	}
 }
