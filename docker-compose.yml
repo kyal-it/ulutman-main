@@ -11,6 +11,7 @@ services:
       SPRING_PROFILES_ACTIVE: main
       SERVER_PORT: 8081
       POSTGRES_DB: postgres
+      SPRING_DATASOURCE_URL: jdbc:postgresql://ulutman_db:5432/postgres
       POSTGRES_USER: ulutmanuser
       POSTGRES_PASSWORD: ulutman2024
     networks:
@@ -37,6 +38,7 @@ services:
     environment:
       POSTGRES_USER: ulutmanuser
       POSTGRES_PASSWORD: ulutman2024
+      POSTGRES_DB: postgres
 
     volumes:
       - db_data:/var/lib/postgresql/data
