@@ -37,7 +37,11 @@ public class SecurityConfig {
         http.cors(cors -> {
                     cors.configurationSource(request -> {
                         CorsConfiguration config = new CorsConfiguration();
-                        config.setAllowedOrigins(List.of("https://backend.ulutman.com"));
+                        config.setAllowedOrigins(List.of(
+                                "https://ulutman.com",
+                                "https://backend.ulutman.com",
+                                "https://development.dwusq5ewq6ygx.amplifyapp.com"
+                        ));
                         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                         config.setAllowedHeaders(List.of("*"));
                         config.setExposedHeaders(List.of("Authorization"));
