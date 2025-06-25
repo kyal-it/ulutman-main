@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @Tag(name = "Auth")
 @SecurityRequirement(name = "Authorization")
-@CrossOrigin(origins = "https://backend.ulutman.com")
+@CrossOrigin(origins = "*",maxAge = 3600)
 public class AuthController {
 
     private final AuthService authService;
