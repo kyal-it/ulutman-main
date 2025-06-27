@@ -23,7 +23,6 @@ import java.util.List;
 @RequestMapping("/api/manage/moderator")
 @Tag(name = "Manage Moderator")
 @SecurityRequirement(name = "Authorization")
-@CrossOrigin(origins = "https://backend.ulutman.com")
 public class ManageModeratorController {
 
     private final ManageModeratorService manageModeratorService;

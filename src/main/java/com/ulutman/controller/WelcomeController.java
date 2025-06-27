@@ -18,7 +18,6 @@ import java.util.Locale;
 @Tag(name = "Multi-lingual")
 @RequiredArgsConstructor
 @Slf4j
-@CrossOrigin(origins = "https://backend.ulutman.com")
 public class WelcomeController {
 
     private final MessageSource messageSource;

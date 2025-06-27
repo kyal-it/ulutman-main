@@ -31,7 +31,7 @@ import java.util.*;
 @RequestMapping("/api/publishes")
 @Tag(name = "Publish")
 @SecurityRequirement(name = "Authorization")
-@CrossOrigin(origins = "https://backend.ulutman.com")
+@CrossOrigin(origins = "*",maxAge = 3600)
 public class PublishController {
 
     private final PublishService publishService;

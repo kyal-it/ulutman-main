@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/manage/adversting")
 @Tag(name = "Manage AdVersting")
 @SecurityRequirement(name = "Authorization")
-@CrossOrigin(origins = "https://backend.ulutman.com")
 public class ManageAdverstingPaymentController {
 
     private final ManagePaymentAdversting managePaymentAdversting;

@@ -24,7 +24,6 @@ import java.util.List;
 @Slf4j
 @Tag(name = "Manage User")
 @SecurityRequirement(name = "Authorization")
-@CrossOrigin(origins = "https://backend.ulutman.com")
 public class ManageUserController {
 
     private final ManageUserService manageUserService;

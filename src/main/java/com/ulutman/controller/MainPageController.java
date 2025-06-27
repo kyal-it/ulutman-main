@@ -24,7 +24,6 @@ import java.util.Map;
 @RequestMapping("/api/main-page")
 @Tag(name = "Main - Page")
 @SecurityRequirement(name = "Authorization")
-@CrossOrigin(origins = "https://backend.ulutman.com")
 public class MainPageController {
 
     private final MainPageService mainPageService;

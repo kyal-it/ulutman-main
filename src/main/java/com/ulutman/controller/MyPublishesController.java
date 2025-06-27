@@ -29,7 +29,6 @@ import java.util.Set;
 @RequestMapping("/api/users/my-publishes")
 @Tag(name = "my-publishes")
 @SecurityRequirement(name = "Authorization")
-@CrossOrigin(origins = "https://backend.ulutman.com")
 public class MyPublishesController {
     private final MyPublishesService publishService;
     private  final AdVersitingService adVersitingService;

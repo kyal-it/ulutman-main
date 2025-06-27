@@ -22,7 +22,6 @@ import java.util.Map;
 @RequestMapping("/api/S3")
 @Tag(name = "Amazon S3")
 @SecurityRequirement(name = "Authorization")
-@CrossOrigin(origins = "https://backend.ulutman.com")
 @RequiredArgsConstructor
 public class S3Controller {
 

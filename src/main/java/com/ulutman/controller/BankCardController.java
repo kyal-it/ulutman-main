@@ -22,7 +22,6 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@CrossOrigin(origins = "https://backend.ulutman.com")
 public class BankCardController {
 
     private final BankCardService bankCardService;

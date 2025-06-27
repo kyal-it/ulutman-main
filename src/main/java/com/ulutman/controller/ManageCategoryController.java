@@ -24,7 +24,6 @@ import java.util.List;
 @RequestMapping("/api/manage/category")
 @Tag(name = "Manage Category")
 @SecurityRequirement(name = "Authorization")
-@CrossOrigin(origins = "https://backend.ulutman.com")
 public class ManageCategoryController {
 
     private final ManageCategoryService manageCategoryService;

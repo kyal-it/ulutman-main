@@ -24,7 +24,6 @@ import java.util.List;
 @RequestMapping("/api/manage/publishes")
 @Tag(name = "Manage Publishes")
 @SecurityRequirement(name = "Authorization")
-@CrossOrigin(origins = "https://backend.ulutman.com")
 public class ManagePublishController {
 
     private final ManagePublishService managePublicationsService;
