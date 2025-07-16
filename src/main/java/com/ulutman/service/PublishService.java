@@ -82,13 +82,19 @@ public class PublishService {
         publish.setCreatedAt(LocalDateTime.now());
         User user = userRepository.findById(publishRequest.getUserId())
                 .orElseThrow(() -> new RuntimeException("Пользователь не найден: " + publishRequest.getUserId()));
-        if (publish.getMetro() != null) { // Проверка на null
+        if (publish.getMetro() != null) {
             String metroName = formatMetroName(publish.getMetro());
-            publish.setMetroStation(metroName); // Предполагается, что у вас есть поле String metroStation в сущности Publish
+            publish.setMetroStation(metroName);
         }
         publish.setUser(user);
         publish.setImages(imageUrls);
-        publish.setPublishStatus(PublishStatus.ОДОБРЕН);
+
+        if (publishRequest.getCategory() == Category.HOTEL) {
+            publish.setPublishStatus(PublishStatus.ОЖИДАЕТ); // <-- добавлено
+        } else {
+            publish.setPublishStatus(PublishStatus.ОДОБРЕН); // как было раньше
+        }
+//        publish.setPublishStatus(PublishStatus.ОДОБРЕН);
         publish.setCategoryStatus(CategoryStatus.АКТИВНО);
 
 

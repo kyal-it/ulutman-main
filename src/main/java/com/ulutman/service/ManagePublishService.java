@@ -120,4 +120,27 @@ public class ManagePublishService {
 
         publishRepository.deleteAll(publishes);
     }
+
+    public void activatePublish(Long publishId) {
+        log.info("Активация публикации с ID: {}", publishId);
+
+        Publish publish = publishRepository.findById(publishId)
+                .orElseThrow(() -> new RuntimeException("Публикация не найдена: " + publishId));
+
+        publish.setActive(true);
+        publish.setPublishStatus(PublishStatus.ОДОБРЕН); // меняем статус на ОДОБРЕН, если был ОЖИДАЕТ
+
+        publishRepository.save(publish);
+
+        mailingService.sendMailing1(
+                publish.getUser().getEmail(),
+                "Ваша публикация активирована!",
+                "Мы рады сообщить вам, что ваша публикация успешно активирована на сайте ULUTMAN.ru.\n" +
+                        "Если у вас есть вопросы, пишите на: ulutman@gmail.com\n\n" +
+                        "С уважением,\n" +
+                        "Команда ULUTMAN"
+        );
+
+        log.info("Публикация активирована и уведомление отправлено пользователю: {}", publish.getUser().getId());
+    }
 }

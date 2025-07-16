@@ -77,4 +77,13 @@ public class ManagePublishController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Некоторые публикации   не найдены");
         }
     }
+
+    //last
+    @Operation(summary = "Create a activatePublication")
+    @ApiResponse(responseCode = "201", description = "activatePublication created successfully")
+    @PostMapping("/activate/{publicationId}")
+    public ResponseEntity<String> activatePublication(@PathVariable Long publicationId) {
+        managePublicationsService.activatePublish(publicationId);
+        return ResponseEntity.ok("Публикация активирована успешно.");
+    }
 }
