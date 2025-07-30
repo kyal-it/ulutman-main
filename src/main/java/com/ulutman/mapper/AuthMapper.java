@@ -70,7 +70,7 @@ public class AuthMapper {
                 .createDate(user.getCreateDate())
                 .publishes(publishResponses)
                 .numberOfPublications(publishResponses.size())
-                .token(jwt)  // Установите токена
+                .token(jwt)
                 .build();
     }
 

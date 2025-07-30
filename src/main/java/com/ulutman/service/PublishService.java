@@ -32,8 +32,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.ulutman.model.enums.Metro.formatMetroName;
-
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -45,7 +43,7 @@ public class PublishService {
     private final UserRepository userRepository;
     private final PropertyDetailsMapper propertyDetailsMapper;
     private final ConditionsMapper conditionsMapper;
-    private MailingService mailingService;
+    private final MailingService mailingService;
     private final FavoriteRepository favoriteRepository;
 
 
@@ -90,9 +88,9 @@ public class PublishService {
         publish.setImages(imageUrls);
 
         if (publishRequest.getCategory() == Category.HOTEL) {
-            publish.setPublishStatus(PublishStatus.ОЖИДАЕТ); // <-- добавлено
+            publish.setPublishStatus(PublishStatus.ОЖИДАЕТ);
         } else {
-            publish.setPublishStatus(PublishStatus.ОДОБРЕН); // как было раньше
+            publish.setPublishStatus(PublishStatus.ОДОБРЕН);
         }
 //        publish.setPublishStatus(PublishStatus.ОДОБРЕН);
         publish.setCategoryStatus(CategoryStatus.АКТИВНО);

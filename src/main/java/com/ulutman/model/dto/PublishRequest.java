@@ -33,7 +33,7 @@ public class PublishRequest {
 
     Subcategory subcategory;
 
-    Optional<String> bank = Optional.empty(); // Выбор банка
+    Optional<String> bank = Optional.empty();
 
     Optional<MultipartFile> paymentReceiptFile;
 

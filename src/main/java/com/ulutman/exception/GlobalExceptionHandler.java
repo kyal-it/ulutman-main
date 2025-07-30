@@ -32,7 +32,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleIncorrectCodeException(IncorrectCodeException ex) {
         log.warn("Caught IncorrectCodeException: {}", ex.getMessage());
         return ResponseEntity
-                .status(HttpStatus.CONFLICT)  // Статус 409 - Conflict
+                .status(HttpStatus.CONFLICT)
                 .body(ex.getMessage());
     }
 }

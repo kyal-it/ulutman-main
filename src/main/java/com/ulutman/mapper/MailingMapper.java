@@ -49,7 +49,6 @@ public class MailingMapper {
                 .build();
     }
 
-    // Метод маппера
     public UserMailingResponse mapToUserMailingResponse(User user) {
         if (user == null) {
             return null;

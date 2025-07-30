@@ -1,11 +1,8 @@
 package com.ulutman.mapper;
 
-
 import com.ulutman.model.dto.MessageRequest;
 import com.ulutman.model.dto.MessageResponse;
-import com.ulutman.model.dto.ModeratorCommentResponse;
 import com.ulutman.model.dto.ModeratorMessageResponse;
-import com.ulutman.model.entities.Comment;
 import com.ulutman.model.entities.Message;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
