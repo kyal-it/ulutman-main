@@ -1,6 +1,5 @@
 package com.ulutman.service;
 
-import io.jsonwebtoken.io.IOException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
@@ -31,7 +30,8 @@ public class S3Service {
                      @Value("${aws.s3.region}") String region) {
 
         AwsBasicCredentials awsCredentials = AwsBasicCredentials.create(accessKeyId, secretAccessKey);
-        s3Client = S3Client.builder()
+
+        this.s3Client = S3Client.builder()
                 .region(Region.of(region))
                 .credentialsProvider(StaticCredentialsProvider.create(awsCredentials))
                 .build();
@@ -41,8 +41,10 @@ public class S3Service {
         List<String> fileUrls = new ArrayList<>();
 
         for (Map.Entry<String, Path> entry : files.entrySet()) {
-            String fileName = entry.getKey();
+            String originalFileName = entry.getKey();
             Path filePath = entry.getValue();
+
+            String fileName = System.currentTimeMillis() + "_" + originalFileName;
 
             try {
                 PutObjectRequest putObjectRequest = PutObjectRequest.builder()
@@ -52,8 +54,9 @@ public class S3Service {
 
                 s3Client.putObject(putObjectRequest, filePath);
                 fileUrls.add(getFileUrl(fileName));
-            } catch (S3Exception | IOException e) {
-                throw new RuntimeException("Ошибка при загрузке файла " + fileName + ": " + e.getMessage());
+
+            } catch (S3Exception e) {
+                throw new RuntimeException("Ошибка при загрузке файла " + originalFileName + ": " + e.awsErrorDetails().errorMessage());
             }
         }
 

@@ -1,112 +1,36 @@
-
 version: "3.9"
+
 services:
   backend:
-    image: '#image'
-    container_name: ulutman
+    build: .
+    container_name: ulutman_backend
     restart: always
-    expose:
-      - "8081"
-    environment:
-      SPRING_PROFILES_ACTIVE: main
-      SERVER_PORT: 8081
-      POSTGRES_DB: postgres
-      SPRING_DATASOURCE_URL: jdbc:postgresql://18.199.219.124:15432/postgres
-      POSTGRES_USER: ulutmanuser
-      POSTGRES_PASSWORD: ulutman2024
-    networks:
-      - ulutman
-
-  nginx:
-    image: nginx:stable-alpine
-    container_name: nginx
     ports:
       - "8081:8081"
-      - "443:443"
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
-      - /home/ubuntu/certs:/etc/nginx/certs:ro
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://database:5432/ulutman
+      SPRING_DATASOURCE_USERNAME: ulutmanuser
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
+      JWT_SECRET: ${JWT_SECRET}
+      AWS_ACCESS_KEY: ${AWS_ACCESS_KEY}
+      AWS_SECRET_KEY: ${AWS_SECRET_KEY}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
     depends_on:
       - database
-    networks:
-      - ulutman
 
   database:
-    image: postgres:16.0
+    image: postgres:16
     container_name: ulutman_db
     restart: always
-    environment:
-      POSTGRES_USER: ulutmanuser
-      POSTGRES_PASSWORD: ulutman2024
-      POSTGRES_DB: postgres
-    volumes:
-      - db_data:/var/lib/postgresql/data
-    networks:
-      - ulutman
     ports:
-          - "15432:5432"
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: ulutman
+      POSTGRES_USER: ulutmanuser
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
 volumes:
-  db_data:
-  certs:
-    external: true
-
-networks:
-  ulutman:
-    driver: bridge
-
-
-
-#version: "3.9"
-#services:
-#  backend:
-#    image: '#image'
-#    container_name: ulutman
-#    restart: always
-#    ports:
-#      - "80:443"
-#      - "443:443"
-#    environment:
-#      SPRING_PROFILES_ACTIVE: main
-#      SERVER_PORT: 443
-#      POSTGRES_DB: jdbc:postgresql://database:5432/postgres
-#      POSTGRES_USER: ulutmanuser
-#      POSTGRES_PASSWORD: ulutman2024
-#      FULLCHAINPEM: /certs/live/backend.ulutman.com/fullchain.pem
-#      PRIVKEYPEM: /certs/live/backend.ulutman.com/privkey.pem
-#      SPRING_SSL_KEY_STORE: /certs/live/backend.ulutman.com/keystore.p12
-#      SPRING_SSL_KEY_STORE_PASSWORD: ulutman
-#      SPRING_SSL_KEY_STORE_TYPE: PKCS12
-#    volumes:
-#      - certs:/certs
-#  database:
-#    image: postgres:16.0
-#    restart: always
-#    container_name: ulutman-db
-#    networks:
-#      - ulutman
-#    expose:
-#      - "5432"
-#    ports:
-#      - "5432:5432"
-#    environment:
-#      POSTGRES_USER: ulutmanuser
-#      POSTGRES_PASSWORD: ulutman2024
-#    volumes:
-#      - db_data:/var/lib/postgresql/data
-#    command: -p 5432
-#    healthcheck:
-#      test: ["CMD-SHELL", "pg_isready -U ulutmanuser -d ulutman"]
-#      interval: 10s
-#      timeout: 5s
-#      retries: 5
-#
-#networks:
-#  ulutman:
-#    driver: bridge
-#
-#volumes:
-#  db_data:
-#  certs:
-#    external: true
-
+  postgres_data:

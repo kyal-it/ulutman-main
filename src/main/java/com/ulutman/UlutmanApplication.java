@@ -13,6 +13,9 @@ public class UlutmanApplication {
 
 
 	public static void main(String[] args) {
+		System.out.println("test");
+
+		System.out.println("test deploy");
 
 		SpringApplication.run(UlutmanApplication.class, args);
 		System.out.println("test");
