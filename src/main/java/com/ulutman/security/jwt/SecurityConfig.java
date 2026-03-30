@@ -39,18 +39,16 @@ public class SecurityConfig {
                         CorsConfiguration config = new CorsConfiguration();
                         config.setAllowedOrigins(List.of(
                                 "http://localhost:5173",
+                                "http://127.0.0.1:5173",
                                 "https://ulutman-api.com",
-                                "https://api.ulutman-api.com"
+                                "https://www.ulutman-api.com",
+                                "https://api.ulutman-api.com",
+                                "https://development.dwusq5ewq6ygx.amplifyapp.com"
                         ));
-                        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+                        config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
                         config.setAllowedHeaders(List.of("*"));
                         config.setExposedHeaders(List.of("Authorization"));
                         config.setAllowCredentials(true);
-//                        var corsConfiguration = new CorsConfiguration();
-//                        corsConfiguration.addAllowedOrigin("*");
-//                        corsConfiguration.addAllowedMethod("*");
-//                        corsConfiguration.addAllowedHeader("*");
-//                        return corsConfiguration;
                         return config;
                     });
                 }).csrf(AbstractHttpConfigurer::disable)
@@ -91,7 +89,6 @@ public class SecurityConfig {
                 .sessionManagement((sessionManagement) ->
                         sessionManagement
                                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
