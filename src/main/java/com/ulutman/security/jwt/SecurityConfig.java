@@ -38,9 +38,9 @@ public class SecurityConfig {
                     cors.configurationSource(request -> {
                         CorsConfiguration config = new CorsConfiguration();
                         config.setAllowedOrigins(List.of(
-                                "https://ulutman.com",
-                                "https://backend.ulutman.com",
-                                "https://development.dwusq5ewq6ygx.amplifyapp.com"
+                                "http://localhost:5173",
+                                "https://ulutman-api.com",
+                                "https://api.ulutman-api.com"
                         ));
                         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
                         config.setAllowedHeaders(List.of("*"));

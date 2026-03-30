@@ -43,7 +43,6 @@ public class SwaggerConfig {
     @Bean
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
-                .host("backend.ulutman.com")
                 .protocols(Set.of("https"))
                 .select()
                 .apis(RequestHandlerSelectors.basePackage(CONTROLLER_PACKAGE))
