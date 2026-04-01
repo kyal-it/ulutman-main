@@ -14,6 +14,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Prepare target directory on EC2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: 51.20.65.141
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          port: 22
+          script: |
+            mkdir -p /home/ubuntu/ulutman-main
+            chmod 755 /home/ubuntu
+            chmod -R u+rwX /home/ubuntu/ulutman-main
+            ls -ld /home/ubuntu /home/ubuntu/ulutman-main
+
       - name: Copy project to EC2
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -23,6 +36,8 @@ jobs:
           port: 22
           source: "Dockerfile,docker-compose.yml,pom.xml,mvnw,.mvn,src"
           target: "/home/ubuntu/ulutman-main"
+          overwrite: true
+          debug: true
 
       - name: Restart Docker app on EC2
         uses: appleboy/ssh-action@v1.0.3
@@ -33,7 +48,6 @@ jobs:
           port: 22
           command_timeout: 30m
           script: |
-            mkdir -p /home/ubuntu/ulutman-main
             cd /home/ubuntu/ulutman-main
-            docker compose up -d --build
-            docker ps
+            sudo docker compose up -d --build
+            sudo docker ps
