@@ -87,16 +87,15 @@ public class PublishService {
         publish.setUser(user);
         publish.setImages(imageUrls);
 
-        if (publishRequest.getCategory() == Category.HOTEL) {
+        if (publishRequest.getCategory() == Category.HOTEL || publishRequest.getCategory() == Category.RENT || publishRequest.getCategory() == Category.REAL_ESTATE) {
             publish.setPublishStatus(PublishStatus.ОЖИДАЕТ);
         } else {
             publish.setPublishStatus(PublishStatus.ОДОБРЕН);
         }
-//        publish.setPublishStatus(PublishStatus.ОДОБРЕН);
         publish.setCategoryStatus(CategoryStatus.АКТИВНО);
 
 
-        if (publishRequest.getCategory() == Category.RENT || publishRequest.getCategory() == Category.HOTEL) {
+        if (publishRequest.getCategory() == Category.RENT || publishRequest.getCategory() == Category.HOTEL || publishRequest.getCategory() == Category.REAL_ESTATE) {
             publish.setActive(false);
         } else {
             publish.setActive(true);
@@ -203,10 +202,10 @@ public class PublishService {
                     publish.getUser().getEmail(),
                     "Уведомление о завершении срока действия",
                     "Привет, на связи отдел договоров Ulutman.ru!\n" +
-                    "Срок действия вашего объявления: {" + publish + "} подошел к концу. \n" +
-                    " Оно больше не будет отображаться на Ulutman.ru.\n" +
-                    " С уважением," +
-                    " Команда Ulutman.ru");
+                            "Срок действия вашего объявления: {" + publish + "} подошел к концу. \n" +
+                            " Оно больше не будет отображаться на Ulutman.ru.\n" +
+                            " С уважением," +
+                            " Команда Ulutman.ru");
         }
     }
 

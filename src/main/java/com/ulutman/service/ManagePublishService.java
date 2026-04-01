@@ -115,7 +115,7 @@ public class ManagePublishService {
         List<Publish> publishes = publishRepository.findAllById(ids);
 
         if (publishes.isEmpty()) {
-            throw new NotFoundException("Публикации с такими ID не найдены");
+            throw new NotFoundException("Публикация с таким ID не найден");
         }
 
         publishRepository.deleteAll(publishes);
@@ -135,8 +135,8 @@ public class ManagePublishService {
         mailingService.sendMailing1(
                 publish.getUser().getEmail(),
                 "Ваша публикация активирована!",
-                "Мы рады сообщить вам, что ваша публикация успешно активирована на сайте ULUTMAN.ru.\n" +
-                        "Если у вас есть вопросы, пишите на: ulutman@gmail.com\n\n" +
+                "Мы рады сообщить вам, что ваша публикация успешно активирована на сайте ULUTMAN.\n" +
+                        "Если у вас есть вопросы, пишите на: ulutmanproject@gmail.com\n\n" +
                         "С уважением,\n" +
                         "Команда ULUTMAN"
         );
