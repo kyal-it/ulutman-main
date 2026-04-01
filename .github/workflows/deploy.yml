@@ -21,6 +21,7 @@ jobs:
           username: ubuntu
           key: ${{ secrets.EC2_SSH_KEY }}
           port: 22
+          command_timeout: 10m
           script: |
             mkdir -p /home/ubuntu/ulutman-main
             chmod 755 /home/ubuntu
@@ -38,16 +39,3 @@ jobs:
           target: "/home/ubuntu/ulutman-main"
           overwrite: true
           debug: true
-
-      - name: Restart Docker app on EC2
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: 51.20.65.141
-          username: ubuntu
-          key: ${{ secrets.EC2_SSH_KEY }}
-          port: 22
-          command_timeout: 60m
-          script: |
-            cd /home/ubuntu/ulutman-main
-            sudo docker compose up -d --build
-            sudo docker ps
