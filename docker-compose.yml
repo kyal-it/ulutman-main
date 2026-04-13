@@ -23,8 +23,6 @@ services:
     image: postgres:16
     container_name: ulutman_db
     restart: always
-    ports:
-      - "5432:5432"
     environment:
       POSTGRES_DB: ulutman
       POSTGRES_USER: ulutmanuser
