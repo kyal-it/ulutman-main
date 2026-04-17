@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -36,7 +37,7 @@ public class AuthController {
     @Operation(summary = "Create a new User")
     @ApiResponse(responseCode = "201", description = "User created successfully")
     @PostMapping("/sign-up")
-    public ResponseEntity<AuthResponse> save(@RequestBody AuthRequest authRequest) {
+    public ResponseEntity<AuthResponse> save(@RequestBody @Valid AuthRequest authRequest) {
         AuthResponse response = authService.save(authRequest);
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
@@ -57,8 +58,9 @@ public class AuthController {
     @Operation(summary = "Send pinCode")
     @ApiResponse(responseCode = "201", description = "Mailing sent pinCode  successfully")
     @GetMapping("/sendPasswordResetCode")
-    public void sendPasswordResetCode(@RequestParam String email) throws EntityNotFoundException {
+    public ResponseEntity<String>sendPasswordResetCode(@RequestParam String email) throws EntityNotFoundException {
         authService.sendPasswordResetCode(email);
+        return ResponseEntity.ok("Пин-код отправлен на вашу почту");
     }
 
     @Operation(summary = "Reset password")

@@ -19,26 +19,28 @@ import java.time.LocalDate;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AuthRequest {
 
-    @NotBlank
+    @NotBlank(message = "Имя не должно быть пустым")
     @Size(min = 3, max = 20, message = "Name should be between 6 and 20 characters!")
     String name;
 
-    @Email(message = "email should be valid")
+    @NotBlank(message = "Email не должен быть пустым")
+    @Email(message = "Некорректный формат email")
     @Size(min = 5, max = 30, message = "email must be between 5 and 30 characters!")
     String email;
 
-    @NotBlank(message = "password is mandatory!")
-    @Pattern(regexp = "^[a-zA-Z0-9a-яА-Я.,;: _?!+=/'\\\\\"*(){}\\[\\]\\-]{8,100}$", message = "incorrect password")
+    @NotBlank(message = "Пароль не должен быть пустым")
+    @Pattern(
+            regexp = "^(?=.*[A-Za-z])(?=.*\\d).{6,}$",
+            message = "Пароль должен содержать минимум 6 символов, хотя бы одну букву и одну цифру"
+    )
     @Size(min = 6, max = 20, message = "password must be between 6 and 20 characters!")
     String password;
 
-    @NotBlank(message = "password is mandatory!")
+    @NotBlank(message = "Подтверждение пароля не должно быть пустым")
     String confirmPassword;
 
-    @NotBlank
     Role role;
 
-    @NotBlank
     Status status;
 
     @CreatedDate
