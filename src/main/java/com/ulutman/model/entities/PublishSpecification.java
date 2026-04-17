@@ -19,7 +19,7 @@ public class PublishSpecification {
         };
     }
 
-    public static Specification<Publish> hasTitleStartingWith(List<String> titles) {
+    public static Specification<Publish> hasTitleContaining(List<String> titles) {
         return (root, query, criteriaBuilder) -> {
             if (titles == null || titles.isEmpty()) {
                 return criteriaBuilder.conjunction();
@@ -28,7 +28,7 @@ public class PublishSpecification {
             List<Predicate> predicates = titles.stream()
                     .map(title -> criteriaBuilder.like(
                             criteriaBuilder.lower(root.get("title")),
-                            title.toLowerCase() + "%"
+                            "%" + title.toLowerCase() + "%"
                     ))
                     .collect(Collectors.toList());
 

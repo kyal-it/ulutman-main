@@ -7,6 +7,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -19,7 +20,7 @@ import java.util.List;
 
 
 @Repository
-public interface PublishRepository extends JpaRepository<Publish, Long> {
+public interface PublishRepository extends JpaRepository<Publish, Long>, JpaSpecificationExecutor<Publish> {
 
 
     @Query("SELECT p FROM Publish p WHERE p.user.id = :userId")
