@@ -1,5 +1,6 @@
 package com.ulutman.model.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.ulutman.model.enums.Role;
 import com.ulutman.model.enums.Status;
 import jakarta.validation.constraints.Email;
@@ -39,6 +40,7 @@ public class AuthRequest {
     @NotBlank(message = "Подтверждение пароля не должно быть пустым")
     String confirmPassword;
 
+    @JsonDeserialize(using = RoleDeserializer.class)
     Role role;
 
     Status status;
